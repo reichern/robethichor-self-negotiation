@@ -9,6 +9,7 @@
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
 
   <exec_depend>python3-flask</exec_depend>
   <exec_depend>robethichor_interfaces</exec_depend>

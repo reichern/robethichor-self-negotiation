@@ -3,9 +3,10 @@ from std_msgs.msg import String
 
 class Executor():
     def __init__(self, node, active_profile, ethic_profiles, active_profile_publisher):
+
         self.node = node
         self.active_profile = active_profile
-        self.ethic_profiles = ethic_profile
+        self.ethic_profiles = ethic_profiles
         self.active_profile_publisher = active_profile_publisher
 
     def update_active_profile(self, new_label):
