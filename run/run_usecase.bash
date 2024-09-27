@@ -55,5 +55,5 @@ echo "Updating context"
 read -p "Enter to go ahead..."
 ros2 topic pub --once /$ROBOT_NAME/current_context std_msgs/msg/String "{data: '$UPDATE_CONTEXT'}"
 
-# Chiama il servizio con il messaggio JSON come stringa
-#ros2 service call "$SERVICE_NAME" "$SERVICE_TYPE" "$SERVICE_REQUEST"
+# Start mission execution
+ros2 service call /$ROBOT_NAME/start std_srvs/srv/Empty
