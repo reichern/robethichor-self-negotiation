@@ -1,0 +1,7 @@
+[console_scripts]
+connector_node = robethichor.nodes.connector.connector_node:main
+context_manager_node = robethichor.nodes.context_manager.context_manager_node:main
+ethics_manager_node = robethichor.nodes.ethics_manager.ethics_manager_node:main
+mission_controller_node = robethichor.nodes.mission_controller.mission_controller_node:main
+negotiation_manager_node = robethichor.nodes.negotiation_manager.negotiation_manager_node:main
+

@@ -1,0 +1,98 @@
+[0.795s] Invoking command in '/home/gianluca/ros2_ws/src/robethichor': AMENT_PREFIX_PATH=/home/gianluca/ros2_ws/src/install/robethichor_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/gianluca/ros2_ws/src/install/robethichor_interfaces:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/gianluca/ros2_ws/src/build/robethichor/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages:/home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../build/robethichor build --build-base /home/gianluca/ros2_ws/src/build/robethichor/build install --record /home/gianluca/ros2_ws/src/build/robethichor/install.log --single-version-externally-managed install_data
+[1.044s] running egg_info
+[1.046s] creating ../build/robethichor/robethichor.egg-info
+[1.046s] writing ../build/robethichor/robethichor.egg-info/PKG-INFO
+[1.046s] writing dependency_links to ../build/robethichor/robethichor.egg-info/dependency_links.txt
+[1.046s] writing entry points to ../build/robethichor/robethichor.egg-info/entry_points.txt
+[1.046s] writing requirements to ../build/robethichor/robethichor.egg-info/requires.txt
+[1.047s] writing top-level names to ../build/robethichor/robethichor.egg-info/top_level.txt
+[1.047s] writing manifest file '../build/robethichor/robethichor.egg-info/SOURCES.txt'
+[1.049s] reading manifest file '../build/robethichor/robethichor.egg-info/SOURCES.txt'
+[1.049s] adding license file 'LICENSE'
+[1.050s] writing manifest file '../build/robethichor/robethichor.egg-info/SOURCES.txt'
+[1.051s] running build
+[1.051s] running build_py
+[1.051s] creating /home/gianluca/ros2_ws/src/build/robethichor/build
+[1.051s] creating /home/gianluca/ros2_ws/src/build/robethichor/build/lib
+[1.051s] creating /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor
+[1.051s] copying robethichor/__init__.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor
+[1.051s] creating /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes
+[1.051s] copying robethichor/nodes/__init__.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes
+[1.052s] creating /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/connector
+[1.052s] copying robethichor/nodes/connector/__init__.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/connector
+[1.052s] copying robethichor/nodes/connector/connector_node.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/connector
+[1.052s] creating /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/negotiation_manager
+[1.053s] copying robethichor/nodes/negotiation_manager/negotiation_manager_node.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/negotiation_manager
+[1.053s] copying robethichor/nodes/negotiation_manager/__init__.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/negotiation_manager
+[1.053s] creating /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/context_manager
+[1.053s] copying robethichor/nodes/context_manager/analyzer.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/context_manager
+[1.054s] copying robethichor/nodes/context_manager/__init__.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/context_manager
+[1.055s] copying robethichor/nodes/context_manager/monitor.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/context_manager
+[1.056s] copying robethichor/nodes/context_manager/context_manager_node.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/context_manager
+[1.056s] creating /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/mission_controller
+[1.057s] copying robethichor/nodes/mission_controller/mission_controller_node.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/mission_controller
+[1.057s] copying robethichor/nodes/mission_controller/__init__.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/mission_controller
+[1.057s] creating /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager
+[1.057s] copying robethichor/nodes/ethics_manager/planner.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager
+[1.058s] copying robethichor/nodes/ethics_manager/executor.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager
+[1.058s] copying robethichor/nodes/ethics_manager/ethics_manager_node.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager
+[1.058s] copying robethichor/nodes/ethics_manager/__init__.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager
+[1.059s] running install
+[1.060s] running install_lib
+[1.060s] creating /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor
+[1.060s] creating /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes
+[1.061s] creating /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/connector
+[1.061s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/connector/__init__.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/connector
+[1.061s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/connector/connector_node.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/connector
+[1.061s] creating /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/negotiation_manager
+[1.062s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/negotiation_manager/negotiation_manager_node.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/negotiation_manager
+[1.062s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/negotiation_manager/__init__.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/negotiation_manager
+[1.062s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/__init__.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes
+[1.062s] creating /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/context_manager
+[1.062s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/context_manager/analyzer.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/context_manager
+[1.062s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/context_manager/__init__.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/context_manager
+[1.063s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/context_manager/monitor.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/context_manager
+[1.063s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/context_manager/context_manager_node.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/context_manager
+[1.063s] creating /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/mission_controller
+[1.063s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/mission_controller/mission_controller_node.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/mission_controller
+[1.064s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/mission_controller/__init__.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/mission_controller
+[1.064s] creating /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager
+[1.064s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager/planner.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager
+[1.064s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager/executor.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager
+[1.064s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager/ethics_manager_node.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager
+[1.065s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager/__init__.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager
+[1.065s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/__init__.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor
+[1.065s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/connector/__init__.py to __init__.cpython-310.pyc
+[1.066s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/connector/connector_node.py to connector_node.cpython-310.pyc
+[1.066s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/negotiation_manager/negotiation_manager_node.py to negotiation_manager_node.cpython-310.pyc
+[1.067s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/negotiation_manager/__init__.py to __init__.cpython-310.pyc
+[1.067s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/__init__.py to __init__.cpython-310.pyc
+[1.067s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/context_manager/analyzer.py to analyzer.cpython-310.pyc
+[1.068s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/context_manager/__init__.py to __init__.cpython-310.pyc
+[1.068s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/context_manager/monitor.py to monitor.cpython-310.pyc
+[1.068s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/context_manager/context_manager_node.py to context_manager_node.cpython-310.pyc
+[1.069s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/mission_controller/mission_controller_node.py to mission_controller_node.cpython-310.pyc
+[1.069s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/mission_controller/__init__.py to __init__.cpython-310.pyc
+[1.070s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager/planner.py to planner.cpython-310.pyc
+[1.070s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager/executor.py to executor.cpython-310.pyc
+[1.070s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager/ethics_manager_node.py to ethics_manager_node.cpython-310.pyc
+[1.071s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager/__init__.py to __init__.cpython-310.pyc
+[1.071s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/__init__.py to __init__.cpython-310.pyc
+[1.071s] running install_data
+[1.071s] creating /home/gianluca/ros2_ws/src/install/robethichor/share/ament_index
+[1.072s] creating /home/gianluca/ros2_ws/src/install/robethichor/share/ament_index/resource_index
+[1.072s] creating /home/gianluca/ros2_ws/src/install/robethichor/share/ament_index/resource_index/packages
+[1.072s] copying resource/robethichor -> /home/gianluca/ros2_ws/src/install/robethichor/share/ament_index/resource_index/packages
+[1.072s] copying package.xml -> /home/gianluca/ros2_ws/src/install/robethichor/share/robethichor
+[1.072s] creating /home/gianluca/ros2_ws/src/install/robethichor/share/robethichor/launch
+[1.073s] copying launch/robethichor_launch.py -> /home/gianluca/ros2_ws/src/install/robethichor/share/robethichor/launch
+[1.073s] running install_egg_info
+[1.075s] Copying ../build/robethichor/robethichor.egg-info to /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor-0.0.1-py3.10.egg-info
+[1.076s] running install_scripts
+[1.099s] Installing connector_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[1.099s] Installing context_manager_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[1.099s] Installing ethics_manager_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[1.099s] Installing mission_controller_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[1.099s] Installing negotiation_manager_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[1.100s] writing list of installed files to '/home/gianluca/ros2_ws/src/build/robethichor/install.log'
+[1.135s] Invoked command in '/home/gianluca/ros2_ws/src/robethichor' returned '0': AMENT_PREFIX_PATH=/home/gianluca/ros2_ws/src/install/robethichor_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/gianluca/ros2_ws/src/install/robethichor_interfaces:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/gianluca/ros2_ws/src/build/robethichor/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages:/home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../build/robethichor build --build-base /home/gianluca/ros2_ws/src/build/robethichor/build install --record /home/gianluca/ros2_ws/src/build/robethichor/install.log --single-version-externally-managed install_data

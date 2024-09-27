@@ -1,0 +1,7 @@
+{
+  "package_name": "robethichor_interfaces",
+  "non_idl_tuples": [
+    "/home/gianluca/ros2_ws/src/robethichor_interfaces:srv/UserStatusService.srv",
+    "/home/gianluca/ros2_ws/src/robethichor_interfaces:srv/NegotiationService.srv"
+  ]
+}

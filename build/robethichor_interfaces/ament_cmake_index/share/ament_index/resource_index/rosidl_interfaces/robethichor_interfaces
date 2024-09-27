@@ -1,0 +1,8 @@
+srv/NegotiationService.idl
+srv/NegotiationService.srv
+srv/NegotiationService_Request.msg
+srv/NegotiationService_Response.msg
+srv/UserStatusService.idl
+srv/UserStatusService.srv
+srv/UserStatusService_Request.msg
+srv/UserStatusService_Response.msg

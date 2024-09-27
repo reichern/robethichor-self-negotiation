@@ -1,0 +1,169 @@
+[0.021s] Invoking command in '/home/gianluca/ros2_ws/src/build/robethichor_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/gianluca/ros2_ws/src/install/robethichor:/home/gianluca/ros2_ws/install/robethichor:/opt/ros/humble /usr/bin/cmake --build /home/gianluca/ros2_ws/src/build/robethichor_interfaces -- -j2 -l2
+[0.090s] [  2%] Built target robethichor_interfaces__cpp
+[0.090s] [ 12%] Built target robethichor_interfaces__rosidl_generator_c
+[0.132s] [ 12%] Built target ament_cmake_python_copy_robethichor_interfaces
+[0.170s] [ 33%] Built target robethichor_interfaces__rosidl_typesupport_cpp
+[0.171s] [ 33%] Built target robethichor_interfaces__rosidl_typesupport_fastrtps_c
+[0.199s] [ 43%] Built target robethichor_interfaces__rosidl_typesupport_introspection_c
+[0.201s] [ 53%] Built target robethichor_interfaces__rosidl_typesupport_c
+[0.248s] [ 64%] Built target robethichor_interfaces__rosidl_typesupport_introspection_cpp
+[0.261s] [ 74%] Built target robethichor_interfaces__rosidl_typesupport_fastrtps_cpp
+[0.288s] [ 74%] Built target robethichor_interfaces
+[0.342s] [ 76%] Built target robethichor_interfaces__py
+[0.410s] [ 84%] Built target robethichor_interfaces__rosidl_generator_py
+[0.463s] [ 89%] Built target robethichor_interfaces__rosidl_typesupport_fastrtps_c__pyext
+[0.525s] [ 94%] Built target robethichor_interfaces__rosidl_typesupport_introspection_c__pyext
+[0.593s] [100%] Built target robethichor_interfaces__rosidl_typesupport_c__pyext
+[0.733s] running egg_info
+[0.737s] writing robethichor_interfaces.egg-info/PKG-INFO
+[0.738s] writing dependency_links to robethichor_interfaces.egg-info/dependency_links.txt
+[0.738s] writing top-level names to robethichor_interfaces.egg-info/top_level.txt
+[0.738s] reading manifest file 'robethichor_interfaces.egg-info/SOURCES.txt'
+[0.741s] writing manifest file 'robethichor_interfaces.egg-info/SOURCES.txt'
+[0.793s] [100%] Built target ament_cmake_python_build_robethichor_interfaces_egg
+[0.807s] Invoked command in '/home/gianluca/ros2_ws/src/build/robethichor_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/gianluca/ros2_ws/src/install/robethichor:/home/gianluca/ros2_ws/install/robethichor:/opt/ros/humble /usr/bin/cmake --build /home/gianluca/ros2_ws/src/build/robethichor_interfaces -- -j2 -l2
+[0.994s] Invoking command in '/home/gianluca/ros2_ws/src/build/robethichor_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/gianluca/ros2_ws/src/install/robethichor:/home/gianluca/ros2_ws/install/robethichor:/opt/ros/humble /usr/bin/cmake --install /home/gianluca/ros2_ws/src/build/robethichor_interfaces
+[1.003s] -- Install configuration: ""
+[1.003s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/ament_index/resource_index/rosidl_interfaces/robethichor_interfaces
+[1.003s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces
+[1.003s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/msg
+[1.003s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/msg/rosidl_generator_c__visibility_control.h
+[1.003s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv
+[1.003s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail
+[1.003s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__type_support.h
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__functions.c
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__struct.h
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__functions.h
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__type_support.h
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__functions.h
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__struct.h
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__functions.c
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/user_status_service.h
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/negotiation_service.h
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/environment/library_path.sh
+[1.004s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/environment/library_path.dsv
+[1.005s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib/librobethichor_interfaces__rosidl_generator_c.so
+[1.005s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces
+[1.005s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/msg
+[1.006s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[1.006s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv
+[1.006s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail
+[1.006s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__rosidl_typesupport_fastrtps_c.h
+[1.006s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__rosidl_typesupport_fastrtps_c.h
+[1.006s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib/librobethichor_interfaces__rosidl_typesupport_fastrtps_c.so
+[1.007s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces
+[1.007s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/msg
+[1.007s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[1.007s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv
+[1.007s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail
+[1.008s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__type_support.c
+[1.008s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__rosidl_typesupport_introspection_c.h
+[1.008s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__rosidl_typesupport_introspection_c.h
+[1.008s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__type_support.c
+[1.008s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib/librobethichor_interfaces__rosidl_typesupport_introspection_c.so
+[1.008s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib/librobethichor_interfaces__rosidl_typesupport_c.so
+[1.009s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces
+[1.009s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv
+[1.009s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail
+[1.009s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__struct.hpp
+[1.009s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__traits.hpp
+[1.010s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__builder.hpp
+[1.010s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__struct.hpp
+[1.010s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__builder.hpp
+[1.010s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__traits.hpp
+[1.010s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/user_status_service.hpp
+[1.010s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/negotiation_service.hpp
+[1.010s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces
+[1.011s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/msg
+[1.011s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[1.011s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv
+[1.011s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail
+[1.011s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/dds_fastrtps
+[1.012s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__rosidl_typesupport_fastrtps_cpp.hpp
+[1.012s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__rosidl_typesupport_fastrtps_cpp.hpp
+[1.012s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib/librobethichor_interfaces__rosidl_typesupport_fastrtps_cpp.so
+[1.012s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces
+[1.013s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv
+[1.013s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail
+[1.013s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__rosidl_typesupport_introspection_cpp.hpp
+[1.013s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__type_support.cpp
+[1.013s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/negotiation_service__type_support.cpp
+[1.013s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/include/robethichor_interfaces/robethichor_interfaces/srv/detail/user_status_service__rosidl_typesupport_introspection_cpp.hpp
+[1.014s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib/librobethichor_interfaces__rosidl_typesupport_introspection_cpp.so
+[1.014s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib/librobethichor_interfaces__rosidl_typesupport_cpp.so
+[1.014s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/environment/pythonpath.sh
+[1.015s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/environment/pythonpath.dsv
+[1.015s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces-0.0.1-py3.10.egg-info
+[1.015s] -- Installing: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces-0.0.1-py3.10.egg-info/SOURCES.txt
+[1.015s] -- Installing: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces-0.0.1-py3.10.egg-info/PKG-INFO
+[1.015s] -- Installing: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces-0.0.1-py3.10.egg-info/top_level.txt
+[1.016s] -- Installing: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces-0.0.1-py3.10.egg-info/dependency_links.txt
+[1.016s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces
+[1.016s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/librobethichor_interfaces__rosidl_generator_py.so
+[1.016s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/robethichor_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[1.017s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/robethichor_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[1.017s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/_robethichor_interfaces_s.ep.rosidl_typesupport_c.c
+[1.017s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/_robethichor_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+[1.017s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/_robethichor_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+[1.017s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/__init__.py
+[1.017s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/srv
+[1.017s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/srv/_negotiation_service.py
+[1.018s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/srv/_user_status_service.py
+[1.018s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/srv/__init__.py
+[1.018s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/srv/_negotiation_service_s.c
+[1.018s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/srv/_user_status_service_s.c
+[1.019s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/robethichor_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[1.057s] Listing '/home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces'...
+[1.057s] Listing '/home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/srv'...
+[1.063s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/robethichor_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[1.063s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/robethichor_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[1.064s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/local/lib/python3.10/dist-packages/robethichor_interfaces/robethichor_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[1.064s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/lib/librobethichor_interfaces__rosidl_generator_py.so
+[1.065s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/srv/UserStatusService.idl
+[1.065s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/srv/NegotiationService.idl
+[1.065s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/srv/UserStatusService.srv
+[1.065s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/srv/UserStatusService_Request.msg
+[1.065s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/srv/UserStatusService_Response.msg
+[1.066s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/srv/NegotiationService.srv
+[1.066s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/srv/NegotiationService_Request.msg
+[1.066s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/srv/NegotiationService_Response.msg
+[1.066s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/ament_index/resource_index/package_run_dependencies/robethichor_interfaces
+[1.066s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/ament_index/resource_index/parent_prefix_path/robethichor_interfaces
+[1.068s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/environment/ament_prefix_path.sh
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/environment/ament_prefix_path.dsv
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/environment/path.sh
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/environment/path.dsv
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/local_setup.bash
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/local_setup.sh
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/local_setup.zsh
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/local_setup.dsv
+[1.069s] -- Installing: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/package.dsv
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/ament_index/resource_index/packages/robethichor_interfaces
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/export_robethichor_interfaces__rosidl_generator_cExport.cmake
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/export_robethichor_interfaces__rosidl_generator_cExport-noconfig.cmake
+[1.069s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/export_robethichor_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+[1.070s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/export_robethichor_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[1.070s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfaces__rosidl_typesupport_introspection_cExport.cmake
+[1.070s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[1.070s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfaces__rosidl_typesupport_cExport.cmake
+[1.071s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+[1.071s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/export_robethichor_interfaces__rosidl_generator_cppExport.cmake
+[1.071s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/export_robethichor_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+[1.071s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/export_robethichor_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[1.071s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+[1.071s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[1.072s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfaces__rosidl_typesupport_cppExport.cmake
+[1.072s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+[1.072s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/export_robethichor_interfaces__rosidl_generator_pyExport.cmake
+[1.073s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/export_robethichor_interfaces__rosidl_generator_pyExport-noconfig.cmake
+[1.073s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/rosidl_cmake-extras.cmake
+[1.073s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+[1.073s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+[1.073s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+[1.074s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[1.074s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+[1.074s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[1.074s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfacesConfig.cmake
+[1.074s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/cmake/robethichor_interfacesConfig-version.cmake
+[1.074s] -- Up-to-date: /home/gianluca/ros2_ws/src/install/robethichor_interfaces/share/robethichor_interfaces/package.xml
+[1.077s] Invoked command in '/home/gianluca/ros2_ws/src/build/robethichor_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/gianluca/ros2_ws/src/install/robethichor:/home/gianluca/ros2_ws/install/robethichor:/opt/ros/humble /usr/bin/cmake --install /home/gianluca/ros2_ws/src/build/robethichor_interfaces

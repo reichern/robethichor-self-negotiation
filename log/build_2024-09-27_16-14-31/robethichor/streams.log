@@ -1,0 +1,32 @@
+[0.701s] Invoking command in '/home/gianluca/ros2_ws/src/robethichor': PYTHONPATH=/home/gianluca/ros2_ws/src/build/robethichor/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../build/robethichor build --build-base /home/gianluca/ros2_ws/src/build/robethichor/build install --record /home/gianluca/ros2_ws/src/build/robethichor/install.log --single-version-externally-managed install_data
+[0.945s] running egg_info
+[0.946s] writing ../build/robethichor/robethichor.egg-info/PKG-INFO
+[0.946s] writing dependency_links to ../build/robethichor/robethichor.egg-info/dependency_links.txt
+[0.947s] writing entry points to ../build/robethichor/robethichor.egg-info/entry_points.txt
+[0.947s] writing requirements to ../build/robethichor/robethichor.egg-info/requires.txt
+[0.947s] writing top-level names to ../build/robethichor/robethichor.egg-info/top_level.txt
+[0.950s] reading manifest file '../build/robethichor/robethichor.egg-info/SOURCES.txt'
+[0.952s] adding license file 'LICENSE'
+[0.952s] writing manifest file '../build/robethichor/robethichor.egg-info/SOURCES.txt'
+[0.953s] running build
+[0.953s] running build_py
+[0.957s] copying robethichor/nodes/ethics_manager/executor.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager
+[0.957s] copying robethichor/nodes/ethics_manager/ethics_manager_node.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager
+[0.957s] running install
+[0.958s] running install_lib
+[0.958s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager/executor.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager
+[0.958s] copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager/ethics_manager_node.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager
+[0.958s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager/executor.py to executor.cpython-310.pyc
+[0.958s] byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager/ethics_manager_node.py to ethics_manager_node.cpython-310.pyc
+[0.959s] running install_data
+[0.960s] running install_egg_info
+[0.963s] removing '/home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor-0.0.1-py3.10.egg-info' (and everything under it)
+[0.963s] Copying ../build/robethichor/robethichor.egg-info to /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor-0.0.1-py3.10.egg-info
+[0.971s] running install_scripts
+[0.990s] Installing connector_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[0.991s] Installing context_manager_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[0.991s] Installing ethics_manager_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[0.991s] Installing mission_controller_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[0.992s] Installing negotiation_manager_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+[0.992s] writing list of installed files to '/home/gianluca/ros2_ws/src/build/robethichor/install.log'
+[1.018s] Invoked command in '/home/gianluca/ros2_ws/src/robethichor' returned '0': PYTHONPATH=/home/gianluca/ros2_ws/src/build/robethichor/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../build/robethichor build --build-base /home/gianluca/ros2_ws/src/build/robethichor/build install --record /home/gianluca/ros2_ws/src/build/robethichor/install.log --single-version-externally-managed install_data

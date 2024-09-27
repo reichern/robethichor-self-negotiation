@@ -1,0 +1,27 @@
+running egg_info
+writing ../build/robethichor/robethichor.egg-info/PKG-INFO
+writing dependency_links to ../build/robethichor/robethichor.egg-info/dependency_links.txt
+writing entry points to ../build/robethichor/robethichor.egg-info/entry_points.txt
+writing requirements to ../build/robethichor/robethichor.egg-info/requires.txt
+writing top-level names to ../build/robethichor/robethichor.egg-info/top_level.txt
+reading manifest file '../build/robethichor/robethichor.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../build/robethichor/robethichor.egg-info/SOURCES.txt'
+running build
+running build_py
+copying robethichor/nodes/ethics_manager/planner.py -> /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager
+running install
+running install_lib
+copying /home/gianluca/ros2_ws/src/build/robethichor/build/lib/robethichor/nodes/ethics_manager/planner.py -> /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager
+byte-compiling /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor/nodes/ethics_manager/planner.py to planner.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor-0.0.1-py3.10.egg-info' (and everything under it)
+Copying ../build/robethichor/robethichor.egg-info to /home/gianluca/ros2_ws/src/install/robethichor/lib/python3.10/site-packages/robethichor-0.0.1-py3.10.egg-info
+running install_scripts
+Installing connector_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+Installing context_manager_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+Installing ethics_manager_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+Installing mission_controller_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+Installing negotiation_manager_node script to /home/gianluca/ros2_ws/src/install/robethichor/lib/robethichor
+writing list of installed files to '/home/gianluca/ros2_ws/src/build/robethichor/install.log'
