@@ -6,13 +6,19 @@ from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
     robot_ns_arg = DeclareLaunchArgument('ns', default_value='robassistant_1', description='Robot namespace')
     connector_port_arg = DeclareLaunchArgument('port', default_value='5000', description='Port for robot connector node')
+    ethical_implication_file_arg = DeclareLaunchArgument('ethical_implication_file', description='Path of the ethical implication configuration file')
+    disposition_activation_file_arg = DeclareLaunchArgument('disposition_activation_file', description='Path of the disposition activation configuration file')
 
     robot_ns = LaunchConfiguration('ns')
     connector_port = LaunchConfiguration('port')
+    ethical_implication_file = LaunchConfiguration('ethical_implication_file')
+    disposition_activation_file = LaunchConfiguration('disposition_activation_file')
 
     return LaunchDescription([
         robot_ns_arg,
         connector_port_arg,
+        ethical_implication_file_arg,
+        disposition_activation_file_arg,
 
         GroupAction([
             PushRosNamespace(robot_ns),
@@ -29,7 +35,8 @@ def generate_launch_description():
             Node(
                 package='robethichor',
                 executable='negotiation_manager_node',
-                name='negotiation_manager_node'
+                name='negotiation_manager_node',
+                parameters=[{'ethical_implication_file': ethical_implication_file}, {'disposition_activation_file': disposition_activation_file}]
             ),
             Node(
                 package='robethichor',

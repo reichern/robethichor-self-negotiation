@@ -1,6 +1,0 @@
-source;share/robethichor/hook/pythonpath.ps1
-source;share/robethichor/hook/pythonpath.dsv
-source;share/robethichor/hook/pythonpath.sh
-source;share/robethichor/hook/ament_prefix_path.ps1
-source;share/robethichor/hook/ament_prefix_path.dsv
-source;share/robethichor/hook/ament_prefix_path.sh

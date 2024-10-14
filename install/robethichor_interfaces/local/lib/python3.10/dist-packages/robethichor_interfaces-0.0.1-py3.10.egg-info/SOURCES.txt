@@ -1,9 +1,0 @@
-setup.py
-robethichor_interfaces/__init__.py
-robethichor_interfaces.egg-info/PKG-INFO
-robethichor_interfaces.egg-info/SOURCES.txt
-robethichor_interfaces.egg-info/dependency_links.txt
-robethichor_interfaces.egg-info/top_level.txt
-robethichor_interfaces/srv/__init__.py
-robethichor_interfaces/srv/_negotiation_service.py
-robethichor_interfaces/srv/_user_status_service.py
