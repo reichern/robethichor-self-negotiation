@@ -13,7 +13,8 @@ class NegotiationEngine():
 
         self.negotiation_id = str(uuid.uuid4())
 
-        self.timeout = 30 # Timeout in seconds for the wait of any message
+        self.dice_timeout = 20 # Timeout in seconds for accepting the negotiation
+        self.timeout = 5 # Timeout in seconds for the wait of any other message
         self.init_negotiation()
 
     def init_negotiation(self):
@@ -25,10 +26,10 @@ class NegotiationEngine():
         self.opponent_dice = 0
 
         self.quitted = False
-        self.opponent_quit_seen = False
+        self.opponent_quit_seen = False # This variable tells if the agent has already processed the opponent's quit
 
         self.opponent_offer = None # (["task"], ["condition"])
-        self.opponent_quitted = False
+        self.opponent_quitted = False # This variable contains the received quit message
         self.opponent_decision = None
 
     def receive_msgs_callback(self, msg):
@@ -108,7 +109,7 @@ class NegotiationEngine():
         #     self.init_negotiation()
         #     return "winner"
 
-        self.dice_event.wait(self.timeout)
+        self.dice_event.wait(self.dice_timeout)
         self.dice_event.clear()
         if self.opponent_dice == 0:
             self.node.get_logger().info("Negotiation: no dice received, executing exiting negotiation as winner")
@@ -133,47 +134,37 @@ class NegotiationEngine():
 
     def sender_negotiation(self):
         # IF SENDER
+        # 0- If there are no more offers, send a quit message (and exit negotiation if opponent has quitted already)
         # 1- Select the offer
         # 2- Send the offer
         # 3- Wait for the response
         # 4a- If the response is accept, exit from the negotiation and return the control
-        # 4b- If the response is skip (because the sender quitted), switch role and become receiver
-        # 4c- If the response is reject, switch role and become receiver
+        # 4b- If the response is reject, switch role and become receiver
 
-        # Checking exit condition:
+        self.node.get_logger().info("Running the negotiation as sender")
+
+        # 0
         if not self.offer_generator.has_next(): # If there are no more offers
-            if self.quitted: # If the agent already sent the quit message
-                if self.opponent_quitted: # And the opponent quitted as well
-                    return "no-agreement"
-                else:
-                    self.node.get_logger().info("Already quitted: skipping sender role")
-                    return self.receiver_negotiation()
-
-            else:
+            if not self.quitted: # If agent did have not sent the quit message before
                 self.node.get_logger().info("No other offers to send: sending quit message")
                 self.quitted = True
                 self.send_quit()
 
-        else:
-            self.node.get_logger().info("Running the negotiation as sender")
+            if self.opponent_quitted: # And the opponent quitted as well
+                self.node.get_logger().info("There are no more offers and opponent has arelady quitted: there's no agreement")
+                return "no-agreement"
+            else:
+                self.node.get_logger().info("Already quitted: skipping sender role")
+                return self.receiver_negotiation()
 
-            # 1
-            offer = self.offer_generator.get_next_offer()
-            self.node.get_logger().info(f"Sending offer: {offer}")
+        # 1
+        offer = self.offer_generator.get_next_offer()
+        self.node.get_logger().info(f"Sending offer: {offer}")
 
-            # 2
-            self.send_offer(offer)
+        # 2
+        self.send_offer(offer)
 
         # 3
-        ## Running spin_once causes the thread to lock
-        # w_time = 0
-        # while (self.opponent_decision is None) and w_time < self.timeout:
-        #     rclpy.spin_once(self.node, timeout_sec=1.0)
-        #     w_time += 1
-        # if w_time >= self.timeout:
-        #     self.node.get_logger().info(f"No decision received: exiting negotiation as winner")
-        #     return "winner" # If the opponent does not decide, execute the offered behavior
-
         self.receive_decision_event.wait(self.timeout)
         self.receive_decision_event.clear()
         if self.opponent_decision is None:
@@ -185,11 +176,6 @@ class NegotiationEngine():
             self.node.get_logger().info(f"Opponent accepted the offer: exiting negotiation as winner")
             return "winner"
         # 4b
-        elif self.opponent_decision == 'skip':
-            self.node.get_logger().info("Opponent skipped over the quit message: switching role")
-            self.opponent_decision = None
-            return self.receiver_negotiation()
-        # 4c
         else:
             # Change role and reset opponent decision and 
             self.node.get_logger().info(f"Opponent rejected: switching role")
@@ -198,6 +184,7 @@ class NegotiationEngine():
 
     def receiver_negotiation(self):
         # IF RECEIVER
+        # 0- If the opponent had already quitted, skip the receiver role and switch again to sender role
         # 1- Wait for the offer to be received
         # 2- Involve the task evaluator and evaluate the received offer
         # 3- Compare the returned value and take decision
@@ -205,22 +192,14 @@ class NegotiationEngine():
         # 5a- If the decision is accept, exit from the negotiation and return the control
         # 5b- If the decision is reject, switch role and become sender
 
+        self.node.get_logger().info("Running the negotiation as receiver")
+
+        #0
         if self.opponent_quit_seen:
             self.node.get_logger().info("Skipping receiver role since the opponent already quitted and will skip its sender turns")
             return self.sender_negotiation()
 
-        self.node.get_logger().info("Running the negotiation as receiver")
-
         # 1
-        ## Running spin_once causes the thread to lock
-        # w_time = 0
-        # while (self.opponent_offer is None or not self.opponent_quitted) and w_time < self.timeout:
-        #     rclpy.spin_once(self.node, timeout_sec=1.0)
-        #     w_time += 1
-        # if w_time >= self.timeout:
-        #     self.node.get_logger().info(f"No offer received: exiting negotiation as winner")
-        #     return 'winner'
-
         self.receive_offer_event.wait(timeout=self.timeout)
         self.receive_offer_event.clear()
 
@@ -238,7 +217,6 @@ class NegotiationEngine():
 
             self.node.get_logger().info("Opponent quitted: skipping")
             self.quit_seen = True
-            self.send_decision('skip') # Send skip to unlock the opponent and allow it to receive the next offer
             return self.sender_negotiation()
 
         self.node.get_logger().info(f"Received offer {self.opponent_offer}")
