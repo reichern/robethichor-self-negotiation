@@ -1,0 +1,22 @@
+{
+    "woman": false,
+    "pregnant": true,
+    "prenatal_care": false,
+    "infant_care": false,
+    "elderly": false,
+    "disabled": false,
+    "age_related_health_issues": false,
+    "flight_anxiety": true,
+    "crowd_stress": false,
+    "travelling_with_disabled_companion": false,
+    "travelling_with_elderly_companion": false,
+    "travelling_with_pets": false,
+    "travelling_with_children": true,
+    "non_native_speaker": false,
+    "fragile_luggage": false,
+    "is_lost": false,
+    "rushing_to_flight": true,
+    "unaccompanied_minor": false,
+    "unseen_emergency": false,
+    "medically_unfit": false
+}

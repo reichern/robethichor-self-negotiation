@@ -1,3 +1,4 @@
+import time
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import Empty
@@ -35,7 +36,9 @@ class MissionControllerNode(Node):
             self.get_logger().info("Starting mission")
 
             negotiation_request = NegotiationService.Request()
-            negotiation_request.tasks = ["t1"]
+            negotiation_request.tasks = ["t1"] # Mocking mission plan
+
+            self.start_negotiation_time = time.perf_counter() # Measuring negotiation time
 
             future = self.negotiation_client.call_async(negotiation_request)
             future.add_done_callback(lambda future: self.negotiation_callback(future))
@@ -54,6 +57,10 @@ class MissionControllerNode(Node):
                 self.get_logger().info(f"Negotiation result: {negotiation_response.outcome}")
         else:
             self.get_logger().error("Negotiation service call failed")
+
+        end_negotiation_time = time.perf_counter() # Measuring negotiation time
+        negotiation_time = end_negotiation_time - self.start_negotiation_time
+        self.get_logger().info(f"Negotiation time: {negotiation_time:.3f} seconds")
 
         self.get_logger().info("Mission is completed!")
 

@@ -1,7 +1,8 @@
 class UtilityFunction():
-    def __init__(self, ethical_implications, disposition_activation):
+    def __init__(self, ethical_implications, disposition_activation, node):
         self.ethical_implications = ethical_implications # {"task": ["disposition"]}
         self.disposition_activation = disposition_activation # {"condition": ["disposition"]}
+        self.node = node
     
     def set_task_ethical_impacts(self, ethical_impacts):
         self.ethical_impacts = ethical_impacts # {"disposition": value}
@@ -19,4 +20,5 @@ class UtilityFunction():
                         # If it is in the activation list, if it activates that disposition, and if the disposition is assigned with a value
                         if condition in self.disposition_activation and disposition in self.disposition_activation[condition] and disposition in self.ethical_impacts:
                             value += self.ethical_impacts[disposition] # Add the value to the offer total value
+        self.node.get_logger().info(f"Evaluating offer {offer}, value: {value}")
         return value

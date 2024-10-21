@@ -86,6 +86,8 @@ configure_robot $1 $ROBOT_BASE_NAME$1 5000
 # Second robot startup
 configure_robot $2 $ROBOT_BASE_NAME$2 5001
 
+sleep 3
+
 # Start the mission if third parameter has been set to Y or y
 if [ "$START" == "Y" ] || [ "$START" == "y" ]; then
 

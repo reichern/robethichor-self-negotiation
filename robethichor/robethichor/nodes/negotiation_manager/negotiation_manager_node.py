@@ -42,7 +42,7 @@ class NegotiationManagerNode(Node):
         # Components initialization
         self.ethical_impact_analyzer = EthicalImpactAnalyzer()
         self.offer_generator = OfferGenerator()
-        self.utility_function = UtilityFunction(ethical_implications, disposition_activation)
+        self.utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
 
         # Subscriber setup
         self.active_profile_subscriber = self.create_subscription(String, 'active_profile', self.active_profile_update_callback, 10)
@@ -81,16 +81,6 @@ class NegotiationManagerNode(Node):
             # Get user status
             future = self.user_status_service_client.call_async(UserStatusService.Request())
             future.add_done_callback(lambda future: self.user_status_service_callback(future, user_status_response_event))
-
-            ## Running spin_once causes the thread to lock
-            # w_time = 0
-            # while self.current_user_status is None:
-                # self.get_logger().info("Waiting for user_status_service...")
-                #rclpy.spin_once(self, timeout_sec=1.0)
-                #w_time += 1
-            # if w_time >= self.timeout:
-            #     self.get_logger().info("No user status got, entering negotiation without active conditions")
-            #     self.user_status_service_client.remove_pending_request(future)
 
             user_status_response_event.wait(timeout=self.timeout)
             if self.current_user_status is None:
