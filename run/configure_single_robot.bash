@@ -10,12 +10,6 @@ USER_STATUS_FILE="user_status.json"
 ETHIC_PROFILES_FILE="ethic_profiles.json"
 GOAL_FILE="goal.json"
 
-# Nome del servizio e del topic
-SERVICE_NAME="/nome_servizio"
-SERVICE_TYPE="nome_pacchetto/NomeServizio"
-TOPIC_NAME="/nome_topic"
-TOPIC_TYPE="nome_pacchetto/NomeMessaggio"
-
 # Connector service configuration
 CONNECTOR_BASEURL="http://localhost:5000"
 PROFILE_LOAD_PATH="/loadEthicProfile"

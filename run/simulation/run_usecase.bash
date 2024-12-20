@@ -1,10 +1,14 @@
 #!/bin/bash
 
+# Run this file as: ./run_usecase.bash <first_user> <second_user> [<start_mission>]
+# Example: ./run_usecase.bash A B Y
+
 # CONFIGURATION
 ROBOT_BASE_NAME="robassistant_"
+LOG_FILE="results/results.log"
 
 # JSON files paths
-BASE_FOLDER="usecase/"
+BASE_FOLDER="usecases/"
 CONTEXT_FILE="context.json"
 USER_STATUS_FILE="user_status.json"
 ETHIC_PROFILES_FILE="ethic_profiles.json"
@@ -17,7 +21,7 @@ PROFILE_LOAD_PATH="/loadEthicProfile"
 USER_STATUS_PATH="/setUserStatus"
 SET_GOAL_PATH="/setGoal"
 
-ROS_WS_PATH="../../" # this directory is inside the ws/src folder
+ROS_WS_PATH="../../../" # this directory is inside the ws/src folder
 
 configure_robot() {
 
@@ -38,7 +42,7 @@ configure_robot() {
     # Ros 2 launch (to launch the ros environment)
     FULL_PATH=$(pwd)
     INSTALL_PATH=$FULL_PATH"/"$ROS_WS_PATH"install/setup.bash"
-    LAUNCH_COMMAND="ros2 launch robethichor robethichor_launch.py ns:=$ROBOT_NAME port:=$PORT ethical_implication_file:=$FULL_PATH/$BASE_FOLDER/$ETHICAL_IMPLICATIONS_FILENAME disposition_activation_file:=$FULL_PATH/$BASE_FOLDER/$DISPOSITION_ACTIVATION_FILENAME"
+    LAUNCH_COMMAND="ros2 launch robethichor robethichor_launch.py ns:=$ROBOT_NAME port:=$PORT ethical_implication_file:=$FULL_PATH/$BASE_FOLDER$ETHICAL_IMPLICATIONS_FILENAME disposition_activation_file:=$FULL_PATH/$BASE_FOLDER$DISPOSITION_ACTIVATION_FILENAME log_output_file:=$FULL_PATH/$LOG_FILE"
     echo "Launching command: $LAUNCH_COMMAND"
     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
     sleep 3
@@ -68,7 +72,8 @@ start_mission() {
     local ROBOT_NAME=$1
 
     echo "Starting mission execution..."
-    ros2 service call /$ROBOT_NAME/start std_srvs/srv/Empty
+    #ros2 service call /$ROBOT_NAME/start std_srvs/srv/Empty
+    ros2 topic pub --once /start std_msgs/msg/Empty "{}"
 }
 
 if [ "$#" -lt 2 ]; then
@@ -92,8 +97,10 @@ sleep 3
 if [ "$START" == "Y" ] || [ "$START" == "y" ]; then
 
     # First robot mission start
-    start_mission $ROBOT_BASE_NAME$1
+    #start_mission $ROBOT_BASE_NAME$1
 
     # Second robot mission start
-    start_mission $ROBOT_BASE_NAME$2
+    #start_mission $ROBOT_BASE_NAME$2
+
+    start_mission
 fi

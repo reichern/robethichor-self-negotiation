@@ -8,17 +8,20 @@ def generate_launch_description():
     connector_port_arg = DeclareLaunchArgument('port', default_value='5000', description='Port for robot connector node')
     ethical_implication_file_arg = DeclareLaunchArgument('ethical_implication_file', description='Path of the ethical implication configuration file')
     disposition_activation_file_arg = DeclareLaunchArgument('disposition_activation_file', description='Path of the disposition activation configuration file')
+    log_output_file_arg = DeclareLaunchArgument('log_output_file', default_value='', description='Path of the log output file')
 
     robot_ns = LaunchConfiguration('ns')
     connector_port = LaunchConfiguration('port')
     ethical_implication_file = LaunchConfiguration('ethical_implication_file')
     disposition_activation_file = LaunchConfiguration('disposition_activation_file')
+    log_output_file = LaunchConfiguration('log_output_file')
 
     return LaunchDescription([
         robot_ns_arg,
         connector_port_arg,
         ethical_implication_file_arg,
         disposition_activation_file_arg,
+        log_output_file_arg,
 
         GroupAction([
             PushRosNamespace(robot_ns),
@@ -41,7 +44,8 @@ def generate_launch_description():
             Node(
                 package='robethichor',
                 executable='mission_controller_node',
-                name='mission_controller_node'
+                name='mission_controller_node',
+                parameters=[{'log_output_file': log_output_file}]
             ),
             Node(
                 package='robethichor',

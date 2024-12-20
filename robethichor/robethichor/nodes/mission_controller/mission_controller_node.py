@@ -1,7 +1,8 @@
+import os
 import time
 import rclpy
 from rclpy.node import Node
-from std_srvs.srv import Empty
+from std_msgs.msg import Empty
 from std_msgs.msg import String
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
@@ -15,6 +16,10 @@ class MissionControllerNode(Node):
 
         self.mission_running = False
 
+        self.declare_parameter('log_output_file', '.')
+        self.log_output_file = self.get_parameter('log_output_file').get_parameter_value().string_value
+        self.get_logger().info(f"Setting mission log output file to {self.log_output_file}")
+
         # Subscribers setup
         self.create_subscription(String, 'goal', self.set_goal_callback, 10)
 
@@ -23,12 +28,12 @@ class MissionControllerNode(Node):
         while not self.negotiation_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Waiting for negotiation service to be available')
 
-        self.start_service = self.create_service(Empty, 'start', self.start_mission_callback, callback_group=self.callback_group)
+        self.create_subscription(Empty, '/start', self.start_mission_callback, 10, callback_group=self.callback_group)
 
     def set_goal_callback(self, msg):
         self.goal = msg.data
 
-    def start_mission_callback(self, request, response):
+    def start_mission_callback(self, msg):
 
         if not self.mission_running:
             self.mission_running = True
@@ -46,7 +51,6 @@ class MissionControllerNode(Node):
         else:
             self.get_logger().info("A mission is already being executed")
 
-        return response
 
     def negotiation_callback(self, future):
         negotiation_response = future.result()
@@ -63,6 +67,14 @@ class MissionControllerNode(Node):
         self.get_logger().info(f"Negotiation time: {negotiation_time:.3f} seconds")
 
         self.get_logger().info("Mission is completed!")
+
+        if self.log_output_file:
+            log_dir = os.path.dirname(self.log_output_file)
+            if log_dir and not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+            with open(self.log_output_file, 'a') as f:
+                f.write(f"{self.get_namespace()}: negotiation completed. Configuration: {self.goal}. Negotiation time: {negotiation_time:.3f} seconds. Result: {negotiation_response.outcome}\n")
+                f.close()
 
 def main(args=None):
     rclpy.init(args=args)
