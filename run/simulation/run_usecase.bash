@@ -102,5 +102,5 @@ if [ "$START" == "Y" ] || [ "$START" == "y" ]; then
     # Second robot mission start
     #start_mission $ROBOT_BASE_NAME$2
 
-    start_mission
+    start_mission # Starts the mission (and the negotiation) for both robots
 fi
