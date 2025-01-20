@@ -12,4 +12,4 @@ RUN . /opt/ros/humble/setup.sh && colcon build
 RUN chmod +x src/run/scalability_experiments/run_experiment.bash
 RUN chmod +x src/run/simulation/run_usecase.bash
 
-ENTRYPOINT ["/bin/bash", "-c", "source /robethichor_ws/install/setup.bash && exec \"$@\"", "--"]
+ENTRYPOINT ["/bin/bash", "-c", "source /robethichor_ws/install/setup.bash && exec \"$@\" || exec bash", "--"]
