@@ -21,27 +21,30 @@ class MissionControllerNode(Node):
         self.get_logger().info(f"Setting mission log output file to {self.log_output_file}")
 
         # Subscribers setup
-        self.create_subscription(String, 'goal', self.set_goal_callback, 10)
+        self.create_subscription(String, 'goal', self.start_mission_callback, 10, callback_group=self.callback_group)
+        #self.create_subscription(Empty, '/start', self.start_mission_callback, 10, callback_group=self.callback_group)
+
+        #self.create_service(NegotiationService, 'negotiation', self.negotiation_service_callback, callback_group=self.callback_group)
 
         # Client service setup
         self.negotiation_client = self.create_client(NegotiationService, 'negotiation', callback_group=self.callback_group)
         while not self.negotiation_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Waiting for negotiation service to be available')
 
-        self.create_subscription(Empty, '/start', self.start_mission_callback, 10, callback_group=self.callback_group)
-
-    def set_goal_callback(self, msg):
-        self.goal = msg.data
+    # def set_goal_callback(self, msg):
+    #     self.goal = msg.data
 
     def start_mission_callback(self, msg):
+        self.get_logger().info("Received new goal...")
 
         if not self.mission_running:
+            self.goal = msg.data
             self.mission_running = True
 
-            self.get_logger().info("Starting mission")
+            self.get_logger().info(f"Starting mission, goal: [{self.goal}]")
 
             negotiation_request = NegotiationService.Request()
-            negotiation_request.tasks = ["t1"] # Mocking mission plan
+            negotiation_request.tasks = ["t1"] # Mocking mission plan. The list of tasks should be obtained by a planner.
 
             self.start_negotiation_time = time.perf_counter() # Measuring negotiation time
 
@@ -49,16 +52,14 @@ class MissionControllerNode(Node):
             future.add_done_callback(lambda future: self.negotiation_callback(future))
 
         else:
-            self.get_logger().info("A mission is already being executed")
-
+            self.get_logger().info("A mission is already being executed: rejecting goal.")
 
     def negotiation_callback(self, future):
         negotiation_response = future.result()
-        self.mission_running = False
         self.negotiation_client.remove_pending_request(future)
 
         if negotiation_response is not None:
-                self.get_logger().info(f"Negotiation result: {negotiation_response.outcome}")
+                self.get_logger().info(f"Negotiation result: {negotiation_response.outcome} ({negotiation_response.rounds} rounds)")
         else:
             self.get_logger().error("Negotiation service call failed")
 
@@ -73,8 +74,10 @@ class MissionControllerNode(Node):
             if log_dir and not os.path.exists(log_dir):
                 os.makedirs(log_dir)
             with open(self.log_output_file, 'a') as f:
-                f.write(f"{self.get_namespace()}: negotiation completed. Configuration: {self.goal}. Negotiation time: {negotiation_time:.3f} seconds. Result: {negotiation_response.outcome}\n")
+                f.write(f"{self.get_namespace()}: negotiation completed. Configuration: {self.goal}. Negotiation time: {negotiation_time:.3f} seconds. Rounds: {negotiation_response.rounds}. Result: {negotiation_response.outcome}\n")
                 f.close()
+
+        self.mission_running = False
 
 def main(args=None):
     rclpy.init(args=args)
@@ -82,7 +85,6 @@ def main(args=None):
     executor = MultiThreadedExecutor()
     executor.add_node(node)
     executor.spin()
-    #rclpy.spin(node, executor)
     node.destroy_node()
     rclpy.shutdown()
 

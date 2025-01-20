@@ -22,3 +22,6 @@ class Executor():
             self.active_profile_publisher.publish(message)
         else:
             self.node.get_logger().info(f"Profile with label {new_label} not found!")
+
+    def refresh_active_profile(self):
+        self.update_active_profile(self.active_profile["label"])

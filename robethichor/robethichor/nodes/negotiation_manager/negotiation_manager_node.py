@@ -45,12 +45,12 @@ class NegotiationManagerNode(Node):
         self.utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
 
         # Subscriber setup
-        self.active_profile_subscriber = self.create_subscription(String, 'active_profile', self.active_profile_update_callback, 10)
+        self.active_profile_subscriber = self.create_subscription(String, 'active_profile', self.active_profile_update_callback, 10, callback_group=self.callback_group)
 
         # Setup negotiation stuff 
         self.negotiation_publisher = self.create_publisher(String, '/negotiation_msgs', 10)
         self.negotiation_engine = NegotiationEngine(self, self.offer_generator, self.utility_function, self.negotiation_publisher)
-        self.negotiation_subscriber = self.create_subscription(String, '/negotiation_msgs', self.negotiation_engine.receive_msgs_callback, 10)
+        self.negotiation_subscriber = self.create_subscription(String, '/negotiation_msgs', self.negotiation_engine.receive_msgs_callback, 10, callback_group=self.callback_group)
 
         # Negotiation service setup
         self.negotiation_service = self.create_service(NegotiationService, 'negotiation', self.negotiation_service_callback, callback_group=self.callback_group)
@@ -62,7 +62,7 @@ class NegotiationManagerNode(Node):
 
 
     def active_profile_update_callback(self, msg):
-        self.get_logger().info("Received new active profile")
+        self.get_logger().info(f"Received new active profile: {msg.data}")
         self.active_profile = json.loads(msg.data)
 
         # Calculate task ethical impacts and provide them to the utility function using the ethical impact analyzer
@@ -93,14 +93,15 @@ class NegotiationManagerNode(Node):
             self.get_logger().info(f"Offers generated: {self.offer_generator.get_offers()}")
 
             # Start the negotiation engine
-            outcome = self.negotiation_engine.execute_negotiation()
+            outcome, rounds = self.negotiation_engine.execute_negotiation()
             response.outcome = outcome # winner, loser, no-agreement
+            response.rounds = rounds # no. of rounds
 
             self.get_logger().info("Negotiation completed")
 
             self.negotiating = False
         else:
-            self.get_logger().info("Received a new negotiation request. Sending back an empty response")
+            self.get_logger().info("Received a new negotiation request but a negotiation is in progress. Sending back an empty response.")
 
         return response
 

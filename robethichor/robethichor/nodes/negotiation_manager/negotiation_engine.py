@@ -11,9 +11,7 @@ class NegotiationEngine():
         self.utility_function = utility_function
         self.negotiation_publisher = negotiation_publisher
 
-        self.negotiation_id = str(uuid.uuid4())
-
-        self.dice_timeout = 20 # Timeout in seconds for accepting the negotiation
+        self.dice_timeout = 50 # Timeout in seconds for accepting the negotiation
         self.timeout = 5 # Timeout in seconds for the wait of any other message
         self.init_negotiation()
 
@@ -21,6 +19,9 @@ class NegotiationEngine():
         self.dice_event = Event()
         self.receive_offer_event = Event() # This event covers both the received offer and the quit
         self.receive_decision_event = Event()
+
+        self.my_id = str(uuid.uuid4())
+        self.opponent_id = None
 
         self.my_dice = 0
         self.opponent_dice = 0
@@ -32,53 +33,64 @@ class NegotiationEngine():
         self.opponent_quitted = False # This variable contains the received quit message
         self.opponent_decision = None
 
+        self.round_counter = 0
+
     def receive_msgs_callback(self, msg):
         # Messages are encoded as json strings
         message = json.loads(msg.data)
         id = message["id"]
 
-        if id != self.negotiation_id:
-            self.node.get_logger().info("Received Negotiation message!")
+        if id != self.my_id: # Avoid reading own messages
+            self.node.get_logger().info(f"Received Negotiation message with key {message['key']}")
 
+            # Keys can be {dice, offer, decision}
             key = message["key"]
             content = message["content"]
 
-            # Keys can be {dice, offer, decision}
-            if key == "dice":
+            # If the dice is first received, store the dice and the opponent id
+            if self.opponent_id is None and self.opponent_dice == 0 and key == "dice":
                 self.opponent_dice = content
+                self.opponent_id = id
+                self.node.get_logger().info(f"Opponent id is {self.opponent_id}")
                 self.dice_event.set()
-            elif key == "offer":
-                self.opponent_offer = (content['task'], content['conditions'])
-                self.receive_offer_event.set()
-            elif key == "quit":
-                self.opponent_quitted = True
-                self.receive_offer_event.set()
-            elif key == "decision":
-                self.opponent_decision = content
-                self.receive_decision_event.set()
-            else:
-                self.node.get_logger().info("Key not recognized: ignoring message")
 
+            # Process messages only if the opponent id has already been set (this means that the negotiation is ongoing)
+            if id == self.opponent_id:
+                self.node.get_logger().info("Processing opponent's message...")
+                if key == "dice":
+                    if self.opponent_dice != 0:
+                        self.node.get_logger().info("Dice already received: ignoring message")
+                elif key == "offer":
+                    self.opponent_offer = (content['task'], content['conditions'])
+                    self.receive_offer_event.set()
+                elif key == "quit":
+                    self.opponent_quitted = True
+                    self.receive_offer_event.set()
+                elif key == "decision":
+                    self.opponent_decision = content
+                    self.receive_decision_event.set()
+                else:
+                    self.node.get_logger().info("Key not recognized: ignoring message")
 
     def send_dice(self):
         message = String()
-        message.data = json.dumps({"id": self.negotiation_id, "key": "dice", "content": self.my_dice})
+        message.data = json.dumps({"id": self.my_id, "key": "dice", "content": self.my_dice})
         self.negotiation_publisher.publish(message)
 
     def send_offer(self, offer):
         encoded_offer = {"task": offer[0], "conditions": offer[1]}
         message = String()
-        message.data = json.dumps({"id": self.negotiation_id, "key": "offer", "content": encoded_offer})
+        message.data = json.dumps({"id": self.my_id, "key": "offer", "content": encoded_offer})
         self.negotiation_publisher.publish(message)
 
     def send_quit(self):
         message = String()
-        message.data = json.dumps({"id": self.negotiation_id, "key": "quit", "content": True})
+        message.data = json.dumps({"id": self.my_id, "key": "quit", "content": True})
         self.negotiation_publisher.publish(message)
 
     def send_decision(self, decision):
         message = String()
-        message.data = json.dumps({"id": self.negotiation_id, "key": "decision", "content": decision})
+        message.data = json.dumps({"id": self.my_id, "key": "decision", "content": decision})
         self.negotiation_publisher.publish(message)
 
 
@@ -98,17 +110,6 @@ class NegotiationEngine():
         self.send_dice()
 
         # 3
-        ## Running spin_once causes the thread to lock
-        # w_time = 0
-        # while self.opponent_dice == 0 and w_time < self.timeout:
-        #     self.node.get_logger().info("Waiting!")
-        #     rclpy.spin_once(self.node, timeout_sec=1.0)
-        #     w_time += 1
-        # if w_time >= self.timeout:
-        #     self.node.get_logger().info("Negotiation: no dice received, executing exiting negotiation as winner")
-        #     self.init_negotiation()
-        #     return "winner"
-
         self.dice_event.wait(self.dice_timeout)
         self.dice_event.clear()
         if self.opponent_dice == 0:
@@ -128,9 +129,13 @@ class NegotiationEngine():
             self.node.get_logger().info("Start the negotiation as receiver")
             result = self.receiver_negotiation()
 
-        # When a negotiation finishes, reinit it
+        # When a negotiation finishes, clear all the events and reinit it
+        rounds = self.round_counter
+        self.dice_event.clear()
+        self.dice_event.clear()
+        self.dice_event.clear()
         self.init_negotiation()
-        return result # results: winner, loser, no-agreement
+        return result, rounds # results: winner, loser, no-agreement
 
     def sender_negotiation(self):
         # IF SENDER
@@ -142,6 +147,7 @@ class NegotiationEngine():
         # 4b- If the response is reject, switch role and become receiver
 
         self.node.get_logger().info("Running the negotiation as sender")
+        self.round_counter = self.round_counter + 1
 
         # 0
         if not self.offer_generator.has_next(): # If there are no more offers
@@ -193,6 +199,7 @@ class NegotiationEngine():
         # 5b- If the decision is reject, switch role and become sender
 
         self.node.get_logger().info("Running the negotiation as receiver")
+        self.round_counter = self.round_counter + 1
 
         #0
         if self.opponent_quit_seen:

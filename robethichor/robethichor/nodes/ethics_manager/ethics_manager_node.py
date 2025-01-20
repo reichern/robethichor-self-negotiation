@@ -33,6 +33,11 @@ class EthicsManagerNode(Node):
         for label in updated_profile:
             self.ethic_profiles[label] = updated_profile[label]
 
+        # If there is a change in the active profile, refresh it
+        if "label" in self.active_profile and self.active_profile["label"] in self.ethic_profiles:
+            self.get_logger().info("There is a change in the active profile, refreshing it")
+            self.executor_.refresh_active_profile()
+
 
 def main(args=None):
     rclpy.init(args=args)
