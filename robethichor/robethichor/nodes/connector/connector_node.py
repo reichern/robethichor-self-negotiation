@@ -27,7 +27,7 @@ class ConnectorNode(Node):
         app.run(host=self.host, port=self.port)
 
 
-@app.route('/loadEthicProfile', methods=['POST'])
+@app.route('/profile', methods=['POST'])
 def load_user_profile():
     node = app.config['ros_node']
     node.get_logger().info("Received user profile")
@@ -39,7 +39,7 @@ def load_user_profile():
 
     return make_response(jsonify({}), 201)
 
-@app.route('/setUserStatus', methods=['POST'])
+@app.route('/status', methods=['POST'])
 def set_user_status_controller():
     node = app.config['ros_node']
     node.get_logger().info("Received user status")
@@ -52,7 +52,7 @@ def set_user_status_controller():
 
     return make_response(jsonify({}), 201)
 
-@app.route('/setGoal', methods=['POST'])
+@app.route('/goal', methods=['POST'])
 def set_goal_controller():
     node = app.config['ros_node']
     node.get_logger().info("Received setGoal request")

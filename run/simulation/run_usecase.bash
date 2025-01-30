@@ -17,9 +17,9 @@ ETHICAL_IMPLICATIONS_FILENAME="ethical_implications.json"
 DISPOSITION_ACTIVATION_FILENAME="disposition_activation.json"
 
 # Connector service information
-PROFILE_LOAD_PATH="/loadEthicProfile"
-USER_STATUS_PATH="/setUserStatus"
-SET_GOAL_PATH="/setGoal"
+PROFILE_LOAD_PATH="/profile"
+USER_STATUS_PATH="/status"
+SET_GOAL_PATH="/goal"
 
 ROS_WS_PATH="../../../" # this directory is inside the ws/src folder
 
