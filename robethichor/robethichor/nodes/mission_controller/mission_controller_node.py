@@ -8,7 +8,7 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 from robethichor_interfaces.srv import NegotiationService
 
-class MissionControllerNode(Node):
+class MissionControllerNode(Node): # Mocked version for testing purposes: avoiding using a planner to get the list of tasks
     def __init__(self):
         super().__init__('mission_controller_node')
 
@@ -22,9 +22,6 @@ class MissionControllerNode(Node):
 
         # Subscribers setup
         self.create_subscription(String, 'goal', self.start_mission_callback, 10, callback_group=self.callback_group)
-        #self.create_subscription(Empty, '/start', self.start_mission_callback, 10, callback_group=self.callback_group)
-
-        #self.create_service(NegotiationService, 'negotiation', self.negotiation_service_callback, callback_group=self.callback_group)
 
         # Client service setup
         self.negotiation_client = self.create_client(NegotiationService, 'negotiation', callback_group=self.callback_group)
