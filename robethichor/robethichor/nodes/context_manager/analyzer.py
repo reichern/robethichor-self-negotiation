@@ -12,7 +12,7 @@ class Analyzer():
 
         for property in context_update:
             if not property in self.context_model or self.context_model[property] != context_update[property]:
-                self.node.get_logger().info(f"Updating property {property} to value {context_update[property]}: context has changed")
+                self.node.get_logger().debug(f"Updating property {property} to value {context_update[property]}: context has changed")
                 self.context_model[property] = context_update[property]
                 context_changed = True
 

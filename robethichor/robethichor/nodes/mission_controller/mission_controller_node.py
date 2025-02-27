@@ -8,7 +8,7 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 from robethichor_interfaces.srv import NegotiationService
 
-class MissionControllerNode(Node): # Mocked version for testing purposes: avoiding using a planner to get the list of tasks
+class MissionControllerNode(Node): # Mocked version for testing purposes: must be refined/replaced for actual usage
     def __init__(self):
         super().__init__('mission_controller_node')
 
@@ -28,9 +28,6 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: avoidi
         while not self.negotiation_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Waiting for negotiation service to be available')
 
-    # def set_goal_callback(self, msg):
-    #     self.goal = msg.data
-
     def start_mission_callback(self, msg):
         self.get_logger().info("Received new goal...")
 
@@ -40,8 +37,13 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: avoidi
 
             self.get_logger().info(f"Starting mission, goal: [{self.goal}]")
 
+            # REFINEMENT REQUIRED: a planner should be used to generate the list of tasks, and their implementation must be provided
+
+            # Example of negotiation request:
             negotiation_request = NegotiationService.Request()
-            negotiation_request.tasks = ["t1"] # Mocking mission plan. The list of tasks should be obtained by a planner.
+            negotiation_request.tasks = ["t1"]
+
+            # /REFINEMENT REQUIRED
 
             self.start_negotiation_time = time.perf_counter() # Measuring negotiation time
 

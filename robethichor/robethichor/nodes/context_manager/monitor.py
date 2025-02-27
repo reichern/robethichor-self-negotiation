@@ -13,6 +13,6 @@ class Monitor():
     def monitor_context(self, msg):
         monitored_properties = json.loads(msg.data)
 
-        self.node.get_logger().info(f"Received info on monitored properties: {msg.data}")
+        self.node.get_logger().debug(f"Received info on monitored properties: {msg.data}")
         # Invoke analyzer to check if context is updated
         self.analyzer.analyze(monitored_properties)

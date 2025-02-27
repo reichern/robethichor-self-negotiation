@@ -41,7 +41,7 @@ class NegotiationEngine():
         id = message["id"]
 
         if id != self.my_id: # Avoid reading own messages
-            self.node.get_logger().info(f"Received Negotiation message with key {message['key']}")
+            self.node.get_logger().debug(f"Received Negotiation message with key {message['key']}")
 
             # Keys can be {dice, offer, decision}
             key = message["key"]
@@ -51,15 +51,15 @@ class NegotiationEngine():
             if self.opponent_id is None and self.opponent_dice == 0 and key == "dice":
                 self.opponent_dice = content
                 self.opponent_id = id
-                self.node.get_logger().info(f"Opponent id is {self.opponent_id}")
+                self.node.get_logger().debug(f"Opponent id is {self.opponent_id}")
                 self.dice_event.set()
 
             # Process messages only if the opponent id has already been set (this means that the negotiation is ongoing)
             if id == self.opponent_id:
-                self.node.get_logger().info("Processing opponent's message...")
+                self.node.get_logger().debug("Processing opponent's message...")
                 if key == "dice":
                     if self.opponent_dice != 0:
-                        self.node.get_logger().info("Dice already received: ignoring message")
+                        self.node.get_logger().debug("Dice already received: ignoring message")
                 elif key == "offer":
                     self.opponent_offer = (content['task'], content['conditions'])
                     self.receive_offer_event.set()
@@ -70,7 +70,7 @@ class NegotiationEngine():
                     self.opponent_decision = content
                     self.receive_decision_event.set()
                 else:
-                    self.node.get_logger().info("Key not recognized: ignoring message")
+                    self.node.get_logger().debug("Key not recognized: ignoring message")
 
     def send_dice(self):
         message = String()
@@ -104,7 +104,7 @@ class NegotiationEngine():
 
         # 1
         self.my_dice = random.randint(1, 100000)
-        self.node.get_logger().info(f"Negotiation: extracted dice value is {self.my_dice}")
+        self.node.get_logger().debug(f"Negotiation: extracted dice value is {self.my_dice}")
 
         # 2
         self.send_dice()
@@ -113,20 +113,20 @@ class NegotiationEngine():
         self.dice_event.wait(self.dice_timeout)
         self.dice_event.clear()
         if self.opponent_dice == 0:
-            self.node.get_logger().info("Negotiation: no dice received, executing exiting negotiation as winner")
+            self.node.get_logger().debug("Negotiation: no dice received, executing exiting negotiation as winner")
             self.init_negotiation()
             return "winner"
 
         # 4
         self.max_offer = self.offer_generator.get_max_offer()
-        self.node.get_logger().info(f"Max offer: {self.max_offer}")
+        self.node.get_logger().debug(f"Max offer: {self.max_offer}")
 
         # 5
         if self.my_dice > self.opponent_dice:
-            self.node.get_logger().info("Start the negotiation as sender")
+            self.node.get_logger().info("Starting the negotiation as sender")
             result = self.sender_negotiation()
         else:
-            self.node.get_logger().info("Start the negotiation as receiver")
+            self.node.get_logger().info("Starting the negotiation as receiver")
             result = self.receiver_negotiation()
 
         # When a negotiation finishes, clear all the events and reinit it
@@ -146,21 +146,21 @@ class NegotiationEngine():
         # 4a- If the response is accept, exit from the negotiation and return the control
         # 4b- If the response is reject, switch role and become receiver
 
-        self.node.get_logger().info("Running the negotiation as sender")
+        self.node.get_logger().debug("Running the negotiation as sender")
         self.round_counter = self.round_counter + 1
 
         # 0
         if not self.offer_generator.has_next(): # If there are no more offers
             if not self.quitted: # If agent did have not sent the quit message before
-                self.node.get_logger().info("No other offers to send: sending quit message")
+                self.node.get_logger().debug("No other offers to send: sending quit message")
                 self.quitted = True
                 self.send_quit()
 
             if self.opponent_quitted: # And the opponent quitted as well
-                self.node.get_logger().info("There are no more offers and opponent has arelady quitted: there's no agreement")
+                self.node.get_logger().debug("There are no more offers and opponent has arelady quitted: there's no agreement")
                 return "no-agreement"
             else:
-                self.node.get_logger().info("Already quitted: skipping sender role")
+                self.node.get_logger().debug("Already quitted: skipping sender role")
                 return self.receiver_negotiation()
 
         # 1
@@ -174,17 +174,17 @@ class NegotiationEngine():
         self.receive_decision_event.wait(self.timeout)
         self.receive_decision_event.clear()
         if self.opponent_decision is None:
-            self.node.get_logger().info("No decision received: exiting negotiation as winner")
+            self.node.get_logger().debug("No decision received: exiting negotiation as winner")
             return "winner"
 
         # 4a
         if self.opponent_decision == 'accept':
-            self.node.get_logger().info(f"Opponent accepted the offer: exiting negotiation as winner")
+            self.node.get_logger().debug(f"Opponent accepted the offer: exiting negotiation as winner")
             return "winner"
         # 4b
         else:
             # Change role and reset opponent decision and 
-            self.node.get_logger().info(f"Opponent rejected: switching role")
+            self.node.get_logger().debug(f"Opponent rejected: switching role")
             self.opponent_decision = None
             return self.receiver_negotiation()
 
@@ -198,12 +198,12 @@ class NegotiationEngine():
         # 5a- If the decision is accept, exit from the negotiation and return the control
         # 5b- If the decision is reject, switch role and become sender
 
-        self.node.get_logger().info("Running the negotiation as receiver")
+        self.node.get_logger().debug("Running the negotiation as receiver")
         self.round_counter = self.round_counter + 1
 
         #0
         if self.opponent_quit_seen:
-            self.node.get_logger().info("Skipping receiver role since the opponent already quitted and will skip its sender turns")
+            self.node.get_logger().debug("Skipping receiver role since the opponent already quitted and will skip its sender turns")
             return self.sender_negotiation()
 
         # 1
@@ -212,21 +212,21 @@ class NegotiationEngine():
 
         # If nothing new has been received
         if self.opponent_offer is None and not self.opponent_quitted:
-            self.node.get_logger().info("No offer received: exiting negotiation as winner")
+            self.node.get_logger().debug("No offer received: exiting negotiation as winner")
             return "winner"
 
         # If instead of an offer, the opponent decided to quit...
         if self.opponent_quitted:
             self.opponent_quit_seen = True
             if self.quitted:
-                self.node.get_logger().info("Also opponent quitted: exit without agreement")
+                self.node.get_logger().debug("Also opponent quitted: exit without agreement")
                 return "no-agreement"
 
-            self.node.get_logger().info("Opponent quitted: skipping")
+            self.node.get_logger().debug("Opponent quitted: skipping")
             self.quit_seen = True
             return self.sender_negotiation()
 
-        self.node.get_logger().info(f"Received offer {self.opponent_offer}")
+        self.node.get_logger().debug(f"Received offer {self.opponent_offer}")
 
         # 3
         utility_value = self.utility_function.compute_utility(self.opponent_offer, self.max_offer)
@@ -234,14 +234,14 @@ class NegotiationEngine():
         # 4
         if utility_value > 0:
             # Accept opponent's offer
-            self.node.get_logger().info(f"Utility value: {utility_value}: accept")
+            self.node.get_logger().debug(f"Utility value: {utility_value}: accept")
             # 5
             self.send_decision('accept')
             # 6a
             return 'loser'
         else:
             # Reject opponent's offer, reset received offers and switch role
-            self.node.get_logger().info(f"Utility value: {utility_value}: reject and switch roles")
+            self.node.get_logger().debug(f"Utility value: {utility_value}: reject and switch roles")
             # 5
             self.send_decision('reject')
             # 6b

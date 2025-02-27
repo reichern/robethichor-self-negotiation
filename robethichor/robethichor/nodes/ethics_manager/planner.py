@@ -11,7 +11,7 @@ class Planner():
     def plan_active_profile_change(self, msg):
         current_context = json.loads(msg.data)
 
-        self.node.get_logger().info(f"Received new context: {msg.data}")
+        self.node.get_logger().debug(f"Received new context: {msg.data}")
 
         # Planning active profile change
         if not "label" in self.active_profile or current_context["location"] != self.active_profile["label"]:
