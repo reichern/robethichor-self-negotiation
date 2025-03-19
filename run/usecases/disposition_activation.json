@@ -1,0 +1,22 @@
+{
+    "woman": ["d1"],
+    "pregnant": ["d2"],
+    "prenatal_care": ["d6"],
+    "infant_care": ["d4"],
+    "elderly": ["d3"],
+    "disabled": ["d12"],
+    "age_related_health_issues": ["d6"],
+    "flight_anxiety": ["d8"],
+    "crowd_stress": ["d8"],
+    "travelling_with_disabled_companion": ["d12"],
+    "travelling_with_elderly_companion": ["d3"],
+    "travelling_with_pets": ["d9"],
+    "travelling_with_children": ["d4"],
+    "non_native_speaker": ["d7"],
+    "fragile_luggage": ["d10"],
+    "is_lost": ["d10"],
+    "rushing_to_flight": ["d11"],
+    "unaccompanied_minor": ["d5"],
+    "unseen_emergency": ["d11"],
+    "medically_unfit": ["d6"]
+}
