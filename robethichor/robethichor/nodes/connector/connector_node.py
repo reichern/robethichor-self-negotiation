@@ -10,10 +10,18 @@ class ConnectorNode(Node):
     def __init__(self):
         super().__init__('connector_node')
 
-        # Publishers setup
+        # Setup publishers for currently active user
         self.ethic_profile_publisher = self.create_publisher(String, 'ethic_profile', 10)
         self.user_status_publisher = self.create_publisher(String, 'user_status', 10)
         self.goal_publisher = self.create_publisher(String, 'goal', 10)
+        # Setup publishers for interrupting user
+        self.int_ethic_profile_publisher = self.create_publisher(String, 'interrupting_user/ethic_profile', 10)
+        self.int_user_status_publisher = self.create_publisher(String, 'interrupting_user/user_status', 10)
+        self.int_goal_publisher = self.create_publisher(String, 'interrupting_user/goal', 10)
+
+        # TODO dynamic parameter!! should be false at beginning
+        # Parameter for whether there is currently an interruption occuring
+        self.interrupting = True
 
         # Controller parameters
         self.declare_parameter('host', '0.0.0.0')
@@ -26,45 +34,53 @@ class ConnectorNode(Node):
         app.config['ros_node'] = self
         app.run(host=self.host, port=self.port)
 
+def publish_data(publisher):
+    data = request.get_json()
+    message = String()
+    message.data = json.dumps(data)
+    publisher.publish(message)
+
+    return make_response(jsonify({}), 201)
 
 @app.route('/profile', methods=['POST'])
 def load_user_profile():
     node = app.config['ros_node']
     node.get_logger().info("Received user profile")
-    data = request.get_json()
-
-    message = String()
-    message.data = json.dumps(data)
-    node.ethic_profile_publisher.publish(message)
-
-    return make_response(jsonify({}), 201)
+    return publish_data(node.ethic_profile_publisher)
 
 @app.route('/status', methods=['POST'])
 def set_user_status_controller():
     node = app.config['ros_node']
     node.get_logger().info("Received user status")
-
-    data = request.get_json()
-
-    message = String()
-    message.data = json.dumps(data)
-    node.user_status_publisher.publish(message)
-
-    return make_response(jsonify({}), 201)
+    return publish_data(node.user_status_publisher)
 
 @app.route('/goal', methods=['POST'])
 def set_goal_controller():
     node = app.config['ros_node']
     node.get_logger().info("Received setGoal request")
-
     data = request.get_json()
+    return publish_data(node.goal_publisher)
 
-    message = String()
-    message.data = json.dumps(data)
-    node.goal_publisher.publish(message)
+@app.route('/interrupting/profile', methods=['POST'])
+def load_int_user_profile():
+    node = app.config['ros_node']
+    if node.interrupting:
+        node.get_logger().info("Received interrupting user profile")
+        return publish_data(node.int_ethic_profile_publisher)
 
-    return make_response(jsonify({}), 201)
+@app.route('/interrupting/status', methods=['POST'])
+def set_int_user_status_controller():
+    node = app.config['ros_node']
+    if node.interrupting:
+        node.get_logger().info(f"Received interrupting user status")
+        return publish_data(node.int_user_status_publisher)
 
+@app.route('/interrupting/goal', methods=['POST'])
+def set_int_goal_controller():
+    node = app.config['ros_node']
+    if node.interrupting:
+        node.get_logger().info("Received interrupting user's setGoal request")
+        return publish_data(node.int_goal_publisher)
 
 def main(args=None):
     rclpy.init(args=args)

@@ -1,3 +1,6 @@
+TODO update Readme
+this is a fork from the original project (https://github.com/gianlucafilippone/robethichor.git), and with help of https://github.com/RoboChor/robethichor-ethics-based-negotiation/blob/main/run/simulation/run_usecase.bash project, adapting the architecture for self-negotiation!
+
 # RobEthiChor
 
 TODO: Description
