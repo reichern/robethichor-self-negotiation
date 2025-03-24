@@ -124,8 +124,7 @@ class NegotiationManagerNode(Node):
 
             # Start the negotiation engine
             outcome = self.negotiation_engine.self_negotiation()
-            response.outcome = outcome # active, interruption, no-agreement
-            # response.rounds = rounds # no. of rounds
+            response.outcome = outcome # current, interruption, no-agreement
 
             self.get_logger().info("Negotiation completed")
 
