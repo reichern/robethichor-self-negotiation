@@ -150,7 +150,7 @@ start_mission() {
 
     echo "Starting mission execution..."
 
-    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq --arg user "$USER_LABEL" --arg interrupted "$INTERRUPTED_BY" '.goal += " (User: " + $user + " starting mission! interrupted by $interrupted)"')
+    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq --arg user "$USER_LABEL" --arg interrupted "$INTERRUPTED_BY" '.goal += " (User: " + $user + " starting mission! interrupted by " + $interrupted)')
 
     curl -X POST http://$HOST:$PORT$SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
 }

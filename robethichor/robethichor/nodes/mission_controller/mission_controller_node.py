@@ -6,7 +6,7 @@ from std_msgs.msg import Empty
 from std_msgs.msg import String, Bool
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
-from robethichor_interfaces.srv import NegotiationService
+from robethichor_interfaces.srv import NegotiationService, InterruptionService
 
 from launch import LaunchDescription, LaunchService
 from launch.actions import GroupAction
@@ -33,6 +33,9 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
         self.negotiation_client = self.create_client(NegotiationService, 'negotiation', callback_group=self.callback_group)
         while not self.negotiation_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Waiting for negotiation service to be available')
+        self.interruption_client = self.create_client(InterruptionService, 'interruption', callback_group=self.callback_group)
+        while not self.interruption_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Waiting for interruption service to be available')
 
     def start_mission_callback(self, msg):
         self.get_logger().info("Received new goal...")
@@ -52,27 +55,14 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
     def interruption_callback(self, msg):
         self.interrupt = msg.data
-        # TODO only if msg is true
-        self.get_logger().info(f"Received interrupt: {self.interrupt}")
+        if (self.interrupt == True):
+            self.get_logger().info(f"Received interrupt!")
 
-        # TODO call interruption handler
-        # TODO wait for second user's data
+            # Interruption request:
+            interruption_request = InterruptionService.Request()
 
-        # TODO this should be done in interruption handler? 
-        # launch ethics manager and context manager for interrupting user 
-        self.launch_interrupting_nodes()
-
-        # TODO wait?? 
-
-        # Measuring negotiation time
-        self.start_negotiation_time = time.perf_counter() 
-
-        # Example of negotiation request:
-        negotiation_request = NegotiationService.Request()
-        negotiation_request.tasks = ["t1"]
-
-        future = self.negotiation_client.call_async(negotiation_request)
-        future.add_done_callback(lambda future: self.negotiation_callback(future))
+            future = self.interruption_client.call_async(interruption_request)
+            future.add_done_callback(lambda future: self.interruption_srv_callback(future))
 
     def negotiation_callback(self, future):
         negotiation_response = future.result()
@@ -99,29 +89,27 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
         self.mission_running = False
 
-    def launch_interrupting_nodes(self):
-        self.get_logger().info("launching other nodes...")
-        # namespace = 'interrupting_user'
-# 
-        # ld = LaunchDescription([
-        #     
-        #     GroupAction([
-        #         PushRosNamespace(namespace),
-        #         LNode(
-        #             package='robethichor',
-        #             executable='ethics_manager_node',
-        #             name='ethics_manager_node'
-        #         ),
-        #         LNode(
-        #             package='robethichor',
-        #             executable='context_manager_node',
-        #             name='context_manager_node'
-        #         ),
-        #     ]),
-        # ])
-        # ls = LaunchService()
-        # ls.include_launch_description(ld)
-        # ls.run_async()
+    def interruption_srv_callback(self, future):
+        interruption_response = future.result()
+        self.interruption_client.remove_pending_request(future)
+        if interruption_response is None:
+            self.get_logger().error("Negotiation service call failed")
+        elif interruption_response == True:
+            self.get_logger().info("Interruption initialised, negotiation can be started.")
+            # Measuring negotiation time
+            self.start_negotiation_time = time.perf_counter() 
+
+            # TODO dynamic tasks
+            # Negotiation request:
+            negotiation_request = NegotiationService.Request()
+            negotiation_request.tasks = ["t1"]
+
+            n_future = self.negotiation_client.call_async(negotiation_request)
+            n_future.add_done_callback(lambda future: self.negotiation_callback(n_future))
+        elif interruption_response == False: 
+            self.get_logger().info("Interrupting request rejected, continue current mission. ")
+
+        return
 
 def main(args=None):
     rclpy.init(args=args)

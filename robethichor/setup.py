@@ -28,6 +28,7 @@ setup(
             'negotiation_manager_node = robethichor.nodes.negotiation_manager.negotiation_manager_node:main',
             'mission_controller_node = robethichor.nodes.mission_controller.mission_controller_node:main',
             'connector_node = robethichor.nodes.connector.connector_node:main',
+            'interruption_manager_node = robethichor.nodes.interruption_manager.interruption_manager_node:main',
         ],
     },
 )

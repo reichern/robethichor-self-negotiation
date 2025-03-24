@@ -53,5 +53,10 @@ def generate_launch_description():
                 name='connector_node',
                 parameters=[{'port': connector_port}]
             ),
+            Node(
+                package='robethichor',
+                executable='interruption_manager_node',
+                name='interruption_manager_node',
+            ),
         ]),
     ])
