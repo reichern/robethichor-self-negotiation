@@ -1,7 +1,10 @@
+# https://github.com/ros/urdf_launch/tree/main
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction
+from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription
 from launch_ros.actions import Node, PushRosNamespace
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     robot_ns_arg = DeclareLaunchArgument('ns', default_value='robassistant_1', description='Robot namespace')
@@ -16,7 +19,7 @@ def generate_launch_description():
     disposition_activation_file = LaunchConfiguration('disposition_activation_file')
     log_output_file = LaunchConfiguration('log_output_file')
 
-    return LaunchDescription([
+    ld = LaunchDescription([
         robot_ns_arg,
         connector_port_arg,
         ethical_implication_file_arg,
@@ -60,3 +63,13 @@ def generate_launch_description():
             ),
         ]),
     ])
+
+
+    ld.add_action(IncludeLaunchDescription(
+        PathJoinSubstitution([FindPackageShare('robethichor'), 'launch', 'gazebo.launch.py']),
+        launch_arguments={
+            'urdf_package': 'tiago_description',
+            'urdf_package_path': PathJoinSubstitution(['robots', 'tiago.urdf.xacro'])}.items()
+    ))
+
+    return ld 

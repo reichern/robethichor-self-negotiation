@@ -40,7 +40,7 @@ start_robot() {
     echo "------ Running $ROBOT_NAME ------"
 
     # Ros 2 launch (to launch the ros environment)
-    LAUNCH_COMMAND="ros2 launch robethichor robethichor_launch.py ns:=$ROBOT_NAME port:=$PORT ethical_implication_file:=$FULL_PATH/$BASE_FOLDER$ETHICAL_IMPLICATIONS_FILENAME disposition_activation_file:=$FULL_PATH/$BASE_FOLDER$DISPOSITION_ACTIVATION_FILENAME log_output_file:=$FULL_PATH/$LOG_FILE"
+    LAUNCH_COMMAND="ros2 launch robethichor robethichor.launch.py ns:=$ROBOT_NAME port:=$PORT ethical_implication_file:=$FULL_PATH/$BASE_FOLDER$ETHICAL_IMPLICATIONS_FILENAME disposition_activation_file:=$FULL_PATH/$BASE_FOLDER$DISPOSITION_ACTIVATION_FILENAME log_output_file:=$FULL_PATH/$LOG_FILE"
     echo "Launching command: $LAUNCH_COMMAND"
     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
     sleep 3
@@ -97,7 +97,7 @@ configure_interrupt() {
     # launch nodes for interruption
     echo "launch interupting nodes? $FIRST"
     if [ "$FIRST" = true ]; then
-        LAUNCH_COMMAND="ros2 launch robethichor robethichor_interruption_launch.py ns:=$ROBOT_NAME/interrupting_user"
+        LAUNCH_COMMAND="ros2 launch robethichor robethichor_interruption.launch.py ns:=$ROBOT_NAME/interrupting_user"
         echo "Launching command: $LAUNCH_COMMAND"
         gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
         sleep 3
