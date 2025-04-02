@@ -27,7 +27,7 @@ def generate_launch_description():
         log_output_file_arg,
 
         GroupAction([
-            PushRosNamespace(robot_ns),
+            # PushRosNamespace(robot_ns),
             Node(
                 package='robethichor',
                 executable='ethics_manager_node',
@@ -68,8 +68,9 @@ def generate_launch_description():
     ld.add_action(IncludeLaunchDescription(
         PathJoinSubstitution([FindPackageShare('robethichor'), 'launch', 'gazebo.launch.py']),
         launch_arguments={
+            'namespace': robot_ns,
             'urdf_package': 'tiago_description',
-            'urdf_package_path': PathJoinSubstitution(['robots', 'tiago.urdf.xacro'])}.items()
+            'urdf_package_path': PathJoinSubstitution(['robots', 'tiago.urdf.xacro'])}.items(),
     ))
 
     return ld 
