@@ -49,28 +49,14 @@ def generate_launch_description():
     ns_arg = DeclareLaunchArgument('namespace', description='The namespace in which ', 
                                         default_value='tiago_description')
     package_arg = DeclareLaunchArgument('urdf_package', description='The package where the robot description is located', 
-                                        default_value='tiago_description')
+                                        # default_value='tiago_description')
+                                        default_value='turtlebot3_description')
     model_arg = DeclareLaunchArgument('urdf_package_path',description='The path to the robot description relative to the package root',
-                                      default_value='robots/tiago.urdf.xacro')
-    
+                                      default_value='turtlebot3_burger.xacro')
+                                    #   default_value='robots/tiago.urdf.xacro')
+
     robot_ns = LaunchConfiguration('namespace')
     set_sim_time = SetLaunchConfiguration("use_sim_time", "True")
-
-    # TODO should be GZ_SIM_RESOURCE_PATH, but seems not to read from it? yields error
-    set_env_vars_resources = GroupAction([
-        SetEnvironmentVariable(name='GAZEBO_MODEL_PATH',
-                               value=FindPackageShare('tiago_description')),
-        AppendEnvironmentVariable(name='GAZEBO_MODEL_PATH',
-                                value=FindPackageShare('pmb2_description')),
-        AppendEnvironmentVariable(name='GAZEBO_MODEL_PATH',
-                                value=FindPackageShare('pal_hey5_description')),
-        AppendEnvironmentVariable(name='GAZEBO_MODEL_PATH',
-                                value=FindPackageShare('pal_gripper_description')),
-        AppendEnvironmentVariable(name='GAZEBO_MODEL_PATH',
-                                value=FindPackageShare('pal_robotiq_description')),
-        AppendEnvironmentVariable(name='GAZEBO_MODEL_PATH',
-                                value=FindPackageShare('omni_base_description'))
-    ])
 
     # launch world
     # TODO path to world? 
@@ -79,43 +65,41 @@ def generate_launch_description():
         launch_arguments={
             'gui': LaunchConfiguration('gui'),
             'pause': 'true',
-            'world': './src/robethichor/worlds/base_world.sdf',
+            'world': '../robethichor/worlds/two_rooms_expanded.sdf',
+            's': 'libgazebo_ros_factory.so'
         }.items(),
     )
     client_launch = IncludeLaunchDescription(
         PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gzclient.launch.py']),
         launch_arguments={
-            'world': './src/robethichor/worlds/base_world.sdf',
+            'world': '../robethichor/worlds/two_rooms_expanded.sdf',
         }.items(),
-    )
-
-    # publish robot description
-    description_launch_py = IncludeLaunchDescription(
-        PathJoinSubstitution([FindPackageShare('urdf_launch'), 'launch', 'description.launch.py']),
-        launch_arguments={
-            'urdf_package': LaunchConfiguration('urdf_package'),
-            'urdf_package_path': LaunchConfiguration('urdf_package_path')}.items()
     )
 
     # spawn robot in gazebo
     urdf_spawner_node = Node(
-        # package='ros_gz_sim',
-        # executable='create',
         package='gazebo_ros',
         executable='spawn_entity.py',
         name='urdf_spawner',
-        arguments=['-topic', '/robot_description', '-entity', 'robot', '-unpause'],
+        arguments=['-topic', 'robot_description', '-entity', 'robot' , '-unpause'],
         output='screen',
     )
-    
+
     # controllers for robot model 
     bringup_launch_py = IncludeLaunchDescription(
         PathJoinSubstitution([FindPackageShare('tiago_bringup'), 'launch', 'tiago_bringup.launch.py']),
         launch_arguments={
-            'arm_type': 'no-arm',
+            "arm_motor_model": 'parker',
+            "laser_model": 'sick-571',
+            "camera_model": 'orbbec-astra',
+            "base_type": 'pmb2',
+            "wrist_model": 'wrist-2017',
+            "ft_sensor": 'schunk-ft',
+            "end_effector": 'pal-gripper',
+            "has_screen": 'False',
+            'arm_type': 'tiago-arm', # tiago-arm, no-arm
             'is_public_sim': 'True',
-            "use_sim_time": LaunchConfiguration("use_sim_time"),
-            'world_name': 'base_world'}.items()
+            "use_sim_time": LaunchConfiguration("use_sim_time")}.items()
     )
 
     # navigation 
@@ -125,44 +109,31 @@ def generate_launch_description():
             'is_public_sim': 'True',
             "use_sim_time": LaunchConfiguration("use_sim_time"),
             'slam': 'True',
-            'advanced_navigation': 'True'}.items()
+            "robot_name": 'robot',
+            'advanced_navigation': 'False',
+            'laser': 'sick-571',
+            'base_type': 'pmb2',
+            'world_name': 'two_rooms_expanded'}.items()
     )
-    # navigation_launch_py = IncludeLaunchDescription(
-    #     PathJoinSubstitution([FindPackageShare('tiago_advanced_2dnav'), 'launch', 'tiago_advanced_nav_bringup.launch.py']),
-    #     launch_arguments={}.items()
-    # )
 
-    # moveit 
-    moveit_launch_py = IncludeLaunchDescription(
-        PathJoinSubstitution([FindPackageShare('tiago_moveit_config'), 'launch', 'move_group.launch.py']),
-        launch_arguments={
-            'arm_type': 'no-arm',
-            "use_sim_time": LaunchConfiguration("use_sim_time"),
-            'tuck_arm': 'False'}.items()
-    )
+    tuck_arm = Node(package='tiago_gazebo',
+                    executable='tuck_arm.py',
+                    name='arm_tucker',
+                    # arguments=['-emulate_tty', 'True'],
+                    emulate_tty=True,
+                    output='both',)
 
 
     # launch description with all actions created above
     ld = LaunchDescription([
-        # PushRosNamespace(robot_ns),
-        # set_env_vars_resources,
         set_sim_time,
         gui_arg,
-        package_arg,
-        model_arg,
         empty_world_launch,
         client_launch,
-        # navigation_launch_py,
-        moveit_launch_py,
-        description_launch_py,
         urdf_spawner_node,
         bringup_launch_py,
+        tuck_arm,
+        navigation_launch_py,
     ])
-
-    # ld.add_action(Node(
-    #     package='joint_state_publisher_gui',
-    #     executable='joint_state_publisher_gui',
-    # ))
-
 
     return ld

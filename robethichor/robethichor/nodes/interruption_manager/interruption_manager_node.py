@@ -7,6 +7,11 @@ from rclpy.executors import MultiThreadedExecutor
 
 from robethichor_interfaces.srv import NegotiationService, InterruptionService
 
+from launch import LaunchDescription, LaunchService
+from launch.actions import GroupAction
+from launch_ros.actions import PushRosNamespace
+from launch_ros.actions import Node as LNode
+
 class InterruptionManagerNode(Node):
     def __init__(self):
         super().__init__('interruption_manager_node')

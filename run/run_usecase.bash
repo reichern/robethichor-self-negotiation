@@ -34,13 +34,18 @@ FIRST=true
 
 start_robot() {
 
-    local ROBOT_NAME=$1
-    local PORT=$2
+    local PORT=$1
 
-    echo "------ Running $ROBOT_NAME ------"
+    echo "------ Running robot ------"
 
     # Ros 2 launch (to launch the ros environment)
-    LAUNCH_COMMAND="ros2 launch robethichor robethichor.launch.py ns:=$ROBOT_NAME port:=$PORT ethical_implication_file:=$FULL_PATH/$BASE_FOLDER$ETHICAL_IMPLICATIONS_FILENAME disposition_activation_file:=$FULL_PATH/$BASE_FOLDER$DISPOSITION_ACTIVATION_FILENAME log_output_file:=$FULL_PATH/$LOG_FILE"
+    LAUNCH_GAZEBO_COMMAND="ros2 launch robethichor gazebo.launch.py"
+    echo "Launching command: $LAUNCH_GAZEBO_COMMAND"
+    gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_GAZEBO_COMMAND; exec bash"
+    sleep 5
+
+    # Ros 2 launch (to launch the ros environment)
+    LAUNCH_COMMAND="ros2 launch robethichor robethichor.launch.py port:=$PORT ethical_implication_file:=$FULL_PATH/$BASE_FOLDER$ETHICAL_IMPLICATIONS_FILENAME disposition_activation_file:=$FULL_PATH/$BASE_FOLDER$DISPOSITION_ACTIVATION_FILENAME log_output_file:=$FULL_PATH/$LOG_FILE"
     echo "Launching command: $LAUNCH_COMMAND"
     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
     sleep 3
@@ -48,13 +53,11 @@ start_robot() {
 
 configure_robot() {
 
-    local ROBOT_NAME=$1
-    local HOST=$2
-    local PORT=$3
+    local HOST=$1
+    local PORT=$2
+    local USER_LABEL=$3
 
-    local USER_LABEL=$4
-
-    echo "------ Configuring $ROBOT_NAME for user $USER_LABEL------"
+    echo "------ Configuring robot for user $USER_LABEL------"
 
     # JSON file read
     ETHIC_PROFILES=$(cat $BASE_FOLDER$USER_LABEL"/"$ETHIC_PROFILES_FILE)
@@ -78,26 +81,24 @@ configure_robot() {
 
     # Publish base context (profile should be selected)
     echo "Publishing base context"
-    ros2 topic pub --once /$ROBOT_NAME/current_context std_msgs/msg/String "{data: '$CONTEXT'}"
+    ros2 topic pub --once /current_context std_msgs/msg/String "{data: '$CONTEXT'}"
 
-    echo -e "Configuration of $ROBOT_NAME complete for user $USER_LABEL\n"
+    echo -e "Configuration of robot complete for user $USER_LABEL\n"
 }
 
 configure_interrupt() {
 
-    local ROBOT_NAME=$1
-    local HOST=$2
-    local PORT=$3
+    local HOST=$1
+    local PORT=$2
+    local USER_LABEL=$3
+    local ACTIVE_USER=$4
 
-    local USER_LABEL=$4
-    local ACTIVE_USER=$5
-
-    echo "------ User $USER_LABEL interrupting $ROBOT_NAME with active user $ACTIVE_USER------"
+    echo "------ User $USER_LABEL interrupting robot with active user $ACTIVE_USER------"
 
     # launch nodes for interruption
     echo "launch interupting nodes? $FIRST"
     if [ "$FIRST" = true ]; then
-        LAUNCH_COMMAND="ros2 launch robethichor robethichor_interruption.launch.py ns:=$ROBOT_NAME/interrupting_user"
+        LAUNCH_COMMAND="ros2 launch robethichor robethichor_interruption.launch.py ns:=interrupting_user"
         echo "Launching command: $LAUNCH_COMMAND"
         gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
         sleep 3
@@ -127,7 +128,7 @@ configure_interrupt() {
 
     # Publish base context (profile should be selected)
     echo "Publishing base context"
-    ros2 topic pub --once /$ROBOT_NAME/interrupting_user/current_context std_msgs/msg/String "{data: '$CONTEXT'}"
+    ros2 topic pub --once /interrupting_user/current_context std_msgs/msg/String "{data: '$CONTEXT'}"
 
     echo -e "Configuration of interrupting user $USER_LABEL complete\n"
 
@@ -135,22 +136,20 @@ configure_interrupt() {
 
     # send interrupt signal
     echo "Sending interrupt signal"
-    ros2 topic pub --once /$ROBOT_NAME/interrupt std_msgs/msg/Bool "{data: True}"
+    ros2 topic pub --once /interrupt std_msgs/msg/Bool "{data: True}"
 
 }
 
 start_mission() {
 
-    local ROBOT_NAME=$1
-    local HOST=$2
-    local PORT=$3
-
-    local USER_LABEL=$4
-    local INTERRUPTED_BY=$5
+    local HOST=$1
+    local PORT=$2
+    local USER_LABEL=$3
+    local INTERRUPTED_BY=$4
 
     echo "Starting mission execution..."
 
-    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq --arg user "$USER_LABEL" --arg interrupted "$INTERRUPTED_BY" '.goal += " (User: " + $user + " starting mission! interrupted by " + $interrupted + ")"')
+    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq --arg user "$USER_LABEL" --arg interrupted "$INTERRUPTED_BY" '.goal  += " (User: " + $user + " starting mission! interrupted by " + $interrupted + ")"')
 
     curl -X POST http://$HOST:$PORT$SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
 }
@@ -161,13 +160,13 @@ USER_2=(A B C)
 
 WAIT_TIME=5
 
-R1_NAME="robassistant_1"
+# R1_NAME="robassistant_1"
 # R2_NAME="robassistant_2"
 
-R1_HOST="localhost"
+HOST="localhost"
 # R2_HOST="localhost"
 
-R1_PORT=5000
+PORT=5000
 # R2_PORT=5001
 
 LAUNCH=false
@@ -186,27 +185,27 @@ while [[ "$#" -gt 0 ]]; do
       WAIT_TIME=$1
       shift
       ;;
-    --names)
-      shift
-      R1_NAME=$1
-      shift
+    # --names)
+    #   shift
+    #   R1_NAME=$1
+    #   shift
     #   R2_NAME=$1
     #   shift
-      ;;
-    --hosts)
-      shift
-      R1_HOST=$1
-      shift
+    #   ;;
+    # --hosts)
+    #   shift
+    #   R1_HOST=$1
+    #   shift
     #   R2_HOST=$1
     #   shift
-      ;;
-    --ports)
-      shift
-      R1_PORT=$1
-      shift
+    #   ;;
+    # --ports)
+    #   shift
+    #   R1_PORT=$1
+    #   shift
     #   R2_PORT=$1
     #   shift
-      ;;
+    #   ;;
     --launch)
       shift
       LAUNCH=$1
@@ -222,7 +221,7 @@ done
 
 if [ "$LAUNCH" = true ]; then
     # First robot startup
-    start_robot $R1_NAME $R1_PORT
+    start_robot $PORT
 
     # Second robot startup
     # start_robot $R2_NAME $R2_PORT
@@ -234,7 +233,7 @@ for U1 in "${USER_1[@]}"; do
             echo "Running simulation for $U1 against $U2"
 
             # Robot configuration
-            configure_robot $R1_NAME $R1_HOST $R1_PORT $U1
+            configure_robot $HOST $PORT $U1
 
             # Second robot configuration
             # configure_robot $R2_NAME $R2_HOST $R2_PORT $U2
@@ -242,12 +241,12 @@ for U1 in "${USER_1[@]}"; do
             sleep 2
 
             # Starts the mission for the robot
-            start_mission $R1_NAME $R1_HOST $R1_PORT $U1 $U2
+            start_mission $HOST $PORT $U1 $U2
 
             sleep 2
 
             # Configure interrupting user and send mission request
-            configure_interrupt $R1_NAME $R1_HOST $R1_PORT $U2 $U1
+            configure_interrupt $HOST $PORT $U2 $U1
             # TODO start mission for interrupting user (has different path!! )
             # start_mission $R1_NAME $R1_HOST $R1_PORT $U2
 

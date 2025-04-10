@@ -7,20 +7,20 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
-    robot_ns_arg = DeclareLaunchArgument('ns', default_value='robassistant_1', description='Robot namespace')
+    # robot_ns_arg = DeclareLaunchArgument('ns', default_value='robassistant_1', description='Robot namespace')
     connector_port_arg = DeclareLaunchArgument('port', default_value='5000', description='Port for robot connector node')
     ethical_implication_file_arg = DeclareLaunchArgument('ethical_implication_file', description='Path of the ethical implication configuration file')
     disposition_activation_file_arg = DeclareLaunchArgument('disposition_activation_file', description='Path of the disposition activation configuration file')
     log_output_file_arg = DeclareLaunchArgument('log_output_file', default_value='', description='Path of the log output file')
 
-    robot_ns = LaunchConfiguration('ns')
+    # robot_ns = LaunchConfiguration('ns')
     connector_port = LaunchConfiguration('port')
     ethical_implication_file = LaunchConfiguration('ethical_implication_file')
     disposition_activation_file = LaunchConfiguration('disposition_activation_file')
     log_output_file = LaunchConfiguration('log_output_file')
 
     ld = LaunchDescription([
-        robot_ns_arg,
+        # robot_ns_arg,
         connector_port_arg,
         ethical_implication_file_arg,
         disposition_activation_file_arg,
@@ -65,12 +65,12 @@ def generate_launch_description():
     ])
 
 
-    ld.add_action(IncludeLaunchDescription(
-        PathJoinSubstitution([FindPackageShare('robethichor'), 'launch', 'gazebo.launch.py']),
-        launch_arguments={
-            'namespace': robot_ns,
-            'urdf_package': 'tiago_description',
-            'urdf_package_path': PathJoinSubstitution(['robots', 'tiago.urdf.xacro'])}.items(),
-    ))
+    # ld.add_action(IncludeLaunchDescription(
+    #     PathJoinSubstitution([FindPackageShare('robethichor'), 'launch', 'gazebo.launch.py']),
+    #     launch_arguments={
+    #         'namespace': robot_ns,
+    #         'urdf_package': 'tiago_description',
+    #         'urdf_package_path': PathJoinSubstitution(['robots', 'tiago.urdf.xacro'])}.items(),
+    # ))
 
     return ld 

@@ -6,12 +6,12 @@ from std_msgs.msg import Empty
 from std_msgs.msg import String, Bool
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
-from robethichor_interfaces.srv import InterruptionService
+from rclpy.action import ActionClient
 
-from launch import LaunchDescription, LaunchService
-from launch.actions import GroupAction
-from launch_ros.actions import PushRosNamespace
-from launch_ros.actions import Node as LNode
+from nav2_msgs.action import NavigateToPose
+from geometry_msgs.msg import PoseStamped
+
+from robethichor_interfaces.srv import InterruptionService
 
 class MissionControllerNode(Node): # Mocked version for testing purposes: must be refined/replaced for actual usage
     def __init__(self):
@@ -30,6 +30,11 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
         self.create_subscription(String, 'goal', self.start_mission_callback, 10, callback_group=self.callback_group)
         self.create_subscription(Bool, 'interrupt', self.interruption_callback, 10, callback_group=self.callback_group)
 
+        # Action Client setup
+        self.action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+        while not self.action_client.wait_for_server(timeout_sec=1.0):
+            self.get_logger().info('Waiting for navigation action server to be available')
+
         # Client service setup
         self.interruption_client = self.create_client(InterruptionService, 'interruption', callback_group=self.callback_group)
         while not self.interruption_client.wait_for_service(timeout_sec=1.0):
@@ -47,9 +52,38 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             # REFINEMENT REQUIRED: a planner should be used to generate the list of tasks, and their implementation must be provided
 
             # TODO: do something!!! 
+            # https://github.com/ros2/demos/blob/humble/action_tutorials/action_tutorials_py/action_tutorials_py/fibonacci_action_client.py
+            nav_msg = NavigateToPose.Goal()
+            nav_msg.pose = self.get_pose(self.goal)
+
+            self.send_goal_future = self.action_client.send_goal_async(nav_msg) # ,feedback_callback=self.feedback_callback)
+            
+            self.send_goal_future.add_done_callback(self.goal_response_callback)
 
         else:
             self.get_logger().info("A mission is already being executed: rejecting goal.")
+
+    def goal_response_callback(self, future):
+        goal_handle = future.result()
+
+        if not goal_handle.accepted:
+            self.get_logger().info('Goal rejected :(')
+            return
+
+        self.get_logger().info('Goal accepted :)')
+
+        self._get_result_future = goal_handle.get_result_async()
+
+        self._get_result_future.add_done_callback(self.get_result_callback)
+
+    def get_result_callback(self, future):
+        # TODO read if navigation was successful? 
+        result = future.result().result
+        self.get_logger().info('Result: {0}'.format(result))
+
+    # def feedback_callback(self, feedback_msg):
+    #     feedback = feedback_msg.feedback
+    #     self.get_logger().info('Received feedback: {0}'.format(feedback))
 
     def interruption_callback(self, msg):
         # TODO what to do if not mission running? what to do if interruption running? 
@@ -89,6 +123,29 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             # TODO 
             self.mission_running = False
         self.interruption_running = False
+
+    def get_pose(self, msg):
+        pose = PoseStamped()
+        pose.header.frame_id = "map"
+        pose.pose.position.x = 0.0
+        pose.pose.position.y = 0.0
+        pose.pose.position.z = 0.0
+        pose.pose.orientation.x = 0.0
+        pose.pose.orientation.y = 0.0
+        pose.pose.orientation.z = 0.0
+        pose.pose.orientation.w = 1.0
+
+        if "navigate_to_room_1" in msg:
+            # TODO should be x = 6, but arm tuck is in the way
+            pose.pose.position.x = 1.5
+            pose.pose.position.y = 2.0
+        if "navigate_to_room_2" in msg:
+            # TODO should be x = 6, but arm tuck is in the way
+            pose.pose.position.x = 1.5
+            pose.pose.position.y = -2.5
+        
+        return pose
+
 
 
 def main(args=None):

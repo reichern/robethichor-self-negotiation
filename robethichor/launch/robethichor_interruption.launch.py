@@ -4,7 +4,7 @@ from launch_ros.actions import Node, PushRosNamespace
 from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
-    robot_ns_arg = DeclareLaunchArgument('ns', default_value='robassistant_1', description='Robot namespace')
+    robot_ns_arg = DeclareLaunchArgument('ns', default_value='interrupting_user', description='Robot namespace')
 
     robot_ns = LaunchConfiguration('ns')
 
