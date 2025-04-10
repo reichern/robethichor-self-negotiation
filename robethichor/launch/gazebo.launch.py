@@ -46,16 +46,7 @@ def generate_launch_description():
         name='gui',
         default_value='true',
     )
-    ns_arg = DeclareLaunchArgument('namespace', description='The namespace in which ', 
-                                        default_value='tiago_description')
-    package_arg = DeclareLaunchArgument('urdf_package', description='The package where the robot description is located', 
-                                        # default_value='tiago_description')
-                                        default_value='turtlebot3_description')
-    model_arg = DeclareLaunchArgument('urdf_package_path',description='The path to the robot description relative to the package root',
-                                      default_value='turtlebot3_burger.xacro')
-                                    #   default_value='robots/tiago.urdf.xacro')
 
-    robot_ns = LaunchConfiguration('namespace')
     set_sim_time = SetLaunchConfiguration("use_sim_time", "True")
 
     # launch world
@@ -116,10 +107,22 @@ def generate_launch_description():
             'world_name': 'two_rooms_expanded'}.items()
     )
 
+    # moveit 
+    moveit_launch_py = IncludeLaunchDescription(
+        PathJoinSubstitution([FindPackageShare('tiago_moveit_config'), 'launch', 'move_group.launch.py']),
+        launch_arguments={
+            "robot_name": 'robot',
+            "use_sim_time": LaunchConfiguration("use_sim_time"),
+            # "namespace": launch_args.namespace,
+            "base_type": 'pmb2',
+            "arm_type": 'tiago-arm',
+            "end_effector": 'pal-gripper',
+            "ft_sensor": 'schunk-ft',}.items()
+    )
+
     tuck_arm = Node(package='tiago_gazebo',
                     executable='tuck_arm.py',
                     name='arm_tucker',
-                    # arguments=['-emulate_tty', 'True'],
                     emulate_tty=True,
                     output='both',)
 
@@ -133,6 +136,7 @@ def generate_launch_description():
         urdf_spawner_node,
         bringup_launch_py,
         tuck_arm,
+        moveit_launch_py,
         navigation_launch_py,
     ])
 
