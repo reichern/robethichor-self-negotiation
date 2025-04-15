@@ -26,14 +26,19 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
         self.log_output_file = self.get_parameter('log_output_file').get_parameter_value().string_value
         self.get_logger().info(f"Setting mission log output file to {self.log_output_file}")
 
+        self.declare_parameter('gazebo', rclpy.Parameter.Type.BOOL)
+        self.gazebo = self.get_parameter('gazebo').get_parameter_value().bool_value
+        self.get_logger().info(f"Start up gazebo: {self.gazebo}")
+
         # Subscribers setup
         self.create_subscription(String, 'goal', self.start_mission_callback, 10, callback_group=self.callback_group)
         self.create_subscription(Bool, 'interrupt', self.interruption_callback, 10, callback_group=self.callback_group)
 
         # Action Client setup
-        self.action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
-        while not self.action_client.wait_for_server(timeout_sec=1.0):
-            self.get_logger().info('Waiting for navigation action server to be available')
+        if self.gazebo:
+            self.action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+            while not self.action_client.wait_for_server(timeout_sec=1.0):
+                self.get_logger().info('Waiting for navigation action server to be available')
 
         # Client service setup
         self.interruption_client = self.create_client(InterruptionService, 'interruption', callback_group=self.callback_group)
@@ -53,12 +58,13 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
             # TODO: do something!!! 
             # https://github.com/ros2/demos/blob/humble/action_tutorials/action_tutorials_py/action_tutorials_py/fibonacci_action_client.py
-            nav_msg = NavigateToPose.Goal()
-            nav_msg.pose = self.get_pose(self.goal)
+            if self.gazebo:
+                nav_msg = NavigateToPose.Goal()
+                nav_msg.pose = self.get_pose(self.goal)
 
-            self.send_goal_future = self.action_client.send_goal_async(nav_msg) # ,feedback_callback=self.feedback_callback)
-            
-            self.send_goal_future.add_done_callback(self.goal_response_callback)
+                self.send_goal_future = self.action_client.send_goal_async(nav_msg) # ,feedback_callback=self.feedback_callback)
+                
+                self.send_goal_future.add_done_callback(self.goal_response_callback)
 
         else:
             self.get_logger().info("A mission is already being executed: rejecting goal.")

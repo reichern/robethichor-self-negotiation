@@ -12,12 +12,14 @@ def generate_launch_description():
     ethical_implication_file_arg = DeclareLaunchArgument('ethical_implication_file', description='Path of the ethical implication configuration file')
     disposition_activation_file_arg = DeclareLaunchArgument('disposition_activation_file', description='Path of the disposition activation configuration file')
     log_output_file_arg = DeclareLaunchArgument('log_output_file', default_value='', description='Path of the log output file')
+    gazebo_arg = DeclareLaunchArgument('gazebo', default_value='False', description='Whether or not to run gazebo')
 
     # robot_ns = LaunchConfiguration('ns')
     connector_port = LaunchConfiguration('port')
     ethical_implication_file = LaunchConfiguration('ethical_implication_file')
     disposition_activation_file = LaunchConfiguration('disposition_activation_file')
     log_output_file = LaunchConfiguration('log_output_file')
+    gazebo = LaunchConfiguration('gazebo')
 
     ld = LaunchDescription([
         # robot_ns_arg,
@@ -25,6 +27,7 @@ def generate_launch_description():
         ethical_implication_file_arg,
         disposition_activation_file_arg,
         log_output_file_arg,
+        gazebo_arg,
 
         GroupAction([
             # PushRosNamespace(robot_ns),
@@ -48,7 +51,7 @@ def generate_launch_description():
                 package='robethichor',
                 executable='mission_controller_node',
                 name='mission_controller_node',
-                parameters=[{'log_output_file': log_output_file}]
+                parameters=[{'log_output_file': log_output_file}, {'gazebo': gazebo}]
             ),
             Node(
                 package='robethichor',

@@ -35,20 +35,27 @@ FIRST=true
 start_robot() {
 
     local PORT=$1
+    local GAZEBO=$2
 
     echo "------ Running robot ------"
 
-    # Ros 2 launch (to launch the ros environment)
+    # launch the ros environment
+    LAUNCH_COMMAND="ros2 launch robethichor robethichor.launch.py port:=$PORT ethical_implication_file:=$FULL_PATH/$BASE_FOLDER$ETHICAL_IMPLICATIONS_FILENAME disposition_activation_file:=$FULL_PATH/$BASE_FOLDER$DISPOSITION_ACTIVATION_FILENAME log_output_file:=$FULL_PATH/$LOG_FILE gazebo:=$GAZEBO"
+    echo "Launching command: $LAUNCH_COMMAND"
+    gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
+    sleep 3
+}
+
+start_gazebo(){
+
+    echo "------ Start up Gazebo -----"
+
+    # launch gazebo
     LAUNCH_GAZEBO_COMMAND="ros2 launch robethichor gazebo.launch.py"
     echo "Launching command: $LAUNCH_GAZEBO_COMMAND"
     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_GAZEBO_COMMAND; exec bash"
     sleep 5
 
-    # Ros 2 launch (to launch the ros environment)
-    LAUNCH_COMMAND="ros2 launch robethichor robethichor.launch.py port:=$PORT ethical_implication_file:=$FULL_PATH/$BASE_FOLDER$ETHICAL_IMPLICATIONS_FILENAME disposition_activation_file:=$FULL_PATH/$BASE_FOLDER$DISPOSITION_ACTIVATION_FILENAME log_output_file:=$FULL_PATH/$LOG_FILE"
-    echo "Launching command: $LAUNCH_COMMAND"
-    gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
-    sleep 3
 }
 
 configure_robot() {
@@ -160,6 +167,8 @@ USER_2=(A B C)
 
 WAIT_TIME=5
 
+GAZEBO=FALSE
+
 # R1_NAME="robassistant_1"
 # R2_NAME="robassistant_2"
 
@@ -183,6 +192,11 @@ while [[ "$#" -gt 0 ]]; do
     --wait)
       shift
       WAIT_TIME=$1
+      shift
+      ;;
+    --gazebo)
+      shift
+      GAZEBO=$1
       shift
       ;;
     # --names)
@@ -219,13 +233,20 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 
+
+if [ "$GAZEBO" = true ]; then
+    # gazebo startup
+    start_gazebo
+fi
+
 if [ "$LAUNCH" = true ]; then
     # First robot startup
-    start_robot $PORT
+    start_robot $PORT $GAZEBO
 
     # Second robot startup
     # start_robot $R2_NAME $R2_PORT
 fi
+
 
 for U1 in "${USER_1[@]}"; do
     for U2 in "${USER_2[@]}"; do
@@ -241,7 +262,7 @@ for U1 in "${USER_1[@]}"; do
             sleep 2
 
             # Starts the mission for the robot
-            start_mission $HOST $PORT $U1 $U2
+            start_mission $HOST $PORT $U1 $U2 $GAZEBO
 
             sleep 2
 
