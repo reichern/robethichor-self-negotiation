@@ -54,7 +54,7 @@ start_gazebo(){
     LAUNCH_GAZEBO_COMMAND="ros2 launch robethichor gazebo.launch.py"
     echo "Launching command: $LAUNCH_GAZEBO_COMMAND"
     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_GAZEBO_COMMAND; exec bash"
-    sleep 5
+    sleep 10
 
 }
 
@@ -130,8 +130,8 @@ configure_interrupt() {
     echo "Uploading user status"
     curl -X POST $CONNECTOR_BASEURL$INT_USER_STATUS_PATH -H "Content-Type: application/json" -d "$USER_STATUS"
 
-    # echo "Setting goal"
-    # curl -X POST $CONNECTOR_BASEURL$SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
+    echo "Setting goal"
+    curl -X POST $CONNECTOR_BASEURL$INT_SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
 
     # Publish base context (profile should be selected)
     echo "Publishing base context"
@@ -142,8 +142,8 @@ configure_interrupt() {
     sleep 3
 
     # send interrupt signal
-    echo "Sending interrupt signal"
-    ros2 topic pub --once /interrupt std_msgs/msg/Bool "{data: True}"
+    # echo "Sending interrupt signal"
+    # ros2 topic pub --once /interrupt std_msgs/msg/Bool "{data: True}"
 
 }
 
@@ -153,6 +153,12 @@ start_mission() {
     local PORT=$2
     local USER_LABEL=$3
     local INTERRUPTED_BY=$4
+
+    echo "Reset robot to original position"
+    ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "pose: {header: {frame_id: map}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation:{x: 0.0, y: 0.0, z: 0, w: 1.0000000}}}"
+    echo "waiting for robot to reach position ... "
+
+    sleep 10
 
     echo "Starting mission execution..."
 

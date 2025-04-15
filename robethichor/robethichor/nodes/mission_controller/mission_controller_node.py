@@ -32,7 +32,7 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
         # Subscribers setup
         self.create_subscription(String, 'goal', self.start_mission_callback, 10, callback_group=self.callback_group)
-        self.create_subscription(Bool, 'interrupt', self.interruption_callback, 10, callback_group=self.callback_group)
+        self.create_subscription(String, 'interrupting_user/goal', self.interruption_callback, 10, callback_group=self.callback_group)
 
         # Action Client setup
         if self.gazebo:
@@ -70,15 +70,15 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             self.get_logger().info("A mission is already being executed: rejecting goal.")
 
     def goal_response_callback(self, future):
-        goal_handle = future.result()
+        self.goal_handle = future.result()
 
-        if not goal_handle.accepted:
+        if not self.goal_handle.accepted:
             self.get_logger().info('Goal rejected :(')
             return
 
         self.get_logger().info('Goal accepted :)')
 
-        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future = self.goal_handle.get_result_async()
 
         self._get_result_future.add_done_callback(self.get_result_callback)
 
@@ -94,17 +94,21 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
     def interruption_callback(self, msg):
         # TODO what to do if not mission running? what to do if interruption running? 
         if self.mission_running and not self.interruption_running:
+            self.get_logger().info(f"Received interrupt!")
             self.interruption_running = True
-            self.interrupt = msg.data
-            if (self.interrupt == True):
-                self.get_logger().info(f"Received interrupt!")
 
-                # Interruption request:
-                interruption_request = InterruptionService.Request()
-                interruption_request.tasks = ["t1"]
+            self.interrupting_goal = msg.data
 
-                future = self.interruption_client.call_async(interruption_request)
-                future.add_done_callback(lambda future: self.interruption_service_callback(future))
+            # stop current navigation 
+            # self.send_goal_future = self.action_client.cancel_goal() 
+            self.goal_handle.cancel_goal_async()
+
+            # Interruption request:
+            interruption_request = InterruptionService.Request()
+            interruption_request.tasks = ["t1"]
+
+            future = self.interruption_client.call_async(interruption_request)
+            future.add_done_callback(lambda future: self.interruption_service_callback(future))
 
     def interruption_service_callback(self, future):
         interruption_response = future.result()
@@ -127,6 +131,22 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
                     f.close()
 
             # TODO 
+            if self.gazebo and interruption_response.winner == "current":
+                nav_msg = NavigateToPose.Goal()
+                nav_msg.pose = self.get_pose(self.goal)
+
+                self.send_goal_future = self.action_client.send_goal_async(nav_msg) # ,feedback_callback=self.feedback_callback)
+                
+                self.send_goal_future.add_done_callback(self.goal_response_callback)
+            else:
+                nav_msg = NavigateToPose.Goal()
+                nav_msg.pose = self.get_pose(self.interrupting_goal)
+
+                self.send_goal_future = self.action_client.send_goal_async(nav_msg) # ,feedback_callback=self.feedback_callback)
+                
+                self.send_goal_future.add_done_callback(self.goal_response_callback)
+
+
             self.mission_running = False
         self.interruption_running = False
 
