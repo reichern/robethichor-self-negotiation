@@ -115,6 +115,7 @@ configure_interrupt() {
     # JSON file read
     ETHIC_PROFILES=$(cat $BASE_FOLDER$USER_LABEL"/"$ETHIC_PROFILES_FILE)
     USER_STATUS=$(cat $BASE_FOLDER$USER_LABEL"/"$USER_STATUS_FILE)
+    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq --arg user "$USER_LABEL" --arg interrupting "$ACTIVE_USER" '.goal  += " (User: " + $user + " interrupting " + $interrupting + ")"')
 
     # Json sent as messages in topics should be escaped
     CONTEXT=$(cat $BASE_FOLDER$USER_LABEL"/"$CONTEXT_FILE | jq -c .)
@@ -153,13 +154,16 @@ start_mission() {
     local PORT=$2
     local USER_LABEL=$3
     local INTERRUPTED_BY=$4
+    local GAZEBO=$5
 
-    echo "Reset robot to original position"
-    ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "pose: {header: {frame_id: map}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation:{x: 0.0, y: 0.0, z: 0, w: 1.0000000}}}"
-    echo "waiting for robot to reach position ... "
 
-    sleep 10
-
+    # if [ "$GAZEBO" = true ]; then
+    #   echo "Reset robot to original position"
+    #   ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "pose: {header: {frame_id: map}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation:{x: 0.0, y: 0.0, z: 0, w: 1.0000000}}}"
+    #   echo "waiting for robot to reach position ... "
+    #   sleep 10
+    # fi
+    
     echo "Starting mission execution..."
 
     GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq --arg user "$USER_LABEL" --arg interrupted "$INTERRUPTED_BY" '.goal  += " (User: " + $user + " starting mission! interrupted by " + $interrupted + ")"')

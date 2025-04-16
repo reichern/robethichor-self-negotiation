@@ -4,6 +4,8 @@ from rclpy.node import Node
 from rclpy.callback_groups import ReentrantCallbackGroup
 # from threading import Event
 from rclpy.executors import MultiThreadedExecutor
+from rclpy.wait_for_message import wait_for_message
+from std_msgs.msg import String
 
 from robethichor_interfaces.srv import NegotiationService, InterruptionService
 
@@ -39,11 +41,13 @@ class InterruptionManagerNode(Node):
 
         response.capabilities = True
 
-        # TODO wait for second user's data? 
-        self.get_logger().info("Waiting for second user's data")
-
         # TODO Launch second user's nodes? 
         self.get_logger().info("Launching second user's nodes")
+
+        # TODO wait for second user's active profile
+        self.get_logger().info("Waiting for second user's data")
+        # wait_for_message(String, "interrupting_user/active_profile", self.node, 1)
+        time.sleep(3)
 
         # Start negotiation
         self.get_logger().info("Interruption initialised, negotiation can be started.")

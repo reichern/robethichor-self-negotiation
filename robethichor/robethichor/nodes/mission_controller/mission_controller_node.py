@@ -94,14 +94,14 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
     def interruption_callback(self, msg):
         # TODO what to do if not mission running? what to do if interruption running? 
         if self.mission_running and not self.interruption_running:
-            self.get_logger().info(f"Received interrupt!")
             self.interruption_running = True
 
             self.interrupting_goal = msg.data
+            self.get_logger().info(f"Received interrupt! Interrupting goal: {self.interrupting_goal}")
 
-            # stop current navigation 
-            # self.send_goal_future = self.action_client.cancel_goal() 
-            self.goal_handle.cancel_goal_async()
+            if self.gazebo:
+                # stop current navigation 
+                self.goal_handle.cancel_goal_async()
 
             # Interruption request:
             interruption_request = InterruptionService.Request()
@@ -131,18 +131,18 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
                     f.close()
 
             # TODO 
-            if self.gazebo and interruption_response.winner == "current":
+            if self.gazebo and (interruption_response.winner == "current" or interruption_response.winner == "no-agreement"):
                 nav_msg = NavigateToPose.Goal()
                 nav_msg.pose = self.get_pose(self.goal)
 
-                self.send_goal_future = self.action_client.send_goal_async(nav_msg) # ,feedback_callback=self.feedback_callback)
+                self.send_goal_future = self.action_client.send_goal_async(nav_msg) 
                 
                 self.send_goal_future.add_done_callback(self.goal_response_callback)
-            else:
+            elif self.gazebo and interruption_response.winner == "interrupting":
                 nav_msg = NavigateToPose.Goal()
                 nav_msg.pose = self.get_pose(self.interrupting_goal)
 
-                self.send_goal_future = self.action_client.send_goal_async(nav_msg) # ,feedback_callback=self.feedback_callback)
+                self.send_goal_future = self.action_client.send_goal_async(nav_msg)
                 
                 self.send_goal_future.add_done_callback(self.goal_response_callback)
 
