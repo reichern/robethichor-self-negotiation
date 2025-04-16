@@ -162,12 +162,10 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
         pose.pose.orientation.w = 1.0
 
         if "navigate_to_room_1" in msg:
-            # TODO should be x = 6, but arm tuck is in the way
-            pose.pose.position.x = 1.5
+            pose.pose.position.x = 5.0
             pose.pose.position.y = 2.0
         if "navigate_to_room_2" in msg:
-            # TODO should be x = 6, but arm tuck is in the way
-            pose.pose.position.x = 1.5
+            pose.pose.position.x = 5.0
             pose.pose.position.y = -2.5
         
         return pose
