@@ -103,14 +103,14 @@ configure_interrupt() {
     echo "------ User $USER_LABEL interrupting robot with active user $ACTIVE_USER------"
 
     # launch nodes for interruption
-    echo "launch interupting nodes? $FIRST"
-    if [ "$FIRST" = true ]; then
-        LAUNCH_COMMAND="ros2 launch robethichor robethichor_interruption.launch.py ns:=interrupting_user"
-        echo "Launching command: $LAUNCH_COMMAND"
-        gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
-        sleep 3
-        FIRST=false
-    fi
+    # echo "launch interupting nodes? $FIRST"
+    # if [ "$FIRST" = true ]; then
+    #     LAUNCH_COMMAND="ros2 launch robethichor robethichor_interruption.launch.py ns:=interrupting_user"
+    #     echo "Launching command: $LAUNCH_COMMAND"
+    #     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
+    #     sleep 3
+    #     FIRST=false
+    # fi
 
     # JSON file read
     ETHIC_PROFILES=$(cat $BASE_FOLDER$USER_LABEL"/"$ETHIC_PROFILES_FILE)
@@ -125,22 +125,24 @@ configure_interrupt() {
 
 
     # Setup application through connector
+
+    echo "Setting goal"
+    curl -X POST $CONNECTOR_BASEURL$INT_SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
+
+    sleep 3
+
     echo "Uploading profiles"
     curl -X POST $CONNECTOR_BASEURL$INT_PROFILE_LOAD_PATH -H "Content-Type: application/json" -d "$ETHIC_PROFILES"
 
     echo "Uploading user status"
     curl -X POST $CONNECTOR_BASEURL$INT_USER_STATUS_PATH -H "Content-Type: application/json" -d "$USER_STATUS"
 
-    echo "Setting goal"
-    curl -X POST $CONNECTOR_BASEURL$INT_SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
 
     # Publish base context (profile should be selected)
     echo "Publishing base context"
     ros2 topic pub --once /interrupting_user/current_context std_msgs/msg/String "{data: '$CONTEXT'}"
 
     echo -e "Configuration of interrupting user $USER_LABEL complete\n"
-
-    sleep 3
 
     # send interrupt signal
     # echo "Sending interrupt signal"

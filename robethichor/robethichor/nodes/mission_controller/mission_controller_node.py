@@ -117,8 +117,12 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             self.get_logger().error("Interruption service call failed, continue current mission.")
         elif interruption_response.capabilities == False:
             self.get_logger().info("Interrupting request rejected because of lacking capabilities, continue current mission. ")
+            nav_msg = NavigateToPose.Goal()
+            nav_msg.pose = self.get_pose(self.goal)
+            self.send_goal_future = self.action_client.send_goal_async(nav_msg) 
+            self.send_goal_future.add_done_callback(self.goal_response_callback)
         elif interruption_response.error == True:
-            self.get_logger().info("Error occured during negotiation, continue current mission. ")
+            self.get_logger().error("Error occured during negotiation, continue current mission. ")
         else:
             self.get_logger().info("Negotiation successful, Mission is completed!")
 
@@ -134,18 +138,16 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             if self.gazebo and (interruption_response.winner == "current" or interruption_response.winner == "no-agreement"):
                 nav_msg = NavigateToPose.Goal()
                 nav_msg.pose = self.get_pose(self.goal)
-
                 self.send_goal_future = self.action_client.send_goal_async(nav_msg) 
-                
                 self.send_goal_future.add_done_callback(self.goal_response_callback)
+                self.get_logger().info("Continue driving to original goal location!")
+
             elif self.gazebo and interruption_response.winner == "interrupting":
                 nav_msg = NavigateToPose.Goal()
                 nav_msg.pose = self.get_pose(self.interrupting_goal)
-
                 self.send_goal_future = self.action_client.send_goal_async(nav_msg)
-                
                 self.send_goal_future.add_done_callback(self.goal_response_callback)
-
+                self.get_logger().info("Driving to new goal location!")
 
             self.mission_running = False
         self.interruption_running = False
@@ -168,9 +170,7 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             pose.pose.position.x = 5.0
             pose.pose.position.y = -2.5
         
-        return pose
-
-
+        return pose    
 
 def main(args=None):
     rclpy.init(args=args)

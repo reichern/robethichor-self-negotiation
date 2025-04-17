@@ -1,8 +1,13 @@
 # https://github.com/ros/urdf_launch/tree/main
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription
-from launch_ros.actions import Node, PushRosNamespace
+from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, RegisterEventHandler, EmitEvent
+from launch.events import matches_action
+from launch_ros.actions import Node, PushRosNamespace, LifecycleNode
+from launch_ros.event_handlers import OnStateTransition
+from launch.event_handlers.on_process_start import OnProcessStart
+from launch_ros.events.lifecycle import ChangeState
+from lifecycle_msgs.msg import Transition
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
@@ -21,6 +26,20 @@ def generate_launch_description():
     log_output_file = LaunchConfiguration('log_output_file')
     gazebo = LaunchConfiguration('gazebo')
 
+    context_manager_node = LifecycleNode(
+                package='robethichor',
+                executable='context_manager_node',
+                name='context_manager_node',
+                namespace='',
+            )
+
+    ethics_manager_node = LifecycleNode(
+                package='robethichor',
+                executable='ethics_manager_node',
+                name='ethics_manager_node',
+                namespace='',
+            )
+
     ld = LaunchDescription([
         # robot_ns_arg,
         connector_port_arg,
@@ -28,18 +47,21 @@ def generate_launch_description():
         disposition_activation_file_arg,
         log_output_file_arg,
         gazebo_arg,
-
         GroupAction([
             # PushRosNamespace(robot_ns),
-            Node(
+            ethics_manager_node,
+            LifecycleNode(
                 package='robethichor',
                 executable='ethics_manager_node',
-                name='ethics_manager_node'
+                name='ethics_manager_node',
+                namespace='interrupting_user'
             ),
-            Node(
+            context_manager_node,
+            LifecycleNode(
                 package='robethichor',
                 executable='context_manager_node',
-                name='context_manager_node'
+                name='context_manager_node',
+                namespace='interrupting_user'
             ),
             Node(
                 package='robethichor',
@@ -65,6 +87,55 @@ def generate_launch_description():
                 name='interruption_manager_node',
             ),
         ]),
+        RegisterEventHandler(
+            OnProcessStart(
+                target_action=context_manager_node,
+                on_start=[
+                    EmitEvent(event=ChangeState(
+                        lifecycle_node_matcher=matches_action(context_manager_node),
+                        transition_id=Transition.TRANSITION_CONFIGURE,
+                    )),
+                ],
+            )
+        ),
+        # When the talker reaches the 'inactive' state, make it take the 'activate' transition.
+        RegisterEventHandler(
+            OnStateTransition(
+                target_lifecycle_node=context_manager_node,
+                start_state='configuring', goal_state='inactive',
+                entities=[
+                    EmitEvent(event=ChangeState(
+                        lifecycle_node_matcher=matches_action(context_manager_node),
+                        transition_id=Transition.TRANSITION_ACTIVATE,
+                    )),
+                ],
+            )
+        ),        
+        RegisterEventHandler(
+            OnProcessStart(
+                target_action=ethics_manager_node,
+                on_start=[
+                    EmitEvent(event=ChangeState(
+                        lifecycle_node_matcher=matches_action(ethics_manager_node),
+                        transition_id=Transition.TRANSITION_CONFIGURE,
+                    )),
+                ],
+            )
+        ),
+        # When the talker reaches the 'inactive' state, make it take the 'activate' transition.
+        RegisterEventHandler(
+            OnStateTransition(
+                target_lifecycle_node=ethics_manager_node,
+                start_state='configuring', goal_state='inactive',
+                entities=[
+                    EmitEvent(event=ChangeState(
+                        lifecycle_node_matcher=matches_action(ethics_manager_node),
+                        transition_id=Transition.TRANSITION_ACTIVATE,
+                    )),
+                ],
+            )
+        ),
+
     ])
 
 
