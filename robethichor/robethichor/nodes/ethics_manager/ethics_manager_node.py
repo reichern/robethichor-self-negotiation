@@ -40,7 +40,7 @@ class EthicsManagerNode(Node):
             self.executor_.refresh_active_profile()
 
     def on_configure(self, state: State) -> TransitionCallbackReturn:
-        self.get_logger().info("on_configure() is called.")
+        self.get_logger().debug("on_configure() is called.")
 
         # Publisher setup
         self.active_profile_publisher = self.create_lifecycle_publisher(String, 'active_profile', 10)
@@ -52,7 +52,7 @@ class EthicsManagerNode(Node):
         return super().on_configure(state)
 
     def on_activate(self, state: State) -> TransitionCallbackReturn:
-        self.get_logger().info("on_activate() is called.")
+        self.get_logger().debug("on_activate() is called.")
 
         # Subscribers setup
         self.profile_subscription = self.create_subscription(String, 'ethic_profile', self.ethic_profiles_update_callback, 10)
@@ -61,7 +61,7 @@ class EthicsManagerNode(Node):
         return super().on_activate(state)
 
     def on_deactivate(self, state: State) -> TransitionCallbackReturn:
-        self.get_logger().info("on_deactivate() is called.")
+        self.get_logger().debug("on_deactivate() is called.")
         
         # destroy subscription
         self.destroy_subscription(self.profile_subscription)
@@ -76,11 +76,11 @@ class EthicsManagerNode(Node):
 
         # TODO executor und planner zerstören? 
 
-        self.get_logger().info('on_cleanup() is called.')
+        self.get_logger().debug('on_cleanup() is called.')
         return super().on_cleanup(state)
 
     def on_shutdown(self, state: State) -> TransitionCallbackReturn:
-        self.get_logger().info('on_shutdown() is called.')
+        self.get_logger().debug('on_shutdown() is called.')
         return super().on_shutdown(state)
 
 def main(args=None):

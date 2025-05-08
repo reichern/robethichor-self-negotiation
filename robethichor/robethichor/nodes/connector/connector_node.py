@@ -19,10 +19,6 @@ class ConnectorNode(Node):
         self.int_user_status_publisher = self.create_publisher(String, 'interrupting_user/user_status', 10)
         self.int_goal_publisher = self.create_publisher(String, 'interrupting_user/goal', 10)
 
-        # TODO dynamic parameter!! should be false at beginning
-        # Parameter for whether there is currently an interruption occuring
-        self.interrupting = True
-
         # Controller parameters
         self.declare_parameter('host', '0.0.0.0')
         self.declare_parameter('port', 5000)
@@ -58,29 +54,25 @@ def set_user_status_controller():
 def set_goal_controller():
     node = app.config['ros_node']
     node.get_logger().info("Received setGoal request")
-    data = request.get_json()
     return publish_data(node.goal_publisher)
 
 @app.route('/interrupting/profile', methods=['POST'])
 def load_int_user_profile():
     node = app.config['ros_node']
-    if node.interrupting:
-        node.get_logger().info("Received interrupting user profile")
-        return publish_data(node.int_ethic_profile_publisher)
+    node.get_logger().info("Received interrupting user profile")
+    return publish_data(node.int_ethic_profile_publisher)
 
 @app.route('/interrupting/status', methods=['POST'])
 def set_int_user_status_controller():
     node = app.config['ros_node']
-    if node.interrupting:
-        node.get_logger().info(f"Received interrupting user status")
-        return publish_data(node.int_user_status_publisher)
+    node.get_logger().info(f"Received interrupting user status")
+    return publish_data(node.int_user_status_publisher)
 
 @app.route('/interrupting/goal', methods=['POST'])
 def set_int_goal_controller():
     node = app.config['ros_node']
-    if node.interrupting:
-        node.get_logger().info("Received interrupting user's setGoal request")
-        return publish_data(node.int_goal_publisher)
+    node.get_logger().info("Received interrupting user's setGoal request")
+    return publish_data(node.int_goal_publisher)
 
 def main(args=None):
     rclpy.init(args=args)

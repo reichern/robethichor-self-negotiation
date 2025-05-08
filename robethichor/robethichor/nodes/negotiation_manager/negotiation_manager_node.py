@@ -109,7 +109,7 @@ class NegotiationManagerNode(Node):
             future.add_done_callback(lambda future: self.interrupting_user_status_service_callback(future, interrupting_user_status_response_event))
             interrupting_user_status_response_event.wait(timeout=self.timeout)
             if self.interrupting_user_status is None:
-                self.get_logger().info("No current user status got, entering negotiation without active conditions")
+                self.get_logger().info("No interrupting user status got, entering negotiation without active conditions")
                 self.interrupting_user_status = {}
 
             # Generate offers

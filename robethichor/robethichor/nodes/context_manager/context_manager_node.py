@@ -32,7 +32,7 @@ class ContextManagerNode(Node):
         self.monitor = None 
 
     def on_configure(self, state: State) -> TransitionCallbackReturn:
-        self.get_logger().info("on_configure() is called.")
+        self.get_logger().debug("on_configure() is called.")
 
         # Publisher setup
         self.current_context_publisher = self.create_lifecycle_publisher(String, "current_context", 10)
@@ -44,7 +44,7 @@ class ContextManagerNode(Node):
         return super().on_configure(state)
 
     def on_activate(self, state: State) -> TransitionCallbackReturn:
-        self.get_logger().info("on_activate() is called.")
+        self.get_logger().debug("on_activate() is called.")
 
         # Subscribers setup
         self.user_status_subscription = self.create_subscription(String, 'user_status', self.user_status_update_callback, 10)
@@ -55,7 +55,7 @@ class ContextManagerNode(Node):
         return super().on_activate(state)
 
     def on_deactivate(self, state: State) -> TransitionCallbackReturn:
-        self.get_logger().info("on_deactivate() is called.")
+        self.get_logger().debug("on_deactivate() is called.")
         
         # destroy subscription, client
         self.destroy_subscription(self.user_status_subscription)
@@ -65,7 +65,7 @@ class ContextManagerNode(Node):
         return super().on_deactivate(state)
 
     def on_cleanup(self, state: State) -> TransitionCallbackReturn:
-        self.get_logger().info('on_cleanup() is called.')
+        self.get_logger().debug('on_cleanup() is called.')
 
         # destroy publisher
         self.destroy_publisher(self.current_context_publisher)
@@ -75,7 +75,7 @@ class ContextManagerNode(Node):
         return super().on_cleanup(state)
 
     def on_shutdown(self, state: State) -> TransitionCallbackReturn:
-        self.get_logger().info('on_shutdown() is called.')
+        self.get_logger().debug('on_shutdown() is called.')
         return super().on_shutdown(state)
 
     def user_status_update_callback(self, msg):
