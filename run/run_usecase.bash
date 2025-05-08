@@ -129,7 +129,7 @@ configure_interrupt() {
     echo "Setting goal"
     curl -X POST $CONNECTOR_BASEURL$INT_SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
 
-    sleep 3
+    sleep 2
 
     echo "Uploading profiles"
     curl -X POST $CONNECTOR_BASEURL$INT_PROFILE_LOAD_PATH -H "Content-Type: application/json" -d "$ETHIC_PROFILES"
@@ -249,6 +249,7 @@ done
 if [ "$GAZEBO" = true ]; then
     # gazebo startup
     start_gazebo
+    sleep 2
 fi
 
 if [ "$LAUNCH" = true ]; then
@@ -276,7 +277,7 @@ for U1 in "${USER_1[@]}"; do
             # Starts the mission for the robot
             start_mission $HOST $PORT $U1 $U2 $GAZEBO
 
-            sleep 2
+            sleep 3
 
             # Configure interrupting user and send mission request
             configure_interrupt $HOST $PORT $U2 $U1
