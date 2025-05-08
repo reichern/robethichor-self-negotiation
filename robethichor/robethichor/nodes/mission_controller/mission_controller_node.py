@@ -80,16 +80,14 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
         self._get_result_future = self.goal_handle.get_result_async()
 
-        self._get_result_future.add_done_callback(self.get_result_callback)
+        self._get_result_future.add_done_callback(self.get_navigation_result_callback)
 
-    def get_result_callback(self, future):
+    def get_navigation_result_callback(self, future):
         # TODO read if navigation was successful? 
         result = future.result().result
         self.get_logger().info('Result: {0}'.format(result))
+        self.mission_running = False
 
-    # def feedback_callback(self, feedback_msg):
-    #     feedback = feedback_msg.feedback
-    #     self.get_logger().info('Received feedback: {0}'.format(feedback))
 
     def interruption_callback(self, msg):
         # TODO what to do if not mission running? what to do if interruption running? 
@@ -113,44 +111,54 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
     def interruption_service_callback(self, future):
         interruption_response = future.result()
         self.interruption_client.remove_pending_request(future)
+
+        # different error cases: continue current mission
         if interruption_response is None:
-            self.get_logger().error("Interruption service call failed, continue current mission.")
+            result_message = "Interruption service call failed, continue current mission."
+            self.get_logger().error(result_message)
         elif interruption_response.capabilities == False:
-            self.get_logger().info("Interrupting request rejected because of lacking capabilities, continue current mission. ")
-            nav_msg = NavigateToPose.Goal()
-            nav_msg.pose = self.get_pose(self.goal)
-            self.send_goal_future = self.action_client.send_goal_async(nav_msg) 
-            self.send_goal_future.add_done_callback(self.goal_response_callback)
+            result_message = "Interrupting request rejected because of lacking capabilities, continue current mission."
+            self.get_logger().info(result_message)
         elif interruption_response.error == True:
-            self.get_logger().error("Error occured during negotiation, continue current mission. ")
+            result_message = "Error occured during negotiation, continue current mission."
+            self.get_logger().error(result_message)
+
+        # negotiation was successful
         else:
-            self.get_logger().info("Negotiation successful, Mission is completed!")
+            self.get_logger().info("Negotiation successful!")
 
-            if self.log_output_file:
-                log_dir = os.path.dirname(self.log_output_file)
-                if log_dir and not os.path.exists(log_dir):
-                    os.makedirs(log_dir)
-                with open(self.log_output_file, 'a') as f:
-                    f.write(f"{self.get_namespace()}: negotiation completed. Configuration: {self.goal}. Negotiation time: {interruption_response.time:.3f} seconds. Result: {interruption_response.winner}\n")
-                    f.close()
+            # no agreement: continue current mission
+            if interruption_response.winner == "no-agreement":
+                result_message = "No agreement! Continue current mission."
+            # interrupting user wins: set interrupting goal as new goal! 
+            elif interruption_response.winner == "interrupting":
+                result_message = "Interrupting user gets precedence - changing to new mission!"
+                self.goal = self.interrupting_goal
+            else:
+                result_message = "Current user gets precedence, continue current mission."
+            self.get_logger().info(result_message)
+            
+        # log results
+        if self.log_output_file:
+            log_dir = os.path.dirname(self.log_output_file)
+        if log_dir and not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+        with open(self.log_output_file, 'a') as f:
+            f.write(f"{result_message} Configuration: {self.goal}. Negotiation time: {interruption_response.time:.3f} seconds. Result: {interruption_response.winner}\n")
+            f.close()
 
-            # TODO 
-            if self.gazebo and (interruption_response.winner == "current" or interruption_response.winner == "no-agreement"):
-                nav_msg = NavigateToPose.Goal()
-                nav_msg.pose = self.get_pose(self.goal)
-                self.send_goal_future = self.action_client.send_goal_async(nav_msg) 
-                self.send_goal_future.add_done_callback(self.goal_response_callback)
-                self.get_logger().info("Continue driving to original goal location!")
+        # send new navigation goal
+        self.send_navigate_goal()
 
-            elif self.gazebo and interruption_response.winner == "interrupting":
-                nav_msg = NavigateToPose.Goal()
-                nav_msg.pose = self.get_pose(self.interrupting_goal)
-                self.send_goal_future = self.action_client.send_goal_async(nav_msg)
-                self.send_goal_future.add_done_callback(self.goal_response_callback)
-                self.get_logger().info("Driving to new goal location!")
-
-            self.mission_running = False
         self.interruption_running = False
+
+    def send_navigate_goal(self):
+        nav_msg = NavigateToPose.Goal()
+        nav_msg.pose = self.get_pose(self.goal)
+        self.send_goal_future = self.action_client.send_goal_async(nav_msg) 
+        self.send_goal_future.add_done_callback(self.goal_response_callback)
+        self.get_logger().info("Sent navigation goal!")
+
 
     def get_pose(self, msg):
         pose = PoseStamped()
