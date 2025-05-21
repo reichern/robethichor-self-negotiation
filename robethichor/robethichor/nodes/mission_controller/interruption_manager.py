@@ -76,14 +76,10 @@ class InterruptionManager():
             self.node.get_logger().error(message)
             return winner, message
         else:
+            # negotiation was successful
             self.node.get_logger().info(f"Negotiation result: {negotiation_response.outcome}")
             winner = negotiation_response.outcome
         
-            # negotiation was successful
-            rviz_msg = String()
-            rviz_msg.data = winner
-            self.winner_publisher.publish(rviz_msg)
-
             # no agreement: continue current mission
             if winner == "no-agreement":
                 message = "No agreement! Continue current mission."
@@ -93,6 +89,11 @@ class InterruptionManager():
             else:
                 message = "Current user gets precedence, continue current mission."
             self.node.get_logger().info(message)
+
+            # publish negotiation result to Rviz
+            rviz_msg = String()
+            rviz_msg.data = message
+            self.winner_publisher.publish(rviz_msg)
 
             log_message = f"{message} Negotiation time: {negotiation_time:.3f} seconds.\n"
             return winner, log_message
