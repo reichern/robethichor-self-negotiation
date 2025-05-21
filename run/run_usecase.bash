@@ -54,8 +54,11 @@ start_gazebo(){
     LAUNCH_GAZEBO_COMMAND="ros2 launch robethichor gazebo.launch.py"
     echo "Launching command: $LAUNCH_GAZEBO_COMMAND"
     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_GAZEBO_COMMAND; exec bash"
-    sleep 10
-
+    sleep 5
+    ros2 topic pub --once /custom_text_marker visualization_msgs/msg/Marker "{'header': {'stamp': 'now','frame_id': 'map'},'id': 0,'type': 9,'action': 0,'pose': {'position': {'x': 5,'y':1, 'z':0},'orientation': {'x': 0, 'y':0, 'z':0, 'w':1}},'scale': {'x': 1, 'y':1, 'z':1},'color': {'r':0.0, 'g':0.0, 'b':0.0, 'a':1.0},'lifetime': {'sec':0},'text': '1'}"
+    # sleep 1
+    ros2 topic pub --once /custom_text_marker visualization_msgs/msg/Marker "{'header': {'stamp': 'now','frame_id': 'map'},'id': 1,'type': 9,'action': 0,'pose': {'position': {'x': 5,'y':-2, 'z':0},'orientation': {'x': 0, 'y':0, 'z':0, 'w':1}},'scale': {'x': 1, 'y':1, 'z':1},'color': {'r':0.0, 'g':0.0, 'b':0.0, 'a':1.0},'lifetime': {'sec':0},'text': '2'}"
+    sleep 5
 }
 
 configure_robot() {
@@ -115,7 +118,7 @@ configure_interrupt() {
     # JSON file read
     ETHIC_PROFILES=$(cat $BASE_FOLDER$USER_LABEL"/"$ETHIC_PROFILES_FILE)
     USER_STATUS=$(cat $BASE_FOLDER$USER_LABEL"/"$USER_STATUS_FILE)
-    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq --arg user "$USER_LABEL" --arg interrupting "$ACTIVE_USER" '.goal  += " (User: " + $user + " interrupting " + $interrupting + ")"')
+    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq '.goal') #  | jq --arg user "$USER_LABEL" --arg interrupting "$ACTIVE_USER" '.goal  += " (User: " + $user + " interrupting " + $interrupting + ")"')
 
     # Json sent as messages in topics should be escaped
     CONTEXT=$(cat $BASE_FOLDER$USER_LABEL"/"$CONTEXT_FILE | jq -c .)
@@ -168,7 +171,7 @@ start_mission() {
     
     echo "Starting mission execution..."
 
-    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq --arg user "$USER_LABEL" --arg interrupted "$INTERRUPTED_BY" '.goal  += " (User: " + $user + " starting mission! interrupted by " + $interrupted + ")"')
+    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq '.goal') #  | jq --arg user "$USER_LABEL" --arg interrupted "$INTERRUPTED_BY" '.goal  += " (User: " + $user + " starting mission! interrupted by " + $interrupted + ")"')
 
     curl -X POST http://$HOST:$PORT$SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
 }
@@ -249,7 +252,6 @@ done
 if [ "$GAZEBO" = true ]; then
     # gazebo startup
     start_gazebo
-    sleep 2
 fi
 
 if [ "$LAUNCH" = true ]; then

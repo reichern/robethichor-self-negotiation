@@ -1,0 +1,5 @@
+<library path="goal_panel">
+  <class type="rviz_goal_panel::GoalPanel" base_class_type="rviz_common::Panel">
+    <description>A very basic panel for a tutorial</description>
+  </class>
+</library>
