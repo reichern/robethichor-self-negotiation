@@ -12,6 +12,7 @@ from nav2_msgs.action import NavigateToPose
 from geometry_msgs.msg import PoseStamped
 
 from robethichor_interfaces.srv import InterruptionService
+from robethichor.nodes.mission_controller.interruption_manager import InterruptionManager
 
 class MissionControllerNode(Node): # Mocked version for testing purposes: must be refined/replaced for actual usage
     def __init__(self):
@@ -30,6 +31,9 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
         self.gazebo = self.get_parameter('gazebo').get_parameter_value().bool_value
         self.get_logger().info(f"Start up gazebo: {self.gazebo}")
 
+        # Interruption Manager
+        self.interruption_manager = InterruptionManager(self)
+
         # Subscribers setup
         self.create_subscription(String, 'goal', self.start_mission_callback, 10, callback_group=self.callback_group)
         self.create_subscription(String, 'interrupting_user/goal', self.interruption_callback, 10, callback_group=self.callback_group)
@@ -39,11 +43,6 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             self.action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
             while not self.action_client.wait_for_server(timeout_sec=1.0):
                 self.get_logger().info('Waiting for navigation action server to be available')
-
-        # Client service setup
-        self.interruption_client = self.create_client(InterruptionService, 'interruption', callback_group=self.callback_group)
-        while not self.interruption_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Waiting for interruption service to be available')
 
     def start_mission_callback(self, msg):
         self.get_logger().info("Received new goal...")
@@ -78,6 +77,8 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
         self.get_logger().info('Goal accepted :)')
 
+        # TODO start lifecycle nodes ? 
+
         self._get_result_future = self.goal_handle.get_result_async()
 
         self._get_result_future.add_done_callback(self.get_navigation_result_callback)
@@ -87,6 +88,7 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
         result = future.result().result
         self.get_logger().info('Result: {0}'.format(result))
         self.mission_running = False
+        # TODO shutdown lifecycle nodes ? 
 
 
     def interruption_callback(self, msg):
@@ -101,56 +103,27 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
                 # stop current navigation 
                 self.goal_handle.cancel_goal_async()
 
-            # Interruption request:
-            interruption_request = InterruptionService.Request()
-            interruption_request.tasks = ["t1"]
-
-            future = self.interruption_client.call_async(interruption_request)
-            future.add_done_callback(lambda future: self.interruption_service_callback(future))
-
-    def interruption_service_callback(self, future):
-        interruption_response = future.result()
-        self.interruption_client.remove_pending_request(future)
-
-        # different error cases: continue current mission
-        if interruption_response is None:
-            result_message = "Interruption service call failed, continue current mission."
-            self.get_logger().error(result_message)
-        elif interruption_response.capabilities == False:
-            result_message = "Interrupting request rejected because of lacking capabilities, continue current mission."
-            self.get_logger().info(result_message)
-        elif interruption_response.error == True:
-            result_message = "Error occured during negotiation, continue current mission."
-            self.get_logger().error(result_message)
-
-        # negotiation was successful
-        else:
-            self.get_logger().info("Negotiation successful!")
-
-            # no agreement: continue current mission
-            if interruption_response.winner == "no-agreement":
-                result_message = "No agreement! Continue current mission."
-            # interrupting user wins: set interrupting goal as new goal! 
-            elif interruption_response.winner == "interrupting":
-                result_message = "Interrupting user gets precedence - changing to new mission!"
+    	    # TODO dynamic tasks!! 
+            winner, log_message = self.interruption_manager.handle_interruption(["t1"])
+            if winner == "interrupting":
                 self.goal = self.interrupting_goal
-            else:
-                result_message = "Current user gets precedence, continue current mission."
-            self.get_logger().info(result_message)
-            
-        # log results
-        if self.log_output_file:
-            log_dir = os.path.dirname(self.log_output_file)
-        if log_dir and not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-        with open(self.log_output_file, 'a') as f:
-            f.write(f"{result_message} Configuration: {self.goal}. Negotiation time: {interruption_response.time:.3f} seconds. Result: {interruption_response.winner}\n")
-            f.close()
+            # TODO shutdown lifecycle nodes? 
+            self.interrupting_goal = None
 
-        # send new navigation goal
-        self.send_navigate_goal()
+            # log results
+            if self.log_output_file:
+                log_dir = os.path.dirname(self.log_output_file)
+            if log_dir and not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+            with open(self.log_output_file, 'a') as f:
+                f.write(log_message)
+                f.close()
 
-        self.interruption_running = False
+            # send new navigation goal
+            if self.gazebo:
+                self.send_navigate_goal()
+
+            self.interruption_running = False
 
     def send_navigate_goal(self):
         nav_msg = NavigateToPose.Goal()

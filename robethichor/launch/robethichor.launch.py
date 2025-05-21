@@ -81,11 +81,6 @@ def generate_launch_description():
                 name='connector_node',
                 parameters=[{'port': connector_port}]
             ),
-            Node(
-                package='robethichor',
-                executable='interruption_manager_node',
-                name='interruption_manager_node',
-            ),
         ]),
         RegisterEventHandler(
             OnProcessStart(
@@ -137,14 +132,5 @@ def generate_launch_description():
         ),
 
     ])
-
-
-    # ld.add_action(IncludeLaunchDescription(
-    #     PathJoinSubstitution([FindPackageShare('robethichor'), 'launch', 'gazebo.launch.py']),
-    #     launch_arguments={
-    #         'namespace': robot_ns,
-    #         'urdf_package': 'tiago_description',
-    #         'urdf_package_path': PathJoinSubstitution(['robots', 'tiago.urdf.xacro'])}.items(),
-    # ))
 
     return ld 
