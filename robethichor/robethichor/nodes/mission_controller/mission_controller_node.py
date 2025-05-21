@@ -1,10 +1,11 @@
 import os
 import time
+import sys
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Empty
 from std_msgs.msg import String, Bool
-from rclpy.executors import MultiThreadedExecutor
+from rclpy.executors import MultiThreadedExecutor, ExternalShutdownException
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.action import ActionClient
 
@@ -158,9 +159,15 @@ def main(args=None):
     node = MissionControllerNode()
     executor = MultiThreadedExecutor()
     executor.add_node(node)
-    executor.spin()
-    node.destroy_node()
-    rclpy.shutdown()
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        pass
+    except ExternalShutdownException:
+        sys.exit(1)
+    finally:
+        rclpy.try_shutdown()
+        node.destroy_node()
 
 if __name__ == '__main__':
     main()

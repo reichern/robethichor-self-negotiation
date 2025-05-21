@@ -1,9 +1,10 @@
+import sys
 import rclpy
 import json
 from threading import Event
 from rclpy.node import Node
 from std_msgs.msg import String
-from rclpy.executors import MultiThreadedExecutor
+from rclpy.executors import MultiThreadedExecutor, ExternalShutdownException
 from rclpy.callback_groups import ReentrantCallbackGroup
 from std_msgs.msg import Bool
 
@@ -164,9 +165,15 @@ def main(args=None):
     node = NegotiationManagerNode()
     executor = MultiThreadedExecutor()
     executor.add_node(node)
-    executor.spin()
-    node.destroy_node()
-    rclpy.shutdown()
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        pass
+    except ExternalShutdownException:
+        sys.exit(1)
+    finally:
+        rclpy.try_shutdown()
+        node.destroy_node()
 
 if __name__ == '__main__':
     main()
