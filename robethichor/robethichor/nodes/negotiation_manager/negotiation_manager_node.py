@@ -5,6 +5,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
+from std_msgs.msg import Bool
 
 from robethichor_interfaces.srv import UserStatusService
 from robethichor_interfaces.srv import NegotiationService
@@ -53,6 +54,8 @@ class NegotiationManagerNode(Node):
         # Subscriber setup
         self.current_active_profile_subscriber = self.create_subscription(String, 'active_profile', self.current_active_profile_update_callback, 10, callback_group=self.callback_group)
         self.interrupting_active_profile_subscriber = self.create_subscription(String, 'interrupting_user/active_profile', self.interrupting_active_profile_update_callback, 10, callback_group=self.callback_group)
+        
+        self.data_ready_publisher = self.create_publisher(Bool, 'data_ready', 10)
 
         # Setup negotiation stuff 
         # .negotiation_publisher = self.create_publisher(String, '/negotiation_msgs', 10)
@@ -86,6 +89,9 @@ class NegotiationManagerNode(Node):
     def interrupting_active_profile_update_callback(self,msg):
         self.get_logger().info('setting ethical impacts for interrupting user')
         self.active_profile_update_callback(msg,self.interrupting_utility_function)
+        ready = Bool()
+        ready.data = True
+        self.data_ready_publisher.publish(ready)
 
     def negotiation_service_callback(self, request, response):
 

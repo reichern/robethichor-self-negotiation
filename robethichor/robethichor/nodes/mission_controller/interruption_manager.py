@@ -1,7 +1,7 @@
 # https://robotics.stackexchange.com/questions/102991/ros-2-how-to-start-and-stop-a-node-from-a-python-script
 import time
 from rclpy.callback_groups import ReentrantCallbackGroup
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 
 from robethichor_interfaces.srv import NegotiationService, InterruptionService, UserStatusService
 from robethichor.nodes.mission_controller.lifecycle_manager import LifecycleManager
@@ -15,11 +15,11 @@ class InterruptionManager():
         self.timeout = 5
 
         # subscription to monitor data arriving at ethics manager
-        self.active_profile_subscription = self.node.create_subscription(String, 'interrupting_user/active_profile', self.received_active_profile_callback, 10)
+        self.data_ready_subscription = self.node.create_subscription(Bool, 'data_ready', self.data_ready_callback, 10)
         self.ethics_ready = False
         
         # Winner publisher setup - only for Rviz visualization! 
-        self.winner_publisher = self.node.create_publisher(String, 'winner', 10)
+        self.negotiation_result_publisher = self.node.create_publisher(String, 'negotiation_result', 10)
 
         # Negotiation service client setup
         self.negotiation_client = self.node.create_client(NegotiationService, 'negotiation', callback_group=self.callback_group)
@@ -35,7 +35,7 @@ class InterruptionManager():
         if not self.has_capabilities():
             winner = "current"
             message = "Interrupting request rejected because of lacking capabilities, continue current mission."
-            self.node.get_logger().info(message)
+            self.publish_result(message)
             return winner, message
         
         # Activate second user's data management nodes 
@@ -46,7 +46,7 @@ class InterruptionManager():
         if not self.interrupting_nodes_available():
             winner = "error"
             message = "Did not receive interrupting user data within 10 seconds, aborting negotiation and continue current mission."
-            self.node.get_logger().error(message)
+            self.publish_result(message, error=True)
             return winner, message
 
 
@@ -73,7 +73,7 @@ class InterruptionManager():
         if negotiation_response is None:
             winner = "error"
             message = "Negotiation service call failed, continue current mission."
-            self.node.get_logger().error(message)
+            self.publish_result(message, error=True)
             return winner, message
         else:
             # negotiation was successful
@@ -88,12 +88,8 @@ class InterruptionManager():
                 message = "Interrupting user gets precedence - changing to new mission!"
             else:
                 message = "Current user gets precedence, continue current mission."
-            self.node.get_logger().info(message)
-
-            # publish negotiation result to Rviz
-            rviz_msg = String()
-            rviz_msg.data = message
-            self.winner_publisher.publish(rviz_msg)
+            
+            self.publish_result(message)
 
             log_message = f"{message} Negotiation time: {negotiation_time:.3f} seconds.\n"
             return winner, log_message
@@ -101,6 +97,18 @@ class InterruptionManager():
     def has_capabilities(self):
         # TODO 
         return True
+    
+    def publish_result(self, message, error=False):
+        # log message
+        if error:
+            self.node.get_logger().error(message)
+        else:
+            self.node.get_logger().info(message)
+
+        # publish message for rviz
+        rviz_msg = String()
+        rviz_msg.data = message
+        self.negotiation_result_publisher.publish(rviz_msg)
 
     def interrupting_nodes_available(self):
         # self.interrupting_user_status_service_client = self.create_client(UserStatusService, 'interrupting_user/user_status_service', callback_group=self.callback_group)
@@ -121,13 +129,13 @@ class InterruptionManager():
         if  self.ethics_ready == False: # user_status == {} or
             return False
         else:
-            time.sleep(5)
             return True
 
 
-    def received_active_profile_callback(self, future):
-        self.node.get_logger().info(f"Received active profile")
-        self.ethics_ready = True
+    def data_ready_callback(self, future):
+        if future.data == True:
+            self.node.get_logger().info(f"Received signal that interrupting users data is ready!")
+            self.ethics_ready = True
         
 
 # def main(args=None):

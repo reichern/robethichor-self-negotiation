@@ -68,7 +68,7 @@ void GoalPanel::onInitialize()
   interrupting_goal_subscription_ = node->create_subscription<std_msgs::msg::String>(
       "/interrupting_user/goal", 10, std::bind(&GoalPanel::interruptingGoalCallback, this, std::placeholders::_1));
   winner_subscription_ = node->create_subscription<std_msgs::msg::String>(
-      "/winner", 10, std::bind(&GoalPanel::winnerCallback, this, std::placeholders::_1));
+      "/negotiation_result", 10, std::bind(&GoalPanel::winnerCallback, this, std::placeholders::_1));
 
 }
 
