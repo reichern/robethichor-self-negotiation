@@ -129,6 +129,8 @@ class InterruptionManager():
         if  self.ethics_ready == False: # user_status == {} or
             return False
         else:
+            if self.node.gazebo:
+                time.sleep(2)
             return True
 
 
