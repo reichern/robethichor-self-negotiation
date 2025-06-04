@@ -11,7 +11,7 @@ from std_msgs.msg import Bool
 from robethichor_interfaces.srv import UserStatusService
 from robethichor_interfaces.srv import NegotiationService
 
-from robethichor.nodes.negotiation_manager.offer_generator_new import OfferGenerator
+from robethichor.nodes.negotiation_manager.offer_generator import OfferGenerator
 from robethichor.nodes.negotiation_manager.utility_function import UtilityFunction
 from robethichor.nodes.negotiation_manager.negotiation_engine import NegotiationEngine
 from robethichor.nodes.negotiation_manager.ethical_impact_analyzer import EthicalImpactAnalyzer
@@ -44,10 +44,12 @@ class NegotiationManagerNode(Node):
             ethical_implications = json.load(implication_file)
             disposition_activation = json.load(activation_file)
 
-        # TODO refactor? 
         self.ethical_impact_analyzer = EthicalImpactAnalyzer()
 
-        # Initializing utilities
+        # Components initialization
+        self.current_offer_generator = OfferGenerator()
+        self.interrupting_offer_generator = OfferGenerator()
+        generators = [self.current_offer_generator, self.interrupting_offer_generator]
         self.current_utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
         self.interrupting_utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
         utilities = [self.current_utility_function, self.interrupting_utility_function]
@@ -60,7 +62,7 @@ class NegotiationManagerNode(Node):
 
         # Setup negotiation stuff 
         # .negotiation_publisher = self.create_publisher(String, '/negotiation_msgs', 10)
-        self.negotiation_engine = NegotiationEngine(self, utilities)
+        self.negotiation_engine = NegotiationEngine(self, generators, utilities)
 
         # Negotiation service setup
         self.negotiation_service = self.create_service(NegotiationService, 'negotiation', self.negotiation_service_callback, callback_group=self.callback_group)
@@ -78,7 +80,6 @@ class NegotiationManagerNode(Node):
         self.get_logger().info(f"Received new active profile: {msg.data}")
         self.active_profile = json.loads(msg.data)
 
-        # TODO eigentlich brauche ich den ethical impact analyzer dafür nicht oder ? 
         # Calculate task ethical impacts and provide them to the utility function using the ethical impact analyzer
         task_ethical_impacts = self.ethical_impact_analyzer.compute_task_ethical_impacts(self.active_profile)
         utility_function.set_task_ethical_impacts(task_ethical_impacts)
@@ -121,19 +122,16 @@ class NegotiationManagerNode(Node):
 
             # Generate offers
             tasks = request.tasks
-            current_offer = self._generate_offer(self.current_user_status,tasks)
-            # TODO get different tasks for interrupting user? 
-            interrupting_offer = self._generate_offer(self.interrupting_user_status,tasks)            
-            # self.offer_generator.generate_offers(self.current_user_status, tasks)
-
-            self.negotiation_engine.set_offers(current_offer, interrupting_offer)
-            self.get_logger().info(f"Offers generated: {current_offer}, {interrupting_offer}")
+            self.current_offer_generator.generate_offers(self.current_user_status, tasks)
+            self.interrupting_offer_generator.generate_offers(self.interrupting_user_status, tasks)
+            self.get_logger().info(f"Offers generated: {self.current_offer_generator.get_offers()}, {self.interrupting_offer_generator.get_offers()}")
 
             # Start the negotiation engine
-            outcome = self.negotiation_engine.self_negotiation()
+            outcome, rounds = self.negotiation_engine.self_negotiation()
             response.outcome = outcome # current, interruption, no-agreement
+            response.rounds = rounds
 
-            self.get_logger().info("Negotiation completed")
+            self.get_logger().info(f"Negotiation completed!")
 
             self.negotiating = False
         else:
@@ -154,11 +152,6 @@ class NegotiationManagerNode(Node):
         self.interrupting_user_status = json.loads(user_status_response.data)
         self.interrupting_user_status_service_client.remove_pending_request(future)
         event.set()
-
-    def _generate_offer(self, user_status, tasks): 
-        conditions_list = [condition for condition in user_status if user_status[condition]]
-        offer = (tasks,conditions_list)
-        return offer
 
 def main(args=None):
     rclpy.init(args=args)

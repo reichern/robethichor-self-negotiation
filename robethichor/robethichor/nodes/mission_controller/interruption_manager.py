@@ -34,7 +34,7 @@ class InterruptionManager():
         self.node.get_logger().info("Checking for necessary robot capabilities.")
         if not self.has_capabilities():
             winner = "current"
-            message = "Interrupting request rejected because of lacking capabilities, continue current mission."
+            message = "Interrupting request rejected because of lacking capabilities, continue current mission.\n"
             self.publish_result(message)
             return winner, message
         
@@ -45,7 +45,7 @@ class InterruptionManager():
         # Check whether nodes have launched properly
         if not self.interrupting_nodes_available():
             winner = "error"
-            message = "Did not receive interrupting user data within 10 seconds, aborting negotiation and continue current mission."
+            message = "Did not receive interrupting user data within 10 seconds, aborting negotiation and continue current mission.\n"
             self.publish_result(message, error=True)
             return winner, message
 
@@ -72,13 +72,14 @@ class InterruptionManager():
         # processing results
         if negotiation_response is None:
             winner = "error"
-            message = "Negotiation service call failed, continue current mission."
+            message = "Negotiation service call failed, continue current mission.\n"
             self.publish_result(message, error=True)
             return winner, message
         else:
             # negotiation was successful
             self.node.get_logger().info(f"Negotiation result: {negotiation_response.outcome}")
             winner = negotiation_response.outcome
+            rounds = negotiation_response.rounds
         
             # no agreement: continue current mission
             if winner == "no-agreement":
@@ -91,7 +92,7 @@ class InterruptionManager():
             
             self.publish_result(message)
 
-            log_message = f"{message} Negotiation time: {negotiation_time:.3f} seconds.\n"
+            log_message = f"{message} Negotiation rounds: {rounds}. Negotiation time: {negotiation_time:.3f} seconds.\n"
             return winner, log_message
                 
     def has_capabilities(self):
