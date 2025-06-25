@@ -45,8 +45,11 @@ GoalPanel::GoalPanel(QWidget * parent) : Panel(parent)
   // Create labels for different text, displayed vertically (the V in VBox means vertical)
   const auto layout = new QVBoxLayout(this);
   goal_label_ = new QLabel("No current Goal.");
+  goal_label_->setStyleSheet("font: 20pt;");  
   interrupting_goal_label_ = new QLabel("");
+  interrupting_goal_label_->setStyleSheet("font: 20pt;");  
   winner_label_ = new QLabel("");
+  winner_label_->setStyleSheet("font: 20pt;");  
   layout->addWidget(goal_label_);
   layout->addWidget(interrupting_goal_label_);
   layout->addWidget(winner_label_);

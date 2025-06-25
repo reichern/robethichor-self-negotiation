@@ -30,6 +30,8 @@ class InterruptionManager():
 
 
     def handle_interruption(self, tasks):
+        self.start_preparation_time = time.perf_counter() 
+
         # if robot does not have necessary capabilities, no negotiation is executed
         self.node.get_logger().info("Checking for necessary robot capabilities.")
         if not self.has_capabilities():
@@ -49,10 +51,10 @@ class InterruptionManager():
             self.publish_result(message, error=True)
             return winner, message
 
-
         # Start negotiation
         self.node.get_logger().info("Interruption initialised, negotiation can be started.")
         # Measuring negotiation time
+        self.end_preparation_time = time.perf_counter() 
         self.start_negotiation_time = time.perf_counter() 
 
         # TODO dynamic tasks
@@ -64,10 +66,12 @@ class InterruptionManager():
         # processing time
         end_negotiation_time = time.perf_counter() # Measuring negotiation time
         negotiation_time = end_negotiation_time - self.start_negotiation_time
-        self.node.get_logger().info(f"Negotiation time: {negotiation_time:.3f} seconds")
+        preparation_time = self.end_preparation_time - self.start_preparation_time
+        self.node.get_logger().info(f"Preparation time: {preparation_time:.3f} Negotiation time: {negotiation_time:.3f} seconds")
 
         # deactivate second user's data management nodes!
         self.lifecycle_manager.deactivate_lifecycle_nodes()
+        self.ethics_ready = False
 
         # processing results
         if negotiation_response is None:
@@ -83,7 +87,7 @@ class InterruptionManager():
         
             # no agreement: continue current mission
             if winner == "no-agreement":
-                message = "No agreement! Continue current mission."
+                message = "No-agreement reached! Continue current mission."
             # interrupting user wins: set interrupting goal as new goal! 
             elif winner == "interrupting":
                 message = "Interrupting user gets precedence - changing to new mission!"
@@ -92,7 +96,7 @@ class InterruptionManager():
             
             self.publish_result(message)
 
-            log_message = f"{message} Negotiation rounds: {rounds}. Negotiation time: {negotiation_time:.3f} seconds.\n"
+            log_message = f"Negotiation rounds: {rounds}. Preparation time: {preparation_time:.3f} seconds. Negotiation time: {negotiation_time:.3f} seconds. {message}\n"
             return winner, log_message
                 
     def has_capabilities(self):
@@ -120,12 +124,12 @@ class InterruptionManager():
         # user_status = {}        
         for _ in range(0,10,1):
             self.node.get_logger().info(f"Waiting for second user's data.")
-            time.sleep(1)
             # if user_status == {}:
             #     result = self.interrupting_user_status_service_client.call(UserStatusService.Request())
             #     user_status = json.loads(result.data)
             if self.ethics_ready == True: # user_status == {} or 
                 break
+            time.sleep(1)
 
         if  self.ethics_ready == False: # user_status == {} or
             return False

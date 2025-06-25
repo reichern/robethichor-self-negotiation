@@ -27,7 +27,9 @@ class LifecycleManager():
 
         # Transition to configured -> inactive -> activated state for ethics manager
         self.transition_state(self.change_ethics_manager_state,"deactivate")
-        self.transition_state(self.change_ethics_manager_state,"cleanup")
+        self.transition_state(self.change_ethics_manager_state,"cleanup")        
+        self.node.get_logger().info(f"deactivated lifecycle nodes ")
+
 
     def transition_state(self, change_state, transition):
         request = ChangeState.Request()

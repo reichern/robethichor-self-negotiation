@@ -1,0 +1,12 @@
+{
+    "pregnant": false,
+    "accompanied by a baby": true,
+    "accompanied by small child": false,
+    "elderly": false,
+    "wheelchair user": true,
+    "in urgency": true,
+    "restricted mobility": false,
+    "visual impairment": false,
+    "hearing impairment": false,
+    "crowd anxiety": false
+}

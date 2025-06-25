@@ -106,9 +106,10 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
     	    # TODO dynamic tasks!! 
             winner, log_message = self.interruption_manager.handle_interruption(["t1"])
+            log_message  = "Users: " + self.goal[-4] + self.interrupting_goal[-4] + " " + log_message
+
             if winner == "interrupting":
                 self.goal = self.interrupting_goal
-            # TODO shutdown lifecycle nodes? 
             self.interrupting_goal = None
 
             # log results
@@ -125,6 +126,8 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
                 self.send_navigate_goal()
 
             self.interruption_running = False
+            # TODO 
+            self.mission_running = False
 
     def send_navigate_goal(self):
         nav_msg = NavigateToPose.Goal()
@@ -145,10 +148,10 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
         pose.pose.orientation.z = 0.0
         pose.pose.orientation.w = 1.0
 
-        if "navigate_to_room_1" in msg:
+        if "navigate_to_room_101" in msg:
             pose.pose.position.x = 5.0
             pose.pose.position.y = 2.0
-        if "navigate_to_room_2" in msg:
+        if "navigate_to_room_102" in msg:
             pose.pose.position.x = 5.0
             pose.pose.position.y = -2.5
         

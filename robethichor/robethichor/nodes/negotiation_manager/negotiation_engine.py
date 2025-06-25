@@ -56,6 +56,7 @@ class NegotiationEngine():
                 # if both users have quitted: stop negotiation
                 if self.current_quitted and self.interrupting_quitted:
                     break
+                # only one user has quitted: switch one final time
                 else:
                     self.switch = False
                     sender = "interrupting" if sender == "current" else "current"
@@ -87,7 +88,6 @@ class NegotiationEngine():
         if utility_value > 0:
             # Accept opponent's offer
             self.node.get_logger().info(f"Utility value: {utility_value}: accept")
-            # 6a
             return 1
         # Reject opponent's offer
         self.node.get_logger().info(f"Utility value: {utility_value}: reject")
