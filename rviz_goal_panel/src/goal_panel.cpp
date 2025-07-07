@@ -45,11 +45,11 @@ GoalPanel::GoalPanel(QWidget * parent) : Panel(parent)
   // Create labels for different text, displayed vertically (the V in VBox means vertical)
   const auto layout = new QVBoxLayout(this);
   goal_label_ = new QLabel("No current Goal.");
-  goal_label_->setStyleSheet("font: 20pt;");  
+  goal_label_->setStyleSheet("font: 14pt;");  
   interrupting_goal_label_ = new QLabel("");
-  interrupting_goal_label_->setStyleSheet("font: 20pt;");  
+  interrupting_goal_label_->setStyleSheet("font: 14pt;");  
   winner_label_ = new QLabel("");
-  winner_label_->setStyleSheet("font: 20pt;");  
+  winner_label_->setStyleSheet("font: 14pt;");  
   layout->addWidget(goal_label_);
   layout->addWidget(interrupting_goal_label_);
   layout->addWidget(winner_label_);
@@ -79,7 +79,13 @@ void GoalPanel::onInitialize()
 // and then we copy its data into the widget's label
 void GoalPanel::goalCallback(const std_msgs::msg::String& msg)
 {
-  goal_label_->setText("Current Goal: " + QString(msg.data.c_str()));
+  if (msg.data == "Reset robot..."){
+    goal_label_->setText(QString(msg.data.c_str()));
+    interrupting_goal_label_->setText(" ");
+    winner_label_->setText(" ");
+  } else {
+    goal_label_->setText("Current Goal: " + QString(msg.data.c_str()));
+  }
 }
 
 // When the subscriber gets a message, this callback is triggered,

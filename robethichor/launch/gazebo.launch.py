@@ -56,14 +56,14 @@ def generate_launch_description():
         launch_arguments={
             'gui': LaunchConfiguration('gui'),
             'pause': 'true',
-            'world': '../robethichor/worlds/two_rooms_expanded.sdf',
+            'world': '../../robethichor/worlds/two_rooms_expanded.sdf',
             's': 'libgazebo_ros_factory.so'
         }.items(),
     )
     client_launch = IncludeLaunchDescription(
         PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gzclient.launch.py']),
         launch_arguments={
-            'world': '../robethichor/worlds/two_rooms_expanded.sdf',
+            'world': '../../robethichor/worlds/two_rooms_expanded.sdf',
         }.items(),
     )
 

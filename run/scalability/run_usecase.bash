@@ -9,11 +9,8 @@
 LOG_FILE="results/results.log"
 
 # JSON files paths
-BASE_FOLDER="usecases/"
+BASE_FOLDER="test_cases/"
 CONTEXT_FILE="context.json"
-USER_STATUS_FILE="user_status.json"
-ETHIC_PROFILES_FILE="ethic_profiles.json"
-GOAL_FILE="goal.json"
 ETHICAL_IMPLICATIONS_FILENAME="ethical_implications.json"
 DISPOSITION_ACTIVATION_FILENAME="disposition_activation.json"
 
@@ -27,7 +24,7 @@ INT_USER_STATUS_PATH="/interrupting/status"
 INT_SET_GOAL_PATH="/interrupting/goal"
 INT_CONTEXT_PATH="/interrupting/context"
 
-ROS_WS_PATH="../../../" # make the root directory as the workspace base folder
+ROS_WS_PATH="../../" # make the root directory as the workspace base folder
 FULL_PATH=$(pwd)
 INSTALL_PATH=$FULL_PATH"/"$ROS_WS_PATH"install/setup.bash"
 
@@ -64,17 +61,20 @@ configure_robot() {
 
     local HOST=$1
     local PORT=$2
-    local USER_LABEL=$3
+    local N=$3
+    local P=$4
+    local I=$5
+    local C=$6
 
-    echo "------ Configuring robot for user $USER_LABEL------"
+    echo "------ Configuring robot for user $I------"
 
     # JSON file read
-    ETHIC_PROFILES=$(cat $BASE_FOLDER$USER_LABEL"/"$ETHIC_PROFILES_FILE)
-    USER_STATUS=$(cat $BASE_FOLDER$USER_LABEL"/"$USER_STATUS_FILE)
-
+    ETHIC_PROFILES=$(cat $BASE_FOLDER$N"/profiles/ethic_profiles_"$N"-"$I".json")
+    USER_STATUS=$(cat $BASE_FOLDER$N"/statuses/"$P"/user_status_"$N"_"$P"-"$I".json")
+ 
     # Json sent as messages in topics should be escaped
-    CONTEXT=$(cat $BASE_FOLDER$USER_LABEL"/"$CONTEXT_FILE | jq -c .)
-
+    CONTEXT=$(cat $BASE_FOLDER$CONTEXT_FILE | jq -c .)
+    
     # Connector service configuration
     CONNECTOR_BASEURL="http://$HOST:$PORT"
 
@@ -94,17 +94,19 @@ configure_robot() {
     # echo "Publishing base context"
     # ros2 topic pub --once /current_context std_msgs/msg/String "{data: '$CONTEXT'}"
 
-    echo -e "Configuration of robot complete for user $USER_LABEL\n"
+    echo -e "Configuration of robot complete\n"
 }
 
 configure_interrupt() {
 
     local HOST=$1
     local PORT=$2
-    local USER_LABEL=$3
-    local ACTIVE_USER=$4
+    local N=$3
+    local P=$4
+    local I=$5
+    local C=$6
 
-    echo "------ Configuring interrupt for  $USER_LABEL! ------"
+    echo "------ Configuring interrupt for user $I! ------"
 
     # launch nodes for interruption
     # echo "launch interupting nodes? $FIRST"
@@ -117,22 +119,21 @@ configure_interrupt() {
     # fi
 
     # JSON file read
-    ETHIC_PROFILES=$(cat $BASE_FOLDER$USER_LABEL"/"$ETHIC_PROFILES_FILE)
-    USER_STATUS=$(cat $BASE_FOLDER$USER_LABEL"/"$USER_STATUS_FILE)
-    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE  | jq --arg user "$USER_LABEL" '.goal  += " (User: " + $user + ")"')
-    # GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq '.goal' )
-
+    ETHIC_PROFILES=$(cat $BASE_FOLDER$N"/profiles/ethic_profiles_"$N"-"$I".json")
+    USER_STATUS=$(cat $BASE_FOLDER$N"/statuses/"$P"/user_status_"$N"_"$P"-"$I".json")
+ 
     # Json sent as messages in topics should be escaped
-    CONTEXT=$(cat $BASE_FOLDER$USER_LABEL"/"$CONTEXT_FILE | jq -c .)
-
+    CONTEXT=$(cat $BASE_FOLDER$CONTEXT_FILE | jq -c .)
+  
     # Connector service configuration
     CONNECTOR_BASEURL="http://$HOST:$PORT"
 
 
     # Setup application through connector
-
-    echo "Setting goal"
-    curl -X POST $CONNECTOR_BASEURL$INT_SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
+    
+    echo "Sending goal"
+    GOAL="{\"goal\": \"Scalability test! "$N" dispositions, "$P" activated conditions, ethicprofile no. "$I". Test counter: "$C"\"}"
+    curl -X POST http://$HOST:$PORT$INT_SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
 
     # sleep 1
 
@@ -162,21 +163,30 @@ start_mission() {
 
     local HOST=$1
     local PORT=$2
-    local USER_LABEL=$3
-    local INTERRUPTED_BY=$4
-    local GAZEBO=$5
-    
-    echo "Starting mission execution for user $USER_LABEL"
-    GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq --arg user "$USER_LABEL" '.goal  += " (User: " + $user + ")"')
-    # GOAL=$(cat $BASE_FOLDER$USER_LABEL"/"$GOAL_FILE | jq '.goal') # 
+    local N=$3
+    local P=$4
+    local I=$5
+    local C=$6
+    local GAZEBO=$7
 
+
+    # if [ "$GAZEBO" = true ]; then
+    #   echo "Reset robot to original position"
+    #   ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "pose: {header: {frame_id: map}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation:{x: 0.0, y: 0.0, z: 0, w: 1.0000000}}}"
+    #   echo "waiting for robot to reach position ... "
+    #   sleep 10
+    # fi
+    
+    echo "Starting mission execution for user $I"
+    GOAL="{\"goal\": \"Scalability test! "$N" dispositions, "$P" activated conditions, ethicprofile no. "$I". Test counter: "$C"\"}"
+ 
     curl -X POST http://$HOST:$PORT$SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
 }
 
-
-USER_1=(A B C)
-USER_2=(A B C)
-
+N_VALUES=(50 100) # 10 25 50 100 200 300
+P_VALUES=(10 25 50 75 100)
+C=10
+ 
 WAIT_TIME=10
 
 GAZEBO=FALSE
@@ -192,13 +202,17 @@ PORT=5000
 
 LAUNCH=false
 
+STARTING_I=1
+STARTING_J=1
+STARTING_COUNTER=1
+
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     --force-config)
       shift
-      USER_1=($1)
+      N_VALUES=($1)
       shift
-      USER_2=($1)
+      P_VALUES=($1)
       shift
       ;;
     --wait)
@@ -211,30 +225,18 @@ while [[ "$#" -gt 0 ]]; do
       GAZEBO=$1
       shift
       ;;
-    # --names)
-    #   shift
-    #   R1_NAME=$1
-    #   shift
-    #   R2_NAME=$1
-    #   shift
-    #   ;;
-    # --hosts)
-    #   shift
-    #   R1_HOST=$1
-    #   shift
-    #   R2_HOST=$1
-    #   shift
-    #   ;;
-    # --ports)
-    #   shift
-    #   R1_PORT=$1
-    #   shift
-    #   R2_PORT=$1
-    #   shift
-    #   ;;
     --launch)
       shift
       LAUNCH=$1
+      shift
+      ;;
+    --start-params)
+      shift
+      STARTING_I=$1
+      shift
+      STARTING_J=$1
+      shift
+      STARTING_COUNTER=$1
       shift
       ;;
     *)
@@ -252,44 +254,36 @@ if [ "$GAZEBO" = true ]; then
 fi
 
 if [ "$LAUNCH" = true ]; then
-    # First robot startup
+    # robot startup
     start_robot $PORT $GAZEBO
-
-    # Second robot startup
-    # start_robot $R2_NAME $R2_PORT
 fi
 
 
-for U1 in "${USER_1[@]}"; do
-    # Robot configuration
-    configure_robot $HOST $PORT $U1
-    sleep 2
-    for U2 in "${USER_2[@]}"; do
-        if [ "$U1" != "$U2" ]; then
-            echo "------ Running simulation $U1 interrupted by $U2 ------"
+for N in "${N_VALUES[@]}"; do
+  for P in "${P_VALUES[@]}"; do
+    counter=$STARTING_COUNTER
+    for (( i=$STARTING_I; i<=C; i++ )) do
 
-            # Second robot configuration
-            # configure_robot $R2_NAME $R2_HOST $R2_PORT $U2
+      # Robot configuration
+      configure_robot $HOST $PORT $N $P $i $counter
+      sleep 2
 
+      for (( j=$STARTING_J; j<=C; j++ )) do
+        if [ "$i" != "$j" ]; then
+          echo "------ Running simulation U$i interrupted by U$j ------"
 
-            # Starts the mission for the robot
-            start_mission $HOST $PORT $U1 $U2 $GAZEBO
+          # Starts the mission for the robot
+          start_mission $HOST $PORT $N $P $i $counter $GAZEBO
 
-            sleep 3
+          sleep 3
 
-            # Configure interrupting user and send mission request
-            configure_interrupt $HOST $PORT $U2 $U1
-            # TODO start mission for interrupting user (has different path!! )
-            # start_mission $R1_NAME $R1_HOST $R1_PORT $U2
+          # Configure interrupting user and send mission request
+          configure_interrupt $HOST $PORT $N $P $j $counter
 
-            sleep $WAIT_TIME
-
-            if [ "$GAZEBO" = true ]; then
-              echo "Reset robot to original position"
-              # ros2 topic pub --once /goal std_msgs/msg/String '{data: "Reset robot..."}'
-              ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "pose: {header: {frame_id: map}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation:{x: 0.0, y: 0.0, z: 0, w: 1.0000000}}}"
-              echo "waiting for robot to reach position ... "
-            fi
+          sleep $WAIT_TIME
+          counter=$((counter+1))
         fi
+      done
     done
+  done
 done

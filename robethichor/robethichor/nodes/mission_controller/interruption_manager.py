@@ -96,7 +96,13 @@ class InterruptionManager():
             
             self.publish_result(message)
 
-            log_message = f"Negotiation rounds: {rounds}. Preparation time: {preparation_time:.3f} seconds. Negotiation time: {negotiation_time:.3f} seconds. {message}\n"
+            log_message = f"Gazebo: {self.node.gazebo}. Negotiation rounds: {rounds}. Preparation time: {preparation_time:.3f} seconds. Negotiation time: {negotiation_time:.3f} seconds. Result: {winner}\n"
+            
+            if "Scalability test!" in self.node.goal:
+                log_message = log_message[:-1] + ". Goal: " + self.node.goal + "\n"
+            else:
+                users = "Users: " + self.node.goal[-4] + self.node.interrupting_goal[-4] + ". "
+                log_message = users + log_message
             return winner, log_message
                 
     def has_capabilities(self):
