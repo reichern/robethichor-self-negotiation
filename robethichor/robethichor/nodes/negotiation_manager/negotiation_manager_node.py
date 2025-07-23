@@ -50,8 +50,8 @@ class NegotiationManagerNode(Node):
         self.current_offer_generator = OfferGenerator()
         self.interrupting_offer_generator = OfferGenerator()
         generators = [self.current_offer_generator, self.interrupting_offer_generator]
-        self.current_utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
-        self.interrupting_utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
+        self.current_utility_function = UtilityFunction(ethical_implications, disposition_activation, self, True)
+        self.interrupting_utility_function = UtilityFunction(ethical_implications, disposition_activation, self, False)
         utilities = [self.current_utility_function, self.interrupting_utility_function]
 
         # Subscriber setup

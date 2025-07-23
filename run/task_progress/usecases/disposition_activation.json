@@ -1,0 +1,12 @@
+{
+    "pregnant": ["d1"],
+    "accompanied by a baby": ["d1"],
+    "accompanied by small child": ["d1"],
+    "elderly": ["d2"],
+    "wheelchair user": ["d3"],
+    "in urgency": ["d4"],
+    "restricted mobility": ["d5"],
+    "visual impairment": ["d5"],
+    "hearing impairment": ["d5"],
+    "crowd anxiety": ["d6"]
+}
