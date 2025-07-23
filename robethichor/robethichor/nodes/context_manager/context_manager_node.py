@@ -59,17 +59,16 @@ class ContextManagerNode(Node):
         
         # destroy subscription, client
         self.destroy_subscription(self.user_status_subscription)
-        # TODO gibt es das?? 
         self.destroy_service(self.user_status_service)
-
+        self.destroy_publisher(self.current_context_publisher)
         return super().on_deactivate(state)
 
     def on_cleanup(self, state: State) -> TransitionCallbackReturn:
         self.get_logger().debug('on_cleanup() is called.')
 
         # destroy publisher
-        self.destroy_publisher(self.current_context_publisher)
-
+        self.context_model = dict()
+        self.user_status = dict()
         # TODO destroy analyzer, monitor? 
 
         return super().on_cleanup(state)

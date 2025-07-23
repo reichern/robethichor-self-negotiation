@@ -67,7 +67,7 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
                 self.send_goal_future.add_done_callback(self.goal_response_callback)
 
         else:
-            self.get_logger().info("A mission is already being executed: rejecting goal.")
+            self.get_logger().info(f"A mission is already being executed: rejecting goal {msg.data}.")
 
     def goal_response_callback(self, future):
         self.goal_handle = future.result()
@@ -123,7 +123,10 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             # send new navigation goal
             if self.gazebo:
                 self.send_navigate_goal()
-
+            else:
+                # if gazebo is not running, we have no indication when the mission is finished, so we have to stop it here! 
+                self.mission_running = False
+                
             self.interruption_running = False
 
     def send_navigate_goal(self):

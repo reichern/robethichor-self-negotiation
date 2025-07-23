@@ -1,5 +1,6 @@
 import json
 import rclpy
+import time
 from rclpy.node import Node
 from std_msgs.msg import String
 from flask import Flask, request, jsonify, make_response
@@ -32,11 +33,14 @@ class ConnectorNode(Node):
         app.config['ros_node'] = self
         app.run(host=self.host, port=self.port)
 
-def publish_data(publisher):
+def publish_data(publisher, subscribers = 1):
     data = request.get_json()
     message = String()
     message.data = json.dumps(data)
-    while publisher.get_subscription_count() < 1:
+    wait_time_start = time.perf_counter()
+    while publisher.get_subscription_count() < subscribers:
+        if time.perf_counter() - wait_time_start == 10:
+            break
         continue
     publisher.publish(message)
 
@@ -70,13 +74,13 @@ def set_context_controller():
 def load_int_user_profile():
     node = app.config['ros_node']
     node.get_logger().info("Received interrupting user profile")
-    return publish_data(node.int_ethic_profile_publisher)
+    return publish_data(node.int_ethic_profile_publisher,2)
 
 @app.route('/interrupting/status', methods=['POST'])
 def set_int_user_status_controller():
     node = app.config['ros_node']
     node.get_logger().info(f"Received interrupting user status")
-    return publish_data(node.int_user_status_publisher)
+    return publish_data(node.int_user_status_publisher,2)
 
 @app.route('/interrupting/goal', methods=['POST'])
 def set_int_goal_controller():
@@ -88,7 +92,7 @@ def set_int_goal_controller():
 def set_int_context_controller():
     node = app.config['ros_node']
     node.get_logger().info("Received interrupting user's base context")
-    return publish_data(node.int_context_publisher)
+    return publish_data(node.int_context_publisher,2)
 
 def main(args=None):
     rclpy.init(args=args)

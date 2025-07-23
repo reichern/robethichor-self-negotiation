@@ -71,6 +71,7 @@ class InterruptionManager():
 
         # deactivate second user's data management nodes!
         self.lifecycle_manager.deactivate_lifecycle_nodes()
+        self.lifecycle_manager.switch_user_data(switch=negotiation_response.outcome == "interrupting")
         self.ethics_ready = False
 
         # processing results
