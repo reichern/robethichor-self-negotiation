@@ -174,8 +174,8 @@ start_mission() {
 }
 
 
-USER_1=(A B C)
-USER_2=(A B C)
+USER_1=(A B C D E F G H I J)
+USER_2=(A B C D E F G H I J)
 
 WAIT_TIME=10
 
@@ -245,13 +245,11 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 
-
-if [ "$GAZEBO" = true ]; then
-    # gazebo startup
-    start_gazebo
-fi
-
 if [ "$LAUNCH" = true ]; then
+    if [ "$GAZEBO" = true ]; then
+        # gazebo startup
+        start_gazebo
+    fi
     # First robot startup
     start_robot $PORT $GAZEBO
 
@@ -271,11 +269,11 @@ for U1 in "${USER_1[@]}"; do
             # Second robot configuration
             # configure_robot $R2_NAME $R2_HOST $R2_PORT $U2
 
-
+            sleep 10
             # Starts the mission for the robot
             start_mission $HOST $PORT $U1 $U2 $GAZEBO
 
-            sleep 3
+            sleep 6
 
             # Configure interrupting user and send mission request
             configure_interrupt $HOST $PORT $U2 $U1

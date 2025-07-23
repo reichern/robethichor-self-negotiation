@@ -183,7 +183,7 @@ start_mission() {
     curl -X POST http://$HOST:$PORT$SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
 }
 
-N_VALUES=(50 100) # 10 25 50 100 200 300
+N_VALUES=(100 25 50 100) # 10 25 50 100 200 300
 P_VALUES=(10 25 50 75 100)
 C=10
  
