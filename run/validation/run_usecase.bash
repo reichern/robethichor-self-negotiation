@@ -269,11 +269,16 @@ for U1 in "${USER_1[@]}"; do
             # Second robot configuration
             # configure_robot $R2_NAME $R2_HOST $R2_PORT $U2
 
-            sleep 10
+            if [ "$GAZEBO" = true ]; then
+                sleep 10
+            fi
             # Starts the mission for the robot
             start_mission $HOST $PORT $U1 $U2 $GAZEBO
 
-            sleep 6
+            sleep 3
+            if [ "$GAZEBO" = true ]; then
+                sleep 3
+            fi
 
             # Configure interrupting user and send mission request
             configure_interrupt $HOST $PORT $U2 $U1
