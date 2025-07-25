@@ -37,7 +37,8 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
         # Subscribers setup
         self.create_subscription(String, 'goal', self.start_mission_callback, 10, callback_group=self.callback_group)
-        self.create_subscription(String, 'interrupting_user/goal', self.interruption_callback, 10, callback_group=self.callback_group)
+        self.create_subscription(String, 'interrupting_user_1/goal', self.interruption_callback, 10, callback_group=self.callback_group)
+        self.create_subscription(String, 'interrupting_user_2/goal', self.second_interruption_callback, 10, callback_group=self.callback_group)
 
         # Action Client setup
         if self.gazebo:
@@ -105,11 +106,14 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
                 self.goal_handle.cancel_goal_async()
 
     	    # TODO dynamic tasks!! 
-            winner, log_message = self.interruption_manager.handle_interruption(["t1"])
+            outcome, log_message = self.interruption_manager.handle_interruption(["t1"])
 
-            if winner == "interrupting":
+            if outcome == "interrupting_1":
                 self.goal = self.interrupting_goal
             self.interrupting_goal = None
+            if outcome == "interrupting_2":
+                self.goal = self.second_interrupting_goal
+            self.second_interrupting_goal = None
 
             # log results
             if self.log_output_file:
@@ -128,6 +132,17 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
                 self.mission_running = False
                 
             self.interruption_running = False
+
+
+    def second_interruption_callback(self, msg):
+        # TODO what to do if not mission running? what to do if interruption running? 
+        if self.mission_running and self.interruption_running:
+
+            self.second_interrupting_goal = msg.data
+            self.get_logger().info(f"Received second interrupt! Interrupting goal: {self.second_interrupting_goal}")
+            self.second_interruption = True
+
+            self.interruption_manager.second_interrupting_goal = ["t1"]
 
     def send_navigate_goal(self):
         nav_msg = NavigateToPose.Goal()

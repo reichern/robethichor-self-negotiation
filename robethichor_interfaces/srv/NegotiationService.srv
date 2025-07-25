@@ -1,5 +1,7 @@
 # Request
 string[] tasks
+string user1
+string user2
 ---
 # Response
 string outcome

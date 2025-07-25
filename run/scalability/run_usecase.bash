@@ -19,10 +19,10 @@ PROFILE_LOAD_PATH="/profile"
 USER_STATUS_PATH="/status"
 SET_GOAL_PATH="/goal"
 CONTEXT_PATH="/context"
-INT_PROFILE_LOAD_PATH="/interrupting/profile"
-INT_USER_STATUS_PATH="/interrupting/status"
-INT_SET_GOAL_PATH="/interrupting/goal"
-INT_CONTEXT_PATH="/interrupting/context"
+INT_PROFILE_LOAD_PATH="/interrupting_1/profile"
+INT_USER_STATUS_PATH="/interrupting_1/status"
+INT_SET_GOAL_PATH="/interrupting_1/goal"
+INT_CONTEXT_PATH="/interrupting_1/context"
 
 ROS_WS_PATH="../../" # make the root directory as the workspace base folder
 FULL_PATH=$(pwd)

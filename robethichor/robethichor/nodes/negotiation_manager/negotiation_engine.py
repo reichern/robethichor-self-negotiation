@@ -5,25 +5,30 @@ from threading import Event
 from std_msgs.msg import String
 
 class NegotiationEngine():
-    def __init__(self, node, offer_generators, utility_functions):
+    def __init__(self, node):
         self.node = node
-        self.current_offer_generator = offer_generators[0]
-        self.current_utility_function = utility_functions[0]
-
-        self.interrupting_offer_generator = offer_generators[1]
-        self.interrupting_utility_function = utility_functions[1]
 
         # TODO set value
         self.max_rounds = 1000 
 
+    def configure(self,users,offer_generators,utility_functions):
+        self.user1 = users[0]
+        self.user2 = users[1]
+
+        self.user1_offer_generator = offer_generators[0]
+        self.user1_utility_function = utility_functions[0]
+
+        self.user2_offer_generator = offer_generators[1]
+        self.user2_utility_function = utility_functions[1]
+
     def self_negotiation(self):
         # Initialization
-        self.current_quitted = False
-        self.interrupting_quitted = False
+        self.user1_quitted = False
+        self.user2_quitted = False
         self.round_counter = 0
         self.switch = True
-        self.current_max_offer = self.current_offer_generator.get_max_offer()
-        self.interrupting_max_offer = self.interrupting_offer_generator.get_max_offer()
+        self.user1_max_offer = self.user1_offer_generator.get_max_offer()
+        self.user2_max_offer = self.user2_offer_generator.get_max_offer()
 
         # default result: no-agreement 
         # in the case of no-agreement, thecurrent user gets precedence, but it is important to log 
@@ -32,8 +37,8 @@ class NegotiationEngine():
         
 
         # start with interrupting user as sender
-        sender = "interrupting"
-        receiver = "current"
+        sender = self.user2
+        receiver = self.user1
 
         # max rounds as abort criterion 
         while self.round_counter < self.max_rounds:
@@ -49,33 +54,33 @@ class NegotiationEngine():
             # offer was rejected: switch roles (if no user has quitted yet) and keep negotiating
             elif round_result == -1:
                 if self.switch: 
-                    sender = "interrupting" if sender == "current" else "current"
-                    receiver = "interrupting" if receiver == "current" else "current"
+                    sender = self.user1 if sender == self.user2 else self.user2
+                    receiver = self.user1 if receiver == self.user2 else self.user2
             # sender has no more offers! 
             elif round_result == 0:
                 # if both users have quitted: stop negotiation
-                if self.current_quitted and self.interrupting_quitted:
+                if self.user1_quitted and self.user2_quitted:
                     break
                 # only one user has quitted: switch one final time
                 else:
                     self.switch = False
-                    sender = "interrupting" if sender == "current" else "current"
-                    receiver = "interrupting" if receiver == "current" else "current"
+                    sender = self.user1 if sender == self.user2 else self.user2
+                    receiver = self.user1 if receiver == self.user2 else self.user2
 
         rounds = self.round_counter
-        return result, rounds # results: current, interrupting, no-agreement
+        return result, rounds # results: current, interrupting_1, interrupting_2, no-agreement
 
     def negotiation_round(self, sender, receiver):
         # set offer generator, utility function and max offer according to current role assignment
-        sender_offer_generator = self.interrupting_offer_generator if sender == "interrupting" else self.current_offer_generator
-        receiver_utility_function = self.current_utility_function if receiver == "current" else self.interrupting_utility_function
-        receiver_max_offer = self.current_max_offer if receiver == "current" else self.interrupting_max_offer
+        sender_offer_generator = self.user2_offer_generator if sender == self.user2 else self.user1_offer_generator
+        receiver_utility_function = self.user1_utility_function if receiver == self.user1 else self.user2_utility_function
+        receiver_max_offer = self.user1_max_offer if receiver == self.user1 else self.user2_max_offer
 
         # if there are no more offers: set sender to quitted
         if not sender_offer_generator.has_next():
             self.node.get_logger().info(f"No more offers from {sender} user!")
-            if sender == "interrupting": self.interrupting_quitted = True
-            elif sender == "current": self.current_quitted = True
+            if sender == self.user2: self.user2_quitted = True
+            elif sender == self.user1: self.user1_quitted = True
             return 0
 
         # get next sender offer

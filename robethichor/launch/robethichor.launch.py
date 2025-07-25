@@ -54,14 +54,26 @@ def generate_launch_description():
                 package='robethichor',
                 executable='ethics_manager_node',
                 name='ethics_manager_node',
-                namespace='interrupting_user'
+                namespace='interrupting_user_1'
             ),
             context_manager_node,
             LifecycleNode(
                 package='robethichor',
                 executable='context_manager_node',
                 name='context_manager_node',
-                namespace='interrupting_user'
+                namespace='interrupting_user_1'
+            ),
+            LifecycleNode(
+                package='robethichor',
+                executable='ethics_manager_node',
+                name='ethics_manager_node',
+                namespace='interrupting_user_2'
+            ),
+            LifecycleNode(
+                package='robethichor',
+                executable='context_manager_node',
+                name='context_manager_node',
+                namespace='interrupting_user_2'
             ),
             Node(
                 package='robethichor',

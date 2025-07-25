@@ -27,8 +27,11 @@ class NegotiationManagerNode(Node):
         self.negotiating = False
         self.current_active_profile = None # {"disposition": value}
         self.current_user_status = None # {"condition": True/False}
-        self.interrupting_active_profile = None # {"disposition": value}
-        self.interrupting_user_status = None # {"condition": True/False}
+        self.interrupting_user1_active_profile = None # {"disposition": value}
+        self.interrupting_user1_status = None # {"condition": True/False}
+        self.interrupting_user2_active_profile = None # {"disposition": value}
+        self.interrupting_user2_status = None # {"condition": True/False}
+
 
 
         # Parameters
@@ -48,21 +51,25 @@ class NegotiationManagerNode(Node):
 
         # Components initialization
         self.current_offer_generator = OfferGenerator()
-        self.interrupting_offer_generator = OfferGenerator()
-        generators = [self.current_offer_generator, self.interrupting_offer_generator]
+        self.interrupting1_offer_generator = OfferGenerator()
+        self.interrupting2_offer_generator = OfferGenerator()
+        # generators = [self.current_offer_generator, self.interrupting_offer_generator]
         self.current_utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
-        self.interrupting_utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
-        utilities = [self.current_utility_function, self.interrupting_utility_function]
+        self.interrupting1_utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
+        self.interrupting2_utility_function = UtilityFunction(ethical_implications, disposition_activation, self)
+        # utilities = [self.current_utility_function, self.interrupting_utility_function]
 
         # Subscriber setup
         self.current_active_profile_subscriber = self.create_subscription(String, 'active_profile', self.current_active_profile_update_callback, 10, callback_group=self.callback_group)
-        self.interrupting_active_profile_subscriber = self.create_subscription(String, 'interrupting_user/active_profile', self.interrupting_active_profile_update_callback, 10, callback_group=self.callback_group)
-        
+        self.interrupting1_active_profile_subscriber = self.create_subscription(String, 'interrupting_user_1/active_profile', self.interrupting1_active_profile_update_callback, 10, callback_group=self.callback_group)
+        self.interrupting2_active_profile_subscriber = self.create_subscription(String, 'interrupting_user_2/active_profile', self.interrupting2_active_profile_update_callback, 10, callback_group=self.callback_group)
+
         self.data_ready_publisher = self.create_publisher(Bool, 'data_ready', 10)
 
         # Setup negotiation stuff 
         # .negotiation_publisher = self.create_publisher(String, '/negotiation_msgs', 10)
-        self.negotiation_engine = NegotiationEngine(self, generators, utilities)
+        # TODO give generators and utilities to negotiation engine
+        self.negotiation_engine = NegotiationEngine(self)
 
         # Negotiation service setup
         self.negotiation_service = self.create_service(NegotiationService, 'negotiation', self.negotiation_service_callback, callback_group=self.callback_group)
@@ -71,9 +78,8 @@ class NegotiationManagerNode(Node):
         self.current_user_status_service_client = self.create_client(UserStatusService, 'user_status_service', callback_group=self.callback_group)
         while not self.current_user_status_service_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Waiting for current_user_status_service to be available')
-        self.interrupting_user_status_service_client = self.create_client(UserStatusService, 'interrupting_user/user_status_service', callback_group=self.callback_group)
-        while not self.interrupting_user_status_service_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Waiting for interrupting_user_status_service to be available')
+        self.interrupting_user1_status_service_client = self.create_client(UserStatusService, 'interrupting_user_1/user_status_service', callback_group=self.callback_group)
+        self.interrupting_user2_status_service_client = self.create_client(UserStatusService, 'interrupting_user_2/user_status_service', callback_group=self.callback_group)
 
 
     def active_profile_update_callback(self, msg, utility_function):
@@ -88,47 +94,85 @@ class NegotiationManagerNode(Node):
         self.get_logger().info('setting ethical impacts for current user')
         self.active_profile_update_callback(msg,self.current_utility_function)
 
-    def interrupting_active_profile_update_callback(self,msg):
-        self.get_logger().info('setting ethical impacts for interrupting user')
-        self.active_profile_update_callback(msg,self.interrupting_utility_function)
+    def interrupting1_active_profile_update_callback(self,msg):
+        self.get_logger().info('setting ethical impacts for interrupting user 1')
+        self.active_profile_update_callback(msg,self.interrupting1_utility_function)
         ready = Bool()
         ready.data = True
         self.data_ready_publisher.publish(ready)
+
+    def interrupting2_active_profile_update_callback(self,msg):
+        self.get_logger().info('setting ethical impacts for interrupting user 2')
+        self.active_profile_update_callback(msg,self.interrupting2_utility_function)
+        ready = Bool()
+        ready.data = True
+        self.data_ready_publisher.publish(ready)
+
+
+    def get_user_services(self, user):
+        if user == "current":
+            return self.current_user_status_service_client, self.current_user_status_service_callback, self.current_offer_generator, self.current_utility_function
+        if user == "interrupting_1":
+            return self.interrupting_user1_status_service_client, self.interrupting_user1_status_service_callback, self.interrupting1_offer_generator, self.interrupting1_utility_function
+        if user == "interrupting_2":
+            return self.interrupting_user2_status_service_client, self.interrupting_user2_status_service_callback, self.interrupting2_offer_generator, self.interrupting2_utility_function
+
+    def get_user_status(self, user):
+        if user == "current":
+            return self.current_user_status
+        if user == "interrupting_1":
+            return self.interrupting_user1_status
+        if user == "interrupting_2":
+            return self.interrupting_user2_status
 
     def negotiation_service_callback(self, request, response):
 
         if not self.negotiating:
             self.negotiating = True
             self.current_user_status = None
-            self.get_logger().info("Starting negotiation")
+            self.interrupting_user1_status = None
+            self.interrupting_user2_status = None
+            user1 = request.user1
+            user2 = request.user2
+            self.get_logger().info(f"Starting negotiation between {user1} and {user2}")
 
-            # TODO besser schreiben
-            # Get user status
-            current_user_status_response_event = Event()
-            future = self.current_user_status_service_client.call_async(UserStatusService.Request())
-            future.add_done_callback(lambda future: self.current_user_status_service_callback(future, current_user_status_response_event))
-            current_user_status_response_event.wait(timeout=self.timeout)
-            if self.current_user_status is None:
-                self.get_logger().info("No current user status got, entering negotiation without active conditions")
-                self.current_user_status = {}
+            # Get user 1 status
+            user1_status_client, user1_status_callback, user1_generator, user1_utility = self.get_user_services(user1)
+            while not user1_status_client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info(f'Waiting for {user1} user\'s service to be available')
+            user1_status_response_event = Event()
+            future = user1_status_client.call_async(UserStatusService.Request())
+            future.add_done_callback(lambda future: user1_status_callback(future, user1_status_response_event))
+            user1_status_response_event.wait(timeout=self.timeout)
+            user1_status = self.get_user_status(user1)
+            if user1_status is None:
+                self.get_logger().info(f"No user status got for {user1}, entering negotiation without active conditions")
+                user1_status = {}
 
-            interrupting_user_status_response_event = Event()
-            future = self.interrupting_user_status_service_client.call_async(UserStatusService.Request())
-            future.add_done_callback(lambda future: self.interrupting_user_status_service_callback(future, interrupting_user_status_response_event))
-            interrupting_user_status_response_event.wait(timeout=self.timeout)
-            if self.interrupting_user_status is None:
-                self.get_logger().info("No interrupting user status got, entering negotiation without active conditions")
-                self.interrupting_user_status = {}
+            # Get user 2 status
+            user2_status_client, user2_status_callback, user2_generator, user2_utility = self.get_user_services(user2)
+            while not user2_status_client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info(f'Waiting for {user2} user\'s service to be available')
+            user2_status_response_event = Event()
+            future = user2_status_client.call_async(UserStatusService.Request())
+            future.add_done_callback(lambda future: user2_status_callback(future, user2_status_response_event))
+            user2_status_response_event.wait(timeout=self.timeout)
+            user2_status = self.get_user_status(user2)
+            if user2_status is None:
+                self.get_logger().info(f"No user status got for {user2}, entering negotiation without active conditions")
+                user2_status = {}
+
+            self.negotiation_engine.configure([user1,user2],[user1_generator,user2_generator],[user1_utility, user2_utility])
 
             # Generate offers
             tasks = request.tasks
-            self.current_offer_generator.generate_offers(self.current_user_status, tasks)
-            self.interrupting_offer_generator.generate_offers(self.interrupting_user_status, tasks)
-            self.get_logger().info(f"Offers generated: {self.current_offer_generator.get_offers()}, {self.interrupting_offer_generator.get_offers()}")
+            user1_generator.generate_offers(user1_status, tasks)
+            user2_generator.generate_offers(user2_status, tasks)
+            self.get_logger().info(f"Offers generated: {user1_generator.get_offers()}, {user2_generator.get_offers()}")
 
             # Start the negotiation engine
             outcome, rounds = self.negotiation_engine.self_negotiation()
-            response.outcome = outcome # current, interruption, no-agreement
+            response.outcome = outcome # current, interruption_1, interruption_2 no-agreement
             response.rounds = rounds
 
             self.get_logger().info(f"Negotiation completed!")
@@ -146,11 +190,18 @@ class NegotiationManagerNode(Node):
         self.current_user_status_service_client.remove_pending_request(future)
         event.set()
 
-    def interrupting_user_status_service_callback(self, future, event):
+    def interrupting_user1_status_service_callback(self, future, event):
         user_status_response = future.result()
         self.get_logger().info(f"Received user status: {user_status_response.data}")
-        self.interrupting_user_status = json.loads(user_status_response.data)
-        self.interrupting_user_status_service_client.remove_pending_request(future)
+        self.interrupting_user1_status = json.loads(user_status_response.data)
+        self.interrupting_user1_status_service_client.remove_pending_request(future)
+        event.set()
+
+    def interrupting_user2_status_service_callback(self, future, event):
+        user_status_response = future.result()
+        self.get_logger().info(f"Received user status: {user_status_response.data}")
+        self.interrupting_user2_status = json.loads(user_status_response.data)
+        self.interrupting_user2_status_service_client.remove_pending_request(future)
         event.set()
 
 def main(args=None):
