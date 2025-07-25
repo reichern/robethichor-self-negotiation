@@ -29,7 +29,7 @@ class InterruptionManager():
         self.lifecycle_manager = LifecycleManager(node)
 
 
-    def handle_interruption(self, tasks):
+    def handle_interruption(self, goal1, goal2):
         self.start_preparation_time = time.perf_counter() 
 
         # if robot does not have necessary capabilities, no negotiation is executed
@@ -57,10 +57,11 @@ class InterruptionManager():
         self.end_preparation_time = time.perf_counter() 
         self.start_negotiation_time = time.perf_counter() 
 
-        # TODO dynamic tasks
+        # TODO dynamic goals
         # Negotiation request:
         negotiation_request = NegotiationService.Request()
-        negotiation_request.tasks = tasks
+        negotiation_request.current_goal = goal1
+        negotiation_request.interrupting_goal = goal2
         negotiation_response = self.negotiation_client.call(negotiation_request)
 
         # processing time

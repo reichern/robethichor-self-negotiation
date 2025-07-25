@@ -104,8 +104,9 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
                 # stop current navigation 
                 self.goal_handle.cancel_goal_async()
 
-    	    # TODO dynamic tasks!! 
-            winner, log_message = self.interruption_manager.handle_interruption(["t1"])
+    	    # TODO dynamic goals!! 
+            # should add self.goal, self.interrupting_goal instead of t1,t1
+            winner, log_message = self.interruption_manager.handle_interruption("t1","t1")
 
             if winner == "interrupting":
                 self.goal = self.interrupting_goal

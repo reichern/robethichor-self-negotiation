@@ -1,5 +1,6 @@
 # Request
-string[] tasks
+string current_goal
+string interrupting_goal
 ---
 # Response
 string outcome

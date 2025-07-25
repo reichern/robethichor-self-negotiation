@@ -80,9 +80,9 @@ class NegotiationManagerNode(Node):
         self.get_logger().info(f"Received new active profile: {msg.data}")
         self.active_profile = json.loads(msg.data)
 
-        # Calculate task ethical impacts and provide them to the utility function using the ethical impact analyzer
-        task_ethical_impacts = self.ethical_impact_analyzer.compute_task_ethical_impacts(self.active_profile)
-        utility_function.set_task_ethical_impacts(task_ethical_impacts)
+        # Calculate goal ethical impacts and provide them to the utility function using the ethical impact analyzer
+        goal_ethical_impacts = self.ethical_impact_analyzer.compute_goal_ethical_impacts(self.active_profile)
+        utility_function.set_goal_ethical_impacts(goal_ethical_impacts)
 
     def current_active_profile_update_callback(self,msg):
         self.get_logger().info('setting ethical impacts for current user')
@@ -121,9 +121,9 @@ class NegotiationManagerNode(Node):
                 self.interrupting_user_status = {}
 
             # Generate offers
-            tasks = request.tasks
-            self.current_offer_generator.generate_offers(self.current_user_status, tasks)
-            self.interrupting_offer_generator.generate_offers(self.interrupting_user_status, tasks)
+            current_goal, interrupting_goal = request.current_goal, request.interrupting_goal
+            self.current_offer_generator.generate_offers(self.current_user_status, current_goal)
+            self.interrupting_offer_generator.generate_offers(self.interrupting_user_status, interrupting_goal)
             self.get_logger().info(f"Offers generated: {self.current_offer_generator.get_offers()}, {self.interrupting_offer_generator.get_offers()}")
 
             # Start the negotiation engine
