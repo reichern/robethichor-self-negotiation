@@ -142,6 +142,7 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             self.get_logger().info(f"Received second interrupt! Interrupting goal: {self.second_interrupting_goal}")
             self.second_interruption = True
 
+            self.interruption_manager.second_interrupting_user = self.second_interrupting_goal[-4] 
             self.interruption_manager.second_interrupting_goal = ["t1"]
 
     def send_navigate_goal(self):

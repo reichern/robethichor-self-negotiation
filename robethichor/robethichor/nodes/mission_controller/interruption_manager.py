@@ -30,6 +30,7 @@ class InterruptionManager():
         self.lifecycle_manager_2 = LifecycleManager(node,"/interrupting_user_2")
 
         self.second_interrupting_goal = None
+        self.second_interrupting_user = ""
 
 
     def handle_interruption(self, tasks):
@@ -110,9 +111,10 @@ class InterruptionManager():
             if "Scalability test!" in self.node.goal:
                 log_message = log_message[:-1] + ". Goal: " + self.node.goal + "\n"
             else:
-                users = "Users: " + self.node.goal[-4] + self.node.interrupting_goal[-4] + ". "
+                users = "Users: " + self.node.goal[-4] + self.node.interrupting_goal[-4] + self.second_interrupting_user + ". "
                 log_message = users + log_message
             self.second_interrupting_goal = None
+            self.second_interrupting_user = ""
             return outcome, log_message
                 
     def negotiation(self,tasks,user1,user2):
