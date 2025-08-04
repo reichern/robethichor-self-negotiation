@@ -3,8 +3,8 @@
 <package format="3">
   <name>robethichor</name>
   <version>0.0.1</version>
-  <description>RobEthiChor ROS2 implementation</description>
-  <maintainer email="gianluca.filippone@gssi.it">Gianluca Filippone</maintainer>
+  <description>RobEthiChor ROS2: Interruption Scenario Expansion</description>
+  <maintainer email="reichern@uni-bremen.de">Nele Reichert</maintainer>
   <license>Apache-2.0</license>
 
   <depend>rclpy</depend>
@@ -16,19 +16,15 @@
   <depend>ros_gz_sim</depend>
   <depend>rviz_common</depend>
   <depend>rviz_default_plugins</depend>
-  <!--depend>moveit_planners_chomp</depend-->
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>joint_state_publisher_gui</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
-  <!--exec_depend>controller_manager</exec_depend-->
   <exec_depend>rviz2</exec_depend>
   <exec_depend>xacro</exec_depend>
-  <!--exec_depend>tiago_description</exec_depend-->
   
   <exec_depend>python3-flask</exec_depend>
   <exec_depend>robethichor_interfaces</exec_depend>
-  <!--exec_depend>pal_navigation_cfg_utils</exec_depend-->
 
   <export>
     <build_type>ament_python</build_type>

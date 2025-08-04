@@ -133,6 +133,3 @@ Users: EG. Gazebo: True. Negotiation rounds: 3. Preparation time: 3.007 seconds.
 Users: EH. Gazebo: True. Negotiation rounds: 6. Preparation time: 3.017 seconds. Negotiation time: 0.027 seconds. Result: no-agreement
 Users: EI. Gazebo: True. Negotiation rounds: 6. Preparation time: 3.014 seconds. Negotiation time: 0.025 seconds. Result: no-agreement
 Users: EJ. Gazebo: True. Negotiation rounds: 5. Preparation time: 3.032 seconds. Negotiation time: 0.028 seconds. Result: interrupting
-Users: AB. Gazebo: True. Negotiation rounds: 4. Preparation time: 3.012 seconds. Negotiation time: 0.027 seconds. Result: current
-Users: AB. Gazebo: True. Negotiation rounds: 4. Preparation time: 3.007 seconds. Negotiation time: 0.034 seconds. Result: current
-Users: AB. Gazebo: True. Negotiation rounds: 4. Preparation time: 3.010 seconds. Negotiation time: 0.018 seconds. Result: current

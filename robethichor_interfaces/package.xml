@@ -3,8 +3,8 @@
 <package format="3">
   <name>robethichor_interfaces</name>
   <version>0.0.1</version>
-  <description>RobEthiChor Interfaces implementation</description>
-  <maintainer email="gianluca.filippone@gssi.it">Gianluca Filippone</maintainer>
+  <description>RobEthiChor Interfaces implementation: Interruption Scenario Expansion</description>
+  <maintainer email="reichern@uni-bremen.de">Nele Reichert</maintainer>
   <license>Apache-2.0</license>
 
   <depend>std_msgs</depend>

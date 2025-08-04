@@ -61,7 +61,6 @@ class NegotiationManagerNode(Node):
         self.data_ready_publisher = self.create_publisher(Bool, 'data_ready', 10)
 
         # Setup negotiation stuff 
-        # .negotiation_publisher = self.create_publisher(String, '/negotiation_msgs', 10)
         self.negotiation_engine = NegotiationEngine(self, generators, utilities)
 
         # Negotiation service setup
@@ -102,7 +101,6 @@ class NegotiationManagerNode(Node):
             self.current_user_status = None
             self.get_logger().info("Starting negotiation")
 
-            # TODO besser schreiben
             # Get user status
             current_user_status_response_event = Event()
             future = self.current_user_status_service_client.call_async(UserStatusService.Request())

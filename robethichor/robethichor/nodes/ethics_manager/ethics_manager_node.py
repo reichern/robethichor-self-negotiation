@@ -74,7 +74,9 @@ class EthicsManagerNode(Node):
         # destroy publisher
         self.destroy_publisher(self.active_profile_publisher)
 
-        # TODO executor und planner zerstören? 
+        # destroy executor and planner 
+        self.executor_ = None 
+        self.planner = None 
 
         self.get_logger().debug('on_cleanup() is called.')
         return super().on_cleanup(state)
@@ -85,11 +87,6 @@ class EthicsManagerNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-
-    # node = EthicsManagerNode()
-    # rclpy.spin(node)
-    # node.destroy_node()
-    # rclpy.shutdown()
 
     executor = rclpy.executors.SingleThreadedExecutor()
     node = EthicsManagerNode()
