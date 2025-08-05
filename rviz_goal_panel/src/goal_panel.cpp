@@ -79,13 +79,10 @@ void GoalPanel::onInitialize()
 // and then we copy its data into the widget's label
 void GoalPanel::goalCallback(const std_msgs::msg::String& msg)
 {
-  if (msg.data == "Reset robot..."){
-    goal_label_->setText(QString(msg.data.c_str()));
-    interrupting_goal_label_->setText(" ");
-    winner_label_->setText(" ");
-  } else {
-    goal_label_->setText("Current Goal:\n" + QString(msg.data.c_str()));
-  }
+  goal_label_->setText(QString(msg.data.c_str()));
+  interrupting_goal_label_->setText(" ");
+  winner_label_->setText(" ");
+  goal_label_->setText("Current Goal:\n" + QString(msg.data.c_str()));
 }
 
 // When the subscriber gets a message, this callback is triggered,
