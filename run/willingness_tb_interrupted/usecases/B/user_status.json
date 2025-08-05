@@ -2,12 +2,12 @@
     "pregnant": false,
     "accompanied by a baby": false,
     "accompanied by small child": false,
-    "elderly": false,
-    "wheelchair user": true,
-    "in urgency": true,
+    "elderly": true,
+    "wheelchair user": false,
+    "in urgency": false,
     "restricted mobility": false,
-    "visual impairment": false,
+    "visual impairment": true,
     "hearing impairment": false,
     "crowd anxiety": false,
-    "end of task": true
+    "end of goal": true
 }
