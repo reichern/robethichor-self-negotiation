@@ -3,7 +3,7 @@ import time
 from rclpy.callback_groups import ReentrantCallbackGroup
 from std_msgs.msg import String, Bool
 
-from robethichor_interfaces.srv import NegotiationService, InterruptionService, UserStatusService
+from robethichor_interfaces.srv import NegotiationService, UserStatusService
 from robethichor.nodes.mission_controller.lifecycle_manager import LifecycleManager
 
 class InterruptionManager():
@@ -29,7 +29,7 @@ class InterruptionManager():
         self.lifecycle_manager = LifecycleManager(node)
 
 
-    def handle_interruption(self, tasks):
+    def handle_interruption(self, goal1, goal2):
         self.start_preparation_time = time.perf_counter() 
 
         # if robot does not have necessary capabilities, no negotiation is executed
@@ -57,10 +57,11 @@ class InterruptionManager():
         self.end_preparation_time = time.perf_counter() 
         self.start_negotiation_time = time.perf_counter() 
 
-        # TODO dynamic tasks
+        # TODO dynamic goals
         # Negotiation request:
         negotiation_request = NegotiationService.Request()
-        negotiation_request.tasks = tasks
+        negotiation_request.current_goal = goal1
+        negotiation_request.interrupting_goal = goal2
         negotiation_response = self.negotiation_client.call(negotiation_request)
 
         # processing time
@@ -123,17 +124,10 @@ class InterruptionManager():
         self.negotiation_result_publisher.publish(rviz_msg)
 
     def interrupting_nodes_available(self):
-        # self.interrupting_user_status_service_client = self.create_client(UserStatusService, 'interrupting_user/user_status_service', callback_group=self.callback_group)
-        # while not self.interrupting_user_status_service_client.wait_for_service(timeout_sec=1.0):
-        #     self.node.get_logger().info('Waiting for interrupting_user_status_service to be available')
         
         # Wait for second user's active profile
-        # user_status = {}        
         for _ in range(0,10,1):
             self.node.get_logger().info(f"Waiting for second user's data.")
-            # if user_status == {}:
-            #     result = self.interrupting_user_status_service_client.call(UserStatusService.Request())
-            #     user_status = json.loads(result.data)
             if self.ethics_ready == True: # user_status == {} or 
                 break
             time.sleep(1)
@@ -150,14 +144,3 @@ class InterruptionManager():
         if future.data == True:
             self.node.get_logger().info(f"Received signal that interrupting users data is ready!")
             self.ethics_ready = True
-        
-
-# def main(args=None):
-#     rclpy.init(args=args)
-#     node = InterruptionManagerNode()
-#     executor = MultiThreadedExecutor()
-#     rclpy.spin(node, executor)
-#     rclpy.shutdown()
-# 
-# if __name__ == '__main__':
-#     main()

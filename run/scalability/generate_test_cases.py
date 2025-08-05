@@ -1,4 +1,4 @@
-# added back in from robethichor
+# source: https://github.com/RoboChor/robethichor-ethics-based-negotiation
 import json
 import random
 import os

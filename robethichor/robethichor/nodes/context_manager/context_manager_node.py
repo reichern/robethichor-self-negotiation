@@ -69,7 +69,10 @@ class ContextManagerNode(Node):
         # destroy publisher
         self.context_model = dict()
         self.user_status = dict()
-        # TODO destroy analyzer, monitor? 
+        # destroy analyzer, monitor
+        self.analyzer = None
+        self.monitor = None
+
 
         return super().on_cleanup(state)
 
@@ -89,11 +92,6 @@ class ContextManagerNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-
-    # node = ContextManagerNode()
-    # rclpy.spin(node)
-    # node.destroy_node()
-    # rclpy.shutdown()
 
     executor = rclpy.executors.SingleThreadedExecutor()
     node = ContextManagerNode()

@@ -12,7 +12,6 @@ from rclpy.action import ActionClient
 from nav2_msgs.action import NavigateToPose
 from geometry_msgs.msg import PoseStamped
 
-from robethichor_interfaces.srv import InterruptionService
 from robethichor.nodes.mission_controller.interruption_manager import InterruptionManager
 
 class MissionControllerNode(Node): # Mocked version for testing purposes: must be refined/replaced for actual usage
@@ -54,9 +53,8 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
             self.get_logger().info(f"Starting mission, goal: [{self.goal}]")
 
-            # REFINEMENT REQUIRED: a planner should be used to generate the list of tasks, and their implementation must be provided
+            # TODO REFINEMENT REQUIRED: a planner should be used to generate the list of tasks, and their implementation must be provided
 
-            # TODO: do something!!! 
             # https://github.com/ros2/demos/blob/humble/action_tutorials/action_tutorials_py/action_tutorials_py/fibonacci_action_client.py
             if self.gazebo:
                 nav_msg = NavigateToPose.Goal()
@@ -78,22 +76,19 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
 
         self.get_logger().info('Goal accepted :)')
 
-        # TODO start lifecycle nodes ? 
+        # TODO activate currently active user's lifecycle nodes here! 
 
         self._get_result_future = self.goal_handle.get_result_async()
 
         self._get_result_future.add_done_callback(self.get_navigation_result_callback)
 
     def get_navigation_result_callback(self, future):
-        # TODO read if navigation was successful? 
         result = future.result().result
         self.get_logger().info('Result: {0}'.format(result))
         self.mission_running = False
-        # TODO shutdown lifecycle nodes ? 
-
+        # TODO deactivate currently active user's lifecycle nodes
 
     def interruption_callback(self, msg):
-        # TODO what to do if not mission running? what to do if interruption running? 
         if self.mission_running and not self.interruption_running:
             self.interruption_running = True
 
@@ -104,8 +99,8 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
                 # stop current navigation 
                 self.goal_handle.cancel_goal_async()
 
-    	    # TODO dynamic tasks!! 
-            winner, log_message = self.interruption_manager.handle_interruption(["t1"])
+    	    # TODO dynamic goals!! be self.goal, self.interrupting_goal instead of t1,t2
+            winner, log_message = self.interruption_manager.handle_interruption("t1","t2")
 
             if winner == "interrupting":
                 self.goal = self.interrupting_goal
