@@ -149,7 +149,7 @@ class InterruptionManager():
         self.end_preparation_time_2 = time.perf_counter() 
         self.ethics_ready = False 
         
-        # Start negotiation
+        # Start negotiation between current user and second interrupting user 
         self.node.get_logger().info("Second interruption initialised, negotiation between current user and second interrupting user can be started.")
 
         negotiation_response, negotiation_time_2 = self.negotiation(goal1, self.second_interrupting_goal,"current","interrupting_2")
@@ -161,6 +161,7 @@ class InterruptionManager():
             self.publish_result(message, error=True)
             return result_AB, message
 
+        # process results
         result_AC = negotiation_response.outcome
         negotiation_time_3 = 0
         if result_AB == "no-agreement":
@@ -172,6 +173,7 @@ class InterruptionManager():
         else:
             self.node.get_logger().info("Need to start negotiation between interrupting users!")
 
+            # start negotiation between first and second interrupting users
             negotiation_response, negotiation_time_3 = self.negotiation(goal2, self.second_interrupting_goal,"interrupting_1","interrupting_2")
 
             self.node.get_logger().info(f"Preparation time: -- Negotiation time: {negotiation_time_3:.3f} seconds")
@@ -180,8 +182,8 @@ class InterruptionManager():
                 self.publish_result(message, error=True)
                 return "no-agreement", message
 
+            # process results
             result_BC = negotiation_response.outcome
-
             if result_AB == "interrupting_1" and result_AC == "interrupting_2":
                 result = result_BC
             elif result_AB == "interrupting_1" and result_AC == "current":
@@ -191,6 +193,7 @@ class InterruptionManager():
                 if result_BC == "interrupting_2": result =  "interrupting_2"
                 else: result = "no-agreement"
 
+        # deactivate second interrupting users lifecycle nodes
         self.lifecycle_manager_2.deactivate_lifecycle_nodes()
         self.lifecycle_manager_2.switch_user_data(switch=result == "interrupting_2")
         return result, preparation_time_2, negotiation_time_2, negotiation_time_3

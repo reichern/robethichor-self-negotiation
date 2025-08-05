@@ -32,8 +32,6 @@ class NegotiationManagerNode(Node):
         self.interrupting_user2_active_profile = None # {"disposition": value}
         self.interrupting_user2_status = None # {"condition": True/False}
 
-
-
         # Parameters
         self.declare_parameter('ethical_implication_file', '.')
         ethical_implication_filename = self.get_parameter('ethical_implication_file').get_parameter_value().string_value
@@ -80,25 +78,22 @@ class NegotiationManagerNode(Node):
         self.interrupting_user2_status_service_client = self.create_client(UserStatusService, 'interrupting_user_2/user_status_service', callback_group=self.callback_group)
 
 
+    # dynamically update active profile
     def active_profile_update_callback(self, msg, utility_function):
         self.get_logger().info(f"Received new active profile: {msg.data}")
         self.active_profile = json.loads(msg.data)
-
         # Calculate goal ethical impacts and provide them to the utility function using the ethical impact analyzer
         goal_ethical_impacts = self.ethical_impact_analyzer.compute_goal_ethical_impacts(self.active_profile)
         utility_function.set_goal_ethical_impacts(goal_ethical_impacts)
-
     def current_active_profile_update_callback(self,msg):
         self.get_logger().info('setting ethical impacts for current user')
         self.active_profile_update_callback(msg,self.current_utility_function)
-
     def interrupting1_active_profile_update_callback(self,msg):
         self.get_logger().info('setting ethical impacts for interrupting user 1')
         self.active_profile_update_callback(msg,self.interrupting1_utility_function)
         ready = Bool()
         ready.data = True
         self.data_ready_publisher.publish(ready)
-
     def interrupting2_active_profile_update_callback(self,msg):
         self.get_logger().info('setting ethical impacts for interrupting user 2')
         self.active_profile_update_callback(msg,self.interrupting2_utility_function)
@@ -107,6 +102,7 @@ class NegotiationManagerNode(Node):
         self.data_ready_publisher.publish(ready)
 
 
+    # dynamically get user services and status
     def get_user_services(self, user):
         if user == "current":
             return self.current_user_status_service_client, self.current_user_status_service_callback, self.current_offer_generator, self.current_utility_function
@@ -114,7 +110,6 @@ class NegotiationManagerNode(Node):
             return self.interrupting_user1_status_service_client, self.interrupting_user1_status_service_callback, self.interrupting1_offer_generator, self.interrupting1_utility_function
         if user == "interrupting_2":
             return self.interrupting_user2_status_service_client, self.interrupting_user2_status_service_callback, self.interrupting2_offer_generator, self.interrupting2_utility_function
-
     def get_user_status(self, user):
         if user == "current":
             return self.current_user_status
@@ -181,20 +176,19 @@ class NegotiationManagerNode(Node):
 
         return response        
 
+    # dynamically update user status
     def current_user_status_service_callback(self, future, event):
         user_status_response = future.result()
         self.get_logger().info(f"Received user status: {user_status_response.data}")
         self.current_user_status = json.loads(user_status_response.data)
         self.current_user_status_service_client.remove_pending_request(future)
         event.set()
-
     def interrupting_user1_status_service_callback(self, future, event):
         user_status_response = future.result()
         self.get_logger().info(f"Received user status: {user_status_response.data}")
         self.interrupting_user1_status = json.loads(user_status_response.data)
         self.interrupting_user1_status_service_client.remove_pending_request(future)
         event.set()
-
     def interrupting_user2_status_service_callback(self, future, event):
         user_status_response = future.result()
         self.get_logger().info(f"Received user status: {user_status_response.data}")
