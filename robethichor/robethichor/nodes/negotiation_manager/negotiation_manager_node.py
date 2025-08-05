@@ -67,8 +67,6 @@ class NegotiationManagerNode(Node):
         self.data_ready_publisher = self.create_publisher(Bool, 'data_ready', 10)
 
         # Setup negotiation stuff 
-        # .negotiation_publisher = self.create_publisher(String, '/negotiation_msgs', 10)
-        # TODO give generators and utilities to negotiation engine
         self.negotiation_engine = NegotiationEngine(self)
 
         # Negotiation service setup
@@ -86,9 +84,9 @@ class NegotiationManagerNode(Node):
         self.get_logger().info(f"Received new active profile: {msg.data}")
         self.active_profile = json.loads(msg.data)
 
-        # Calculate task ethical impacts and provide them to the utility function using the ethical impact analyzer
-        task_ethical_impacts = self.ethical_impact_analyzer.compute_task_ethical_impacts(self.active_profile)
-        utility_function.set_task_ethical_impacts(task_ethical_impacts)
+        # Calculate goal ethical impacts and provide them to the utility function using the ethical impact analyzer
+        goal_ethical_impacts = self.ethical_impact_analyzer.compute_goal_ethical_impacts(self.active_profile)
+        utility_function.set_goal_ethical_impacts(goal_ethical_impacts)
 
     def current_active_profile_update_callback(self,msg):
         self.get_logger().info('setting ethical impacts for current user')
@@ -165,9 +163,9 @@ class NegotiationManagerNode(Node):
             self.negotiation_engine.configure([user1,user2],[user1_generator,user2_generator],[user1_utility, user2_utility])
 
             # Generate offers
-            tasks = request.tasks
-            user1_generator.generate_offers(user1_status, tasks)
-            user2_generator.generate_offers(user2_status, tasks)
+            goal1, goal2 = request.current_goal, request.interrupting_goal
+            user1_generator.generate_offers(user1_status, goal1)
+            user2_generator.generate_offers(user2_status, goal2)
             self.get_logger().info(f"Offers generated: {user1_generator.get_offers()}, {user2_generator.get_offers()}")
 
             # Start the negotiation engine

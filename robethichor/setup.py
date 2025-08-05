@@ -16,9 +16,9 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='Gianluca Filippone',
-    maintainer_email='gianluca.filippone@gssi.it',
-    description='RobEthiChor ROS implementation',
+    maintainer='Nele Reichert',
+    maintainer_email='reichern@uni-bremen.de',
+    description='RobEthiChor ROS2: Interruption Scenario Expansion',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={

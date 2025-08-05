@@ -65,6 +65,7 @@ class LifecycleManager():
 
     def switch_user_data(self,switch=False):
         self.node.get_logger().info(f"lifecycle manager: switching user data: {switch}")
+        # TODO comment out: when evaluating; comment in: when actually running! 
         # if switch:
         #     self.publish_data(self.user_context_pub,self.interrupt_context)
         #     self.publish_data(self.user_profile_pub,self.interrupt_profile)
@@ -78,4 +79,3 @@ class LifecycleManager():
         request = ChangeState.Request()
         request.transition = Transition(label=transition)
         future = change_state.call_async(request)
-        # rclpy.spin_until_future_complete(self, future)
