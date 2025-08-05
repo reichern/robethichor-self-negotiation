@@ -138,7 +138,7 @@ class MissionControllerNode(Node): # Mocked version for testing purposes: must b
             self.second_interruption = True
 
             self.interruption_manager.second_interrupting_user = self.second_interrupting_goal[-4] 
-            self.interruption_manager.second_interrupting_goal = ["t1"]
+            self.interruption_manager.second_interrupting_goal = "t2"
 
     def send_navigate_goal(self):
         nav_msg = NavigateToPose.Goal()

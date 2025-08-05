@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# from repo: https://github.com/RoboChor/robethichor-ethics-based-negotiation
+# adapted from repo: https://github.com/RoboChor/robethichor-ethics-based-negotiation
 
-# Run this file as: ./run_usecase.bash [--force-config <N> <P>] [--wait <time>] [--names <robot1_name> <robot2_name>] [--hosts <host1> <host2>] [--ports <port1> <port2>] [--launch <true/false>]
-# Example: ./run_usecase.bash --force-config "A B C D E F G H I J" "A B C D E F G H I J" --wait 10 --names "robassistant_1" "robassistant_2" --hosts "localhost" "localhost" --ports 5000 5001 --launch true
+# Run this file as: ./run_usecase.bash [--force-config <N> <P>] [--wait <time>] [--host <host>] [--port <port>] [--launch <true/false>]
+# Example: ./run_usecase.bash --force-config "A B C D E F G H I J" "A B C D E F G H I J" --wait 10 --host "localhost" --port 5000 --launch true
 
 # CONFIGURATION
 LOG_FILE="results/results.log"
@@ -44,7 +44,6 @@ start_robot() {
 
     # launch the ros environment
     LAUNCH_COMMAND="ros2 launch robethichor robethichor.launch.py port:=$PORT ethical_implication_file:=$FULL_PATH/$BASE_FOLDER$ETHICAL_IMPLICATIONS_FILENAME disposition_activation_file:=$FULL_PATH/$BASE_FOLDER$DISPOSITION_ACTIVATION_FILENAME log_output_file:=$FULL_PATH/$LOG_FILE gazebo:=$GAZEBO"
-    # echo "Launching command: $LAUNCH_COMMAND"
     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
     sleep 3
 }
@@ -55,7 +54,6 @@ start_gazebo(){
 
     # launch gazebo
     LAUNCH_GAZEBO_COMMAND="ros2 launch robethichor gazebo.launch.py"
-    # echo "Launching command: $LAUNCH_GAZEBO_COMMAND"
     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_GAZEBO_COMMAND; exec bash"
     sleep 5
     ros2 topic pub --once /custom_text_marker visualization_msgs/msg/Marker "{'header': {'stamp': 'now','frame_id': 'map'},'id': 0,'type': 9,'action': 0,'pose': {'position': {'x': 5,'y':1, 'z':0},'orientation': {'x': 0, 'y':0, 'z':0, 'w':1}},'scale': {'x': 1, 'y':1, 'z':1},'color': {'r':0.0, 'g':0.0, 'b':0.0, 'a':1.0},'lifetime': {'sec':0},'text': '101'}"
@@ -89,14 +87,9 @@ configure_robot() {
     echo "Uploading user status"
     curl -X POST $CONNECTOR_BASEURL$USER_STATUS_PATH -H "Content-Type: application/json" -d "$USER_STATUS"
 
-    # echo "Setting goal"
-    # curl -X POST $CONNECTOR_BASEURL$SET_GOAL_PATH -H "Content-Type: application/json" -d "$GOAL"
-
     # Publish base context (profile should be selected)
     echo "Uploading base context"
     curl -X POST $CONNECTOR_BASEURL$CONTEXT_PATH -H "Content-Type: application/json" -d "$CONTEXT"
-    # echo "Publishing base context"
-    # ros2 topic pub --once /current_context std_msgs/msg/String "{data: '$CONTEXT'}"
 
     echo -e "Configuration of robot complete for user $USER_LABEL\n"
 }
@@ -110,15 +103,6 @@ configure_interrupt() {
 
     echo "------ Configuring interrupt $INT for  $USER_LABEL! ------"
 
-    # launch nodes for interruption
-    # echo "launch interupting nodes? $FIRST"
-    # if [ "$FIRST" = true ]; then
-    #     LAUNCH_COMMAND="ros2 launch robethichor robethichor_interruption.launch.py ns:=interrupting_user"
-    #     echo "Launching command: $LAUNCH_COMMAND"
-    #     gnome-terminal -- bash -c ". $INSTALL_PATH; $LAUNCH_COMMAND; exec bash"
-    #     sleep 3
-    #     FIRST=false
-    # fi
 
     # JSON file read
     ETHIC_PROFILES=$(cat $BASE_FOLDER$USER_LABEL"/"$ETHIC_PROFILES_FILE)
@@ -163,14 +147,7 @@ configure_interrupt() {
     echo "Uploading base context"
     curl -X POST $CONNECTOR_BASEURL$INT_CONTEXT_PATH -H "Content-Type: application/json" -d "$CONTEXT"
 
-    # echo "Publishing base context"
-    # ros2 topic pub --once /interrupting_user/current_context std_msgs/msg/String "{data: '$CONTEXT'}"
-
     echo -e "Configuration of interrupting user $USER_LABEL complete\n"
-
-    # send interrupt 
-    # echo "Sending interrupt signal"
-    # ros2 topic pub --once /interrupt std_msgs/msg/Bool "{data: True}"
 
 }
 
@@ -197,14 +174,9 @@ WAIT_TIME=10
 
 GAZEBO=FALSE
 
-# R1_NAME="robassistant_1"
-# R2_NAME="robassistant_2"
-
 HOST="localhost"
-# R2_HOST="localhost"
 
 PORT=5000
-# R2_PORT=5001
 
 LAUNCH=false
 
@@ -227,27 +199,16 @@ while [[ "$#" -gt 0 ]]; do
       GAZEBO=$1
       shift
       ;;
-    # --names)
-    #   shift
-    #   R1_NAME=$1
-    #   shift
-    #   R2_NAME=$1
-    #   shift
-    #   ;;
-    # --hosts)
-    #   shift
-    #   R1_HOST=$1
-    #   shift
-    #   R2_HOST=$1
-    #   shift
-    #   ;;
-    # --ports)
-    #   shift
-    #   R1_PORT=$1
-    #   shift
-    #   R2_PORT=$1
-    #   shift
-    #   ;;
+    --host)
+      shift
+      HOST=$1
+      shift
+      ;;
+    --port)
+      shift
+      PORT=$1
+      shift
+      ;;
     --launch)
       shift
       LAUNCH=$1
@@ -269,8 +230,6 @@ if [ "$LAUNCH" = true ]; then
     # First robot startup
     start_robot $PORT $GAZEBO
 
-    # Second robot startup
-    # start_robot $R2_NAME $R2_PORT
 fi
 
 
@@ -283,8 +242,6 @@ for U1 in "${USER_1[@]}"; do
             if [ "$U1" != "$U2" ] && [ "$U1" != "$U3" ] && [ "$U2" != "$U3" ]; then
                 echo "------ Running simulation $U1 interrupted by $U2 and $U3------"
 
-                # Second robot configuration
-                # configure_robot $R2_NAME $R2_HOST $R2_PORT $U2
 
                 if [ "$GAZEBO" = true ]; then
                     sleep 10
@@ -299,8 +256,6 @@ for U1 in "${USER_1[@]}"; do
 
                 # Configure interrupting user and send mission request
                 configure_interrupt $HOST $PORT $U2 1
-                # TODO start mission for interrupting user (has different path!! )
-                # start_mission $R1_NAME $R1_HOST $R1_PORT $U2
 
                 # sleep 1
 
@@ -312,7 +267,6 @@ for U1 in "${USER_1[@]}"; do
 
                 if [ "$GAZEBO" = true ]; then
                   echo "Reset robot to original position"
-                  # ros2 topic pub --once /goal std_msgs/msg/String '{data: "Reset robot..."}'
                   ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "pose: {header: {frame_id: map}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation:{x: 0.0, y: 0.0, z: 0, w: 1.0000000}}}"
                   echo "waiting for robot to reach position ... "
                 fi

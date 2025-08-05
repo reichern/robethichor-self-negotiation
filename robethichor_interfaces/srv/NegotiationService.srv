@@ -1,6 +1,6 @@
 # Request
-string current_goal
-string interrupting_goal
+string goal1
+string goal2
 string user1
 string user2
 ---

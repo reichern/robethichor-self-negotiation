@@ -163,7 +163,7 @@ class NegotiationManagerNode(Node):
             self.negotiation_engine.configure([user1,user2],[user1_generator,user2_generator],[user1_utility, user2_utility])
 
             # Generate offers
-            goal1, goal2 = request.current_goal, request.interrupting_goal
+            goal1, goal2 = request.goal1, request.goal2
             user1_generator.generate_offers(user1_status, goal1)
             user2_generator.generate_offers(user2_status, goal2)
             self.get_logger().info(f"Offers generated: {user1_generator.get_offers()}, {user2_generator.get_offers()}")

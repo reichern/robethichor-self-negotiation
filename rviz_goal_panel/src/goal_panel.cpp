@@ -46,12 +46,15 @@ GoalPanel::GoalPanel(QWidget * parent) : Panel(parent)
   const auto layout = new QVBoxLayout(this);
   goal_label_ = new QLabel("No current Goal.");
   goal_label_->setStyleSheet("font: 20pt;");  
-  interrupting_goal_label_ = new QLabel("");
-  interrupting_goal_label_->setStyleSheet("font: 20pt;");  
+  interrupting1_goal_label_ = new QLabel("");
+  interrupting1_goal_label_->setStyleSheet("font: 20pt;");  
+  interrupting2_goal_label_ = new QLabel("");
+  interrupting2_goal_label_->setStyleSheet("font: 20pt;");  
   winner_label_ = new QLabel("");
   winner_label_->setStyleSheet("font: 20pt;");  
   layout->addWidget(goal_label_);
-  layout->addWidget(interrupting_goal_label_);
+  layout->addWidget(interrupting1_goal_label_);
+  layout->addWidget(interrupting2_goal_label_);
   layout->addWidget(winner_label_);
 }
 
@@ -68,8 +71,10 @@ void GoalPanel::onInitialize()
   rclcpp::Node::SharedPtr node = node_ptr_->get_raw_node();
   goal_subscription_ = node->create_subscription<std_msgs::msg::String>(
       "/goal", 10, std::bind(&GoalPanel::goalCallback, this, std::placeholders::_1));
-  interrupting_goal_subscription_ = node->create_subscription<std_msgs::msg::String>(
-      "/interrupting_user/goal", 10, std::bind(&GoalPanel::interruptingGoalCallback, this, std::placeholders::_1));
+  interrupting1_goal_subscription_ = node->create_subscription<std_msgs::msg::String>(
+      "/interrupting_user_1/goal", 10, std::bind(&GoalPanel::interrupting1GoalCallback, this, std::placeholders::_1));
+  interrupting2_goal_subscription_ = node->create_subscription<std_msgs::msg::String>(
+      "/interrupting_user_2/goal", 10, std::bind(&GoalPanel::interrupting2GoalCallback, this, std::placeholders::_1));
   winner_subscription_ = node->create_subscription<std_msgs::msg::String>(
       "/negotiation_result", 10, std::bind(&GoalPanel::winnerCallback, this, std::placeholders::_1));
 
@@ -80,16 +85,24 @@ void GoalPanel::onInitialize()
 void GoalPanel::goalCallback(const std_msgs::msg::String& msg)
 {
   goal_label_->setText(QString(msg.data.c_str()));
-  interrupting_goal_label_->setText(" ");
+  interrupting1_goal_label_->setText(" ");
+  interrupting2_goal_label_->setText(" ");
   winner_label_->setText(" ");
   goal_label_->setText("Current Goal:\n" + QString(msg.data.c_str()));
 }
 
 // When the subscriber gets a message, this callback is triggered,
 // and then we copy its data into the widget's label
-void GoalPanel::interruptingGoalCallback(const std_msgs::msg::String& msg)
+void GoalPanel::interrupting1GoalCallback(const std_msgs::msg::String& msg)
 {
-  interrupting_goal_label_->setText("Interruption!\nInterrupting Goal:\n" + QString(msg.data.c_str()));
+  interrupting1_goal_label_->setText("Interruption!\nInterrupting Goal:\n" + QString(msg.data.c_str()));
+}
+
+// When the subscriber gets a message, this callback is triggered,
+// and then we copy its data into the widget's label
+void GoalPanel::interrupting2GoalCallback(const std_msgs::msg::String& msg)
+{
+  interrupting2_goal_label_->setText("Second Interruption!\nInterrupting Goal:\n" + QString(msg.data.c_str()));
 }
 
 // When the subscriber gets a message, this callback is triggered,

@@ -124,8 +124,8 @@ class InterruptionManager():
         # TODO dynamic goals
         # Negotiation request:
         negotiation_request = NegotiationService.Request()
-        negotiation_request.current_goal = goal1
-        negotiation_request.interrupting_goal = goal2
+        negotiation_request.goal1 = goal1
+        negotiation_request.goal2 = goal2
         negotiation_request.user1 = user1
         negotiation_request.user2 = user2
         negotiation_response = self.negotiation_client.call(negotiation_request)

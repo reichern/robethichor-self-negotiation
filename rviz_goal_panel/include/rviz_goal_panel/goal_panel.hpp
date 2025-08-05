@@ -57,15 +57,18 @@ public:
 protected:
   std::shared_ptr<rviz_common::ros_integration::RosNodeAbstractionIface> node_ptr_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr goal_subscription_;
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr interrupting_goal_subscription_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr interrupting1_goal_subscription_;  
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr interrupting2_goal_subscription_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr winner_subscription_;
 
   void goalCallback(const std_msgs::msg::String& msg);
-  void interruptingGoalCallback(const std_msgs::msg::String& msg);
+  void interrupting1GoalCallback(const std_msgs::msg::String& msg);
+  void interrupting2GoalCallback(const std_msgs::msg::String& msg);
   void winnerCallback(const std_msgs::msg::String& msg);
 
   QLabel * goal_label_;
-  QLabel * interrupting_goal_label_;
+  QLabel * interrupting1_goal_label_;
+  QLabel * interrupting2_goal_label_;
   QLabel * winner_label_;
 };
 
