@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# from repo: https://github.com/RoboChor/robethichor-ethics-based-negotiation
+# adapted from repo: https://github.com/RoboChor/robethichor-ethics-based-negotiation
 
 # Run this file as: ./run_usecase.bash [--force-config <N> <P>] [--host <host>] [--port <port>] [--wait <time>] [--launch <true/false>]
 # Example: ./run_usecase.bash --force-config "10 25 50 100" "10 25 50 75 100" --wait 10 --launch true

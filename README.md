@@ -52,6 +52,8 @@ git clone https://github.com/reichern/robethichor-self-negotiation.git
 
 TODO Gazebo + Tiago integration
 install gazebo??? 
+curl -sSL http://get.gazebosim.org | sh
+-> run: "gazebo" check if it is the correct version
 include robot:
 sudo apt install ros-humble-tiago-simulation
 
