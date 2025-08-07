@@ -1,17 +1,38 @@
 # RobEthiChor: Interruption Scenario Example
 
-This project is an expansion of the [RobEthiChor](https://doi.org/10.48550/arXiv.2507.22664) framework. Therefore, it is a fork of the [original repository](https://github.com/gianlucafilippone/robethichor.git) and with some help of the [second repository](https://github.com/RoboChor/robethichor-ethics-based-negotiation).
-
-
 This is the accompanying project to the master's thesis "Ethical Decision-Making for Service Robots". It expands the RobEthiChor framework from dealing with resource contentions between two robots each serving a user, to a resource contention of two users both requesting a service from the same robot. 
 
-TODO scenario image? 
+The project is an expansion of the [RobEthiChor](https://doi.org/10.48550/arXiv.2507.22664) framework. Therefore, it is a fork of the [original repository](https://github.com/gianlucafilippone/robethichor.git) and with some help of the [second repository](https://github.com/RoboChor/robethichor-ethics-based-negotiation).
 
-<!--p align="center">
-  <img src="docs/ros_implementation.png" alt="robethichor architecture">
-</p-->
+As the robot to be simulated, the [TIAGo robot](https://pal-robotics.com/robot/tiago/) was chosen. It provides a [package](https://github.com/pal-robotics/tiago_simulation) to integrate it with Gazebo. However, at the moment the version with which this system was implemented is no longer available. The current state of this repository is not compatible with the new version of the package. Therefore, the old version is provided locally, to make the code in this repository replicable. 
 
-TODO repository structure? 
+The structure of the git repository is as follows: 
+```
+robethichor-self-negotiation
+├── LICENSE
+├── README.md
+├── evaluation                        # evaluation scripts used in the thesis
+├── results                           # results of the thest runs done for the thesis
+├── robethichor                       # adapted robethichor package
+├── robethichor_interfaces            # adapted robethichor interface package
+├── run                               # run files for running different tests
+│   ├── multi_lateral                 #     multi-lateral negotiation: only available in separate branch! 
+│   ├── scalability                   #     scalability of the runtime
+│   ├── validation                    #     validation of the base algorithm
+│   └── willingness_tb_interrupted    #     willingness to be interrupted: only availbale in separate branch! 
+├── tiago_public_sim                  # local package to build separately for the simulated robot 
+└── rviz_goal_panel                   # custom rviz panel to visualize decision
+```
+The structure of the datastick is as follows: 
+```
+├── master_thesis.pdf                 # the digital version of the master thesis this work was built around
+├── robethichor_ws                    # the workspace containing the robethichor package 
+│   └── src                           #     this folder contains the contents of this repository!
+│       └── ...                       #    
+└── tiago_public_ws                   # The workspace containing a required old version of a package for Gazebo simulation 
+    └── src                           #     the source code of the packate
+        └── ...                       #    
+```
 
 ## Main changes
 The following main changes were made to the original system:
@@ -34,90 +55,111 @@ There are additional details that were changed, but concern mainly notational di
 
 To include the willingness to be interrupted, the test data was adapted to include the user condition `end of goal`. The implementation of the utility function was then adapted to account for this special case.  
 
+The willingness to be interrupted is provided in the `willingness-tb-interrupted` branch of the repository. 
+
 ### Expansion: Multi-lateral negotiation
 
 To accomodate multi-lateral negotiation, a third set of ethic and context manager nodes is launched and managed by the lifecycle node manager. The interuption manager is expanded to include the policy for sending the negotiation requests and combining their outcome. The negotiation request is expanded to include information about between which users the negotiation should take place. The negotiation manager dynamically reacts to this information by querying the respective data. 
 
+The willingness to be interrupted is provided in the `multi-lateral` branch of the repository.  
+
+
 ## Download, installation and running on a local machine
-Clone the repository:
-```
-git clone https://github.com/reichern/robethichor-self-negotiation.git
-```
 
 ### Prerequisites
-- Ubuntu 22.04
-- ROS 2 Humble 
-- ROS dev-tools
-- Rosdep
 
-TODO Gazebo + Tiago integration
-install gazebo??? 
-include robot:
-sudo apt install ros-humble-tiago-simulation
+The code should be run on Ubuntu 22.04 with [ROS 2 Humble](https://docs.ros.org/en/humble/Installation.html) (including dev tools!). 
+
+To build the dependencies of the packages, Rosdep needs to be installed and initialized:
+
+```
+sudo apt-get update
+sudo apt-get install python3-rosdep
+sudo rosdep init
+rosdep update
+```
+
+Additional packages to install:
+```
+sudo apt-get install gnome-terminal
+sudo apt-get install jq 
+```
 
 ### Installation
-Robethichor needs to be built using `colcon` in order to run.
 
-First create a folder for the ROS workspace, e.g.:
+When installing from Git, first the workspace for the code needs to be setup. This is not neccessary when installing from the datastick. In this case, skip to the next step. 
+
+Clone the git, create a workspace and move the data from the git in the `src/` folder. 
+
 ```
+git clone https://github.com/reichern/robethichor-self-negotiation.git
 mkdir robethichor_ws
+mkdir robethichor_ws/src
+mv robethichor-self-negotiation/* robethichor_ws/src
 ```
 
-Move the downloaded repository into the `src` folder inside the workspace:
-
-```
-mv robethichor robethichor_ws/src
-```
-
-Install dependencies using Rosdep:
-> [!NOTE]
-> Rosdep must be installed and initialized before building the ROS package.
-> Install Rosdep:
-> ```
-> apt-get update
-> apt-get install python3-rosdep
-> ```
->
-> Initialize Rosdep:
-> ```
-> sudo rosdep init
-> rosdep update
-> ```
+To build the robethichor package, install all the dependencies and build it with `colcon`.
 
 ```
 cd robethichor_ws
-apt-get update
+sudo apt-get update
 rosdep install --from-paths src -y --ignore-src
 colcon build
 source install/setup.bash
 ```
 
-#### Gazebo and RViz Integration 
 
-TODO 
-rviz: use file in robethichor config setup.rviz or just add a GoalPanel yourself? 
-gazebo: add map to tiago package :/ 
+> [!IMPORTANT]
+> As mentioned, due to problems with a current version of the robot simulation package (ros-humble-tiago-simulation), the Gazebo simulation does not start up properly anymore. 
+> To run the tests with Gazebo, the package needs to be installed locally in its old version. 
+> This is provided on the datastick. Without access to the package, it will still be possible to run all the tests without Gazebo.
+> 
+> To install the package from the datastick, navigate to the `tiago_public_ws/` folder. Then, similarly, the dependencies need to be installed and the package needs to be built with `colcon`. 
+> ```
+> cd tiago_public_ws
+> sudo apt-get update
+> rosdep install --from-paths src -y --ignore-src
+> colcon build
+> source install/setup.bash
+> ```
+
+To run the Gazebo simulation, it also needs to be sourced: 
+
+```
+source /usr/share/gazebo/setup.bash
+```
+
+#### Troubleshooting
+
+When the gnome-terminals are not starting up properly, this might be a problem with the locale-gen. A possible solution: navigate to `/etc/locale.gen`, make sure that the necessary languages (e.g. `de_DE.UTF-8 UTF-8`, `en_US.UTF-8 UTF-8`) are not commented out and run :
+
+```
+sudo locale-gen
+```  
+Afterwards, reboot the system. 
 
 ### Running experiments
 
 The `run/` folder contains the experimental settings and the scripts required to run them. 
 
 The following experiments are provided:
-- Validation experiments: This runs the base setup of bilateral negotiation on manually crafted data. It supports Gazebo integration, and therefore provides a visualization of a negotiation scenario.
-- Scalability experiments: This runs the base setup of bilateral negotiation for automatically generated tests cases with different numbers of dispositions and activated conditions. It does not provide Gazebo integration.
-- Willingness to be interrupted: This runs exactly similar to the validation experiments, however with the internal inclusion of willingness to be interrupted in the decision process, therefore slighlty different results
-- Multi-lateral negotiation: This runs on the manually crafted data as used in the validation and willingness to be interrupted experiment, however on triples of users instead of pairs. It conducts several bilateral negotiations and combines their outcome for the final decision. (TODO Gazebo integration??)
+- **Validation experiments**: This  experiment runs the base setup of bilateral negotiation on manually crafted data. It supports Gazebo integration, and therefore provides a visualization of a negotiation scenario.
+- **Scalability experiments**: This experiment runs the base setup of bilateral negotiation for automatically generated tests cases with different numbers of dispositions and activated conditions. It does not provide Gazebo integration.
+- **Willingness to be interrupted**: This experiment runs exactly like the validation experiments, however with the internal inclusion of willingness to be interrupted in the decision process, therefore slighlty different results. It supports Gazebo integration. 
+- **Multi-lateral negotiation**: This runs on the manually crafted data as used in the validation and willingness to be interrupted experiment, however on triples of users instead of pairs. It conducts several bilateral negotiations and combines their outcome for the final decision. It also supports Gazebo integration. 
+
+When running the experiments with Gazebo, make sure to have not only the robethichor workspace sourced, but also Gazebo and the tiago workspace, as mentioned above! 
 
 #### Validation Experiments
 The runscript and configuration for the validation experiments can be found in the `validation/` folder. The manually crafted users are stored under  `validation/usecases`. To run the experiments: 
 ```
-cd ../run/validation
+cd src/run/validation
 chmod +x run_usecase.bash
 ./run_usecase.bash --launch true 
 ```
 A separate terminal will open for the robot. Log files will be stored inside the `validation/results/` folder.
 All configuration options can be found in the `validation/run_usecase.bash` file. The most important ones are:
-- ```--gazebo <bool>```: Starts the experiment with Gazebo integration, which is set to `false` as a default. When set to `true`, first a terminal for Gazebo will open before a second one for the robot starts. 
+- ```--gazebo <bool>```: Whether to run the experiment with Gazebo integration, which is set to `false` as a default. When set to `true`, first a terminal for Gazebo will open before a second one for the robot starts. 
 - ```--force-config "<currently active users>" "<interrupting users>"```: Configures which negotiations should be run. As a default, the experiment will run a negotiation between each of the possible pairs of test users in each role assignment. The users are denoted as "A B C D E F G H I J". Example to run negotiations only between the first three users: ```--force-config "A B C" "A B C"```
 - ```--wait <wait time>```: The wait time between test runs. Is set to `10` by default. To speed up the experiments, the value can be reduced, however it should be chosen with caution, as to not overlap the negotiations and produce faulty results, especially when running with Gazebo.
 
@@ -131,27 +173,29 @@ The runscript and configuration for the scalability experiments can be found in 
 > ```
 
 To run the experiments: 
-
 ```
-cd ../run/scalability_experiments
+cd src/run/scalability
 chmod +x run_experiment.bash
 ./run_experiment.bash --launch true
 ```
 A separate terminal will open for the robot. Log files will be stored inside the `scalability/results/` folder.
 All configuration options can be found in the `scalability/run_usecase.bash` file. The most important ones are:
-- ```--force-config "<currently active users>" "<interrupting users>"```: Configures of which dimensions the negotiations should be run. As a default, the experiment will run negotiations for test cases with 10,25,50 and 100 dispositions and a condition activation of 10,25,50,75,100%. Example to run negotiations only smaller test cases of dispositions, but all condition activations: ```--force-config "10 25" "10 25 50 75 100"```
+- ```--force-config "<currently active users>" "<interrupting users>"```: Configures the dimensions of the negotiations that will be tested. As a default, the experiment will run negotiations for test cases with 10,25,50 and 100 dispositions and a condition activation of 10,25,50,75,100%. Example to run negotiations only smaller test cases of dispositions, but all condition activations: ```--force-config "10 25" "10 25 50 75 100"```
 - ```--wait <wait time>```: The wait time between test runs. Is set to `10` by default. To speed up the experiments, the value can be reduced, however it should be chosen with caution, as to not overlap the negotiations and produce faulty results.
 
 ### Expansion: Willingness to be interrupted
 
 To conduct the experiment for willingness to be interrupted, switch to the corresponding branch: 
 
-TODO 
+```
+git checkout willingness-tb-interrupted
+``` 
 
-Then, the runscript and configuration for the experiments can be found in the `willingness_tb_interrupted/` folder. In the folder  `willingness_tb_interrupted/usecases`, the manually crafted users from the validation experiment with the adapted user status are provided.  
+And don't forget to rebuild the package! 
+Then, the runscript and configuration for the experiments can be found in the `willingness_tb_interrupted/` folder. In the folder  `willingness_tb_interrupted/usecases`, the manually crafted users from the validation experiment status are provided with adapted user conditions including the end of a goal.  
 The experiment can be run exactly like the general validation experiment:
 ```
-cd ../run/willingness_tb_interrupted
+cd src/run/willingness_tb_interrupted
 chmod +x run_usecase.bash
 ./run_usecase.bash --launch true 
 ```
@@ -160,18 +204,46 @@ chmod +x run_usecase.bash
 
 To conduct the experiment for multi-lateral negotiation, switch to the corresponding branch: 
 
-TODO 
+```
+git checkout multi-lateral
+``` 
 
+And don't forget to rebuild the package! 
 Then, the runscript and configuration for the experiments can be found in the `multi-lateral/` folder. Since the multi-lateral experiment can use the manually crafted test users without adaptation, the test cases are not replicated in this folder and instead run on the test cases in `validation/usecases`. The test run functions similary to the validation one, however it runs on triples instead of pairs. It still runs on a list of currently active users and a list of interrupting users, just that for every test run two users are sampled from the interrupting users list, as opposed to before. To run the experiment: 
 
 ```
-cd ../run/validation
+cd src/run/validation
 chmod +x run_usecase.bash
 ./run_usecase.bash --launch true 
 ```
 
-TODO test out!! 
 The multi-lateral negotiation experiment theoretically provides Gazebo integration, however, it runs in the same world as before consisting of two rooms. Therefore it does not visualize the multi-lateral negotiation as well as the bilateral negotiation. 
-TODO integrate in RViz?
+
 ## Evaluation
-TODO where to find scripts, data, ... 
+
+The data that was used for evaluation in the thesis is provided under the `results/` folder. The following files can be found:
+
+- `ground_truth.csv`: Table of each possible pair of the manually created test users, and their manually calculated expected result.
+- `scalability.log`: The results of the scalability tests as described in the thesis. 
+- `validation-with_gazebo.log`: The results of the validation tests of the base algorithm with Gazebo.
+- `validation-without_gazebo.log`: The results of the validation tests of the base algorithm without Gazebo.
+
+In the expansion branches, the additonal files can be found in the same folder:
+
+- `willingness_tb_interrupted.log`: The results of the test runs for inclusion of willingness to be interrupted. 
+- `ground_truth-multi_lateral.csv`: Table of each possible trible of the manually created test users, and their manually calculated expected result.
+- `results-multi_lateral.log`: The results of the test runs for multi-lateral negotiation. 
+
+The evaluation scripts analyzing the test results can be found in the `evaluation/` folder. The followign scripts can be found:
+
+- `users-expected_results.ods`: List of all the test users, their ethical impact and utility in each possible combination, and expected negotiation outcome in the base algorithm.
+- `scalability.ipynb`: Jupyter notebook evaluating the scalability test run as described in the thesis. 
+- `validation.ipynb`: Jupyter notebook evaluating the validation test runs with and without Gazebo, as described in the thesis. 
+
+In the expansion branches, the additional files can be found in the same folder:
+
+- `willingness_tb_interrupted.ipynb`: Jupyter notebook evaluating the the test runs for inclusion of willingness to be interrupted. 
+- `multi_lateral.ipynb`: Jupyter notebook evaluating the the test runs for multi-lateral negotiation, as described in the thesis. 
+
+
+
