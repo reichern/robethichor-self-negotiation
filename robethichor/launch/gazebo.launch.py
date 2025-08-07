@@ -56,14 +56,14 @@ def generate_launch_description():
         launch_arguments={
             'gui': LaunchConfiguration('gui'),
             'pause': 'true',
-            'world': '../../robethichor/worlds/two_rooms_expanded.sdf',
+            'world': '../../robethichor/worlds/two_rooms_expanded.world',
             's': 'libgazebo_ros_factory.so'
         }.items(),
     )
     client_launch = IncludeLaunchDescription(
         PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gzclient.launch.py']),
         launch_arguments={
-            'world': '../../robethichor/worlds/two_rooms_expanded.sdf',
+            'world': '../../robethichor/worlds/two_rooms_expanded.world',
         }.items(),
     )
 
@@ -80,7 +80,7 @@ def generate_launch_description():
     bringup_launch_py = IncludeLaunchDescription(
         PathJoinSubstitution([FindPackageShare('tiago_bringup'), 'launch', 'tiago_bringup.launch.py']),
         launch_arguments={
-            "arm_motor_model": 'parker',
+            # "arm_motor_model": 'parker',
             "laser_model": 'sick-571',
             "camera_model": 'orbbec-astra',
             "base_type": 'pmb2',
@@ -88,7 +88,7 @@ def generate_launch_description():
             "ft_sensor": 'schunk-ft',
             "end_effector": 'pal-gripper',
             "has_screen": 'False',
-            'arm_type': 'tiago-arm', # tiago-arm, no-arm
+            'arm_type': 'no-arm', # tiago-arm, no-arm
             'is_public_sim': 'True',
             "use_sim_time": LaunchConfiguration("use_sim_time")}.items()
     )
@@ -104,7 +104,8 @@ def generate_launch_description():
             'advanced_navigation': 'False',
             'laser': 'sick-571',
             'base_type': 'pmb2',
-            'world_name': 'two_rooms_expanded'}.items()
+            'world_name': 'two_rooms_expanded',
+            'robethichor_path': '../../robethichor/'}.items()
     )
 
     # moveit 
@@ -115,7 +116,7 @@ def generate_launch_description():
             "use_sim_time": LaunchConfiguration("use_sim_time"),
             # "namespace": launch_args.namespace,
             "base_type": 'pmb2',
-            "arm_type": 'tiago-arm',
+            "arm_type": 'no-arm',
             "end_effector": 'pal-gripper',
             "ft_sensor": 'schunk-ft',}.items()
     )
@@ -124,7 +125,7 @@ def generate_launch_description():
                     executable='tuck_arm.py',
                     name='arm_tucker',
                     emulate_tty=True,
-                    output='both',)
+                    output='both')
 
 
     # launch description with all actions created above
@@ -135,9 +136,9 @@ def generate_launch_description():
         client_launch,
         urdf_spawner_node,
         bringup_launch_py,
-        tuck_arm,
         moveit_launch_py,
         navigation_launch_py,
+        # tuck_arm,
     ])
 
     return ld

@@ -46,16 +46,8 @@ git clone https://github.com/reichern/robethichor-self-negotiation.git
 
 ### Prerequisites
 - Ubuntu 22.04
-- ROS 2 Humble 
-- ROS dev-tools
+- [ROS 2 Humble](https://docs.ros.org/en/humble/Installation.html) 
 - Rosdep
-
-TODO Gazebo + Tiago integration
-install gazebo??? 
-curl -sSL http://get.gazebosim.org | sh
--> run: "gazebo" check if it is the correct version
-include robot:
-sudo apt install ros-humble-tiago-simulation
 
 ### Installation
 Robethichor needs to be built using `colcon` in order to run.
@@ -68,7 +60,7 @@ mkdir robethichor_ws
 Move the downloaded repository into the `src` folder inside the workspace:
 
 ```
-mv robethichor robethichor_ws/src
+mv robethichor-self-negotiation/* robethichor_ws/src
 ```
 
 Install dependencies using Rosdep:
@@ -76,8 +68,8 @@ Install dependencies using Rosdep:
 > Rosdep must be installed and initialized before building the ROS package.
 > Install Rosdep:
 > ```
-> apt-get update
-> apt-get install python3-rosdep
+> sudo apt-get update
+> sudo apt-get install python3-rosdep
 > ```
 >
 > Initialize Rosdep:
@@ -88,17 +80,32 @@ Install dependencies using Rosdep:
 
 ```
 cd robethichor_ws
-apt-get update
+sudo apt-get update
 rosdep install --from-paths src -y --ignore-src
 colcon build
 source install/setup.bash
 ```
 
-#### Gazebo and RViz Integration 
+To run gazebo, source:
+```
+source /usr/share/gazebo/setup.bash 
+```
 
-TODO 
-rviz: use file in robethichor config setup.rviz or just add a GoalPanel yourself? 
-gazebo: add map to tiago package :/ 
+Some additional packages that might have to be installed:
+```
+sudo apt-get install gnome-terminal
+sudo apt-get install jq 
+sudo apt install ros-humble-tiago-simulation
+```
+#### Troubleshooting
+problems starting gnome-terminal:  
+  sudo nano /etc/locale.gen -> outcomment relevant languages
+  sudo locale-gen
+  reboot 
+
+#### Robot simulation
+
+As the robot to be simulated, the [TIAGo robot](https://github.com/pal-robotics/tiago_simulation) was chosen. It provides a package to integrate it with Gazebo. However, since setting up this repository, the old version of the package is no longer available. The current state of this repository is not compatible with the new version of the package. Therefore, the old version is provided locally, to make the code in this repository replicable. 
 
 ### Running experiments
 
@@ -113,7 +120,7 @@ The following experiments are provided:
 #### Validation Experiments
 The runscript and configuration for the validation experiments can be found in the `validation/` folder. The manually crafted users are stored under  `validation/usecases`. To run the experiments: 
 ```
-cd ../run/validation
+cd src/run/validation
 chmod +x run_usecase.bash
 ./run_usecase.bash --launch true 
 ```
@@ -135,7 +142,7 @@ The runscript and configuration for the scalability experiments can be found in 
 To run the experiments: 
 
 ```
-cd ../run/scalability_experiments
+cd src/run/scalability_experiments
 chmod +x run_experiment.bash
 ./run_experiment.bash --launch true
 ```
@@ -148,12 +155,14 @@ All configuration options can be found in the `scalability/run_usecase.bash` fil
 
 To conduct the experiment for willingness to be interrupted, switch to the corresponding branch: 
 
-TODO 
+```
+git checkout willingness-tb-interrupted
+``` 
 
 Then, the runscript and configuration for the experiments can be found in the `willingness_tb_interrupted/` folder. In the folder  `willingness_tb_interrupted/usecases`, the manually crafted users from the validation experiment with the adapted user status are provided.  
 The experiment can be run exactly like the general validation experiment:
 ```
-cd ../run/willingness_tb_interrupted
+cd src/run/willingness_tb_interrupted
 chmod +x run_usecase.bash
 ./run_usecase.bash --launch true 
 ```
@@ -162,18 +171,21 @@ chmod +x run_usecase.bash
 
 To conduct the experiment for multi-lateral negotiation, switch to the corresponding branch: 
 
-TODO 
+```
+git checkout multi-lateral
+``` 
 
 Then, the runscript and configuration for the experiments can be found in the `multi-lateral/` folder. Since the multi-lateral experiment can use the manually crafted test users without adaptation, the test cases are not replicated in this folder and instead run on the test cases in `validation/usecases`. The test run functions similary to the validation one, however it runs on triples instead of pairs. It still runs on a list of currently active users and a list of interrupting users, just that for every test run two users are sampled from the interrupting users list, as opposed to before. To run the experiment: 
 
 ```
-cd ../run/validation
+cd src/run/validation
 chmod +x run_usecase.bash
 ./run_usecase.bash --launch true 
 ```
 
-TODO test out!! 
 The multi-lateral negotiation experiment theoretically provides Gazebo integration, however, it runs in the same world as before consisting of two rooms. Therefore it does not visualize the multi-lateral negotiation as well as the bilateral negotiation. 
-TODO integrate in RViz?
+
 ## Evaluation
 TODO where to find scripts, data, ... 
+
+
