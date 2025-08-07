@@ -68,7 +68,7 @@ The willingness to be interrupted is provided in the `multi-lateral` branch of t
 
 ### Prerequisites
 
-The code should be run on Ubuntu 22.04 with [ROS 2 Humble](https://docs.ros.org/en/humble/Installation.html). 
+The code should be run on Ubuntu 22.04 with [ROS 2 Humble](https://docs.ros.org/en/humble/Installation.html) (including dev tools!). 
 
 To build the dependencies of the packages, Rosdep needs to be installed and initialized:
 
@@ -94,6 +94,7 @@ Clone the git, create a workspace and move the data from the git in the `src/` f
 ```
 git clone https://github.com/reichern/robethichor-self-negotiation.git
 mkdir robethichor_ws
+mkdir robethichor_ws/src
 mv robethichor-self-negotiation/* robethichor_ws/src
 ```
 
@@ -111,7 +112,7 @@ source install/setup.bash
 > [!IMPORTANT]
 > As mentioned, due to problems with a current version of the robot simulation package (ros-humble-tiago-simulation), the Gazebo simulation does not start up properly anymore. 
 > To run the tests with Gazebo, the package needs to be installed locally in its old version. 
-> This is provided on the datastick. Without access to the package, it will still be possible to run all the tests without Gazebo
+> This is provided on the datastick. Without access to the package, it will still be possible to run all the tests without Gazebo.
 > 
 > To install the package from the datastick, navigate to the `tiago_public_ws/` folder. Then, similarly, the dependencies need to be installed and the package needs to be built with `colcon`. 
 > ```
