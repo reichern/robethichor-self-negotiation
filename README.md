@@ -191,6 +191,7 @@ To conduct the experiment for willingness to be interrupted, switch to the corre
 git checkout willingness-tb-interrupted
 ``` 
 
+And don't forget to rebuild the package! 
 Then, the runscript and configuration for the experiments can be found in the `willingness_tb_interrupted/` folder. In the folder  `willingness_tb_interrupted/usecases`, the manually crafted users from the validation experiment status are provided with adapted user conditions including the end of a goal.  
 The experiment can be run exactly like the general validation experiment:
 ```
@@ -207,6 +208,7 @@ To conduct the experiment for multi-lateral negotiation, switch to the correspon
 git checkout multi-lateral
 ``` 
 
+And don't forget to rebuild the package! 
 Then, the runscript and configuration for the experiments can be found in the `multi-lateral/` folder. Since the multi-lateral experiment can use the manually crafted test users without adaptation, the test cases are not replicated in this folder and instead run on the test cases in `validation/usecases`. The test run functions similary to the validation one, however it runs on triples instead of pairs. It still runs on a list of currently active users and a list of interrupting users, just that for every test run two users are sampled from the interrupting users list, as opposed to before. To run the experiment: 
 
 ```
