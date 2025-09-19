@@ -1,6 +1,8 @@
-# RobEthiChor: Interruption Scenario Example
+# A Self-Negotiation Framework for Ethical Decision-Making during Task Interruptions in Service Robots
 
-This is the accompanying project to the master's thesis "Ethical Decision-Making for Service Robots". It expands the RobEthiChor framework from dealing with resource contentions between two robots each serving a user, to a resource contention of two users both requesting a service from the same robot. 
+This is the accompanying repository to the paper "A Self-Negotiation Framework for Ethical Decision-Making during Task Interruptions in Service Robots". It adapts the RobEthiChor framework from dealing with resource contentions between two robots each serving a user, to two users both requesting a service from the same robot. 
+
+![Scenario Graphic](scenario-graphic.png)
 
 The project is an expansion of the [RobEthiChor](https://doi.org/10.48550/arXiv.2507.22664) framework. Therefore, it is a fork of the [original repository](https://github.com/gianlucafilippone/robethichor.git) and with some help of the [second repository](https://github.com/RoboChor/robethichor-ethics-based-negotiation).
 
@@ -11,8 +13,8 @@ The structure of the git repository is as follows:
 robethichor-self-negotiation
 ├── LICENSE
 ├── README.md
-├── evaluation                        # evaluation scripts used in the thesis
-├── results                           # results of the thest runs done for the thesis
+├── evaluation                        # evaluation scripts used in the project
+├── results                           # results of the thest runs done for the project
 ├── robethichor                       # adapted robethichor package
 ├── robethichor_interfaces            # adapted robethichor interface package
 ├── run                               # run files for running different tests
@@ -30,7 +32,7 @@ The structure of the datastick is as follows:
 │   └── src                           #     this folder contains the contents of this repository!
 │       └── ...                       #    
 └── tiago_public_ws                   # The workspace containing a required old version of a package for Gazebo simulation 
-    └── src                           #     the source code of the packate
+    └── src                           #     the source code of the package
         └── ...                       #    
 ```
 
@@ -221,10 +223,10 @@ The multi-lateral negotiation experiment theoretically provides Gazebo integrati
 
 ## Evaluation
 
-The data that was used for evaluation in the thesis is provided under the `results/` folder. The following files can be found:
+The data that was used for evaluation in this project is provided under the `results/` folder. The following files can be found:
 
 - `ground_truth.csv`: Table of each possible pair of the manually created test users, and their manually calculated expected result.
-- `scalability.log`: The results of the scalability tests as described in the thesis. 
+- `scalability.log`: The results of the scalability tests as described in this project. 
 - `validation-with_gazebo.log`: The results of the validation tests of the base algorithm with Gazebo.
 - `validation-without_gazebo.log`: The results of the validation tests of the base algorithm without Gazebo.
 
@@ -237,13 +239,13 @@ In the expansion branches, the additonal files can be found in the same folder:
 The evaluation scripts analyzing the test results can be found in the `evaluation/` folder. The followign scripts can be found:
 
 - `users-expected_results.ods`: List of all the test users, their ethical impact and utility in each possible combination, and expected negotiation outcome in the base algorithm.
-- `scalability.ipynb`: Jupyter notebook evaluating the scalability test run as described in the thesis. 
-- `validation.ipynb`: Jupyter notebook evaluating the validation test runs with and without Gazebo, as described in the thesis. 
+- `scalability.ipynb`: Jupyter notebook evaluating the scalability test run as described in the project. 
+- `validation.ipynb`: Jupyter notebook evaluating the validation test runs with and without Gazebo, as described in the project. 
 
 In the expansion branches, the additional files can be found in the same folder:
 
 - `willingness_tb_interrupted.ipynb`: Jupyter notebook evaluating the the test runs for inclusion of willingness to be interrupted. 
-- `multi_lateral.ipynb`: Jupyter notebook evaluating the the test runs for multi-lateral negotiation, as described in the thesis. 
+- `multi_lateral.ipynb`: Jupyter notebook evaluating the the test runs for multi-lateral negotiation, as described in the project. 
 
 
 
