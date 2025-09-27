@@ -1,44 +1,13 @@
-# adapted from 
-# https://github.com/ros/urdf_sim_tutorial/tree/ros2
-
-# Software License Agreement (BSD License 2.0)
-#
-# Copyright (c) 2023, Metro Robots
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
-#
-#  * Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-#  * Redistributions in binary form must reproduce the above
-#    copyright notice, this list of conditions and the following
-#    disclaimer in the documentation and/or other materials provided
-#    with the distribution.
-#  * Neither the name of Metro Robots nor the names of its
-#    contributors may be used to endorse or promote products derived
-#    from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
+# based on tiago simulation package: 
+# https://github.com/pal-robotics/tiago_simulation
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, AppendEnvironmentVariable, SetEnvironmentVariable, GroupAction, IncludeLaunchDescription, SetLaunchConfiguration
-from launch_ros.actions import PushRosNamespace
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, IncludeLaunchDescription, SetLaunchConfiguration, ExecuteProcess
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from os import environ, pathsep, path
+from ament_index_python.packages import get_package_prefix, get_package_share_directory
 
 def generate_launch_description():
     # arguments
@@ -47,41 +16,78 @@ def generate_launch_description():
         default_value='true',
     )
 
-    set_sim_time = SetLaunchConfiguration("use_sim_time", "True")
+    set_sim_time = SetLaunchConfiguration("use_sim_time", "True") 
 
-    # launch world
-    # TODO path to world? 
-    empty_world_launch = IncludeLaunchDescription(
-        PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gzserver.launch.py']),
-        launch_arguments={
-            'gui': LaunchConfiguration('gui'),
-            'pause': 'true',
-            'world': '../../robethichor/worlds/two_rooms_expanded.world',
-            's': 'libgazebo_ros_factory.so'
-        }.items(),
-    )
-    client_launch = IncludeLaunchDescription(
-        PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gzclient.launch.py']),
-        launch_arguments={
-            'world': '../../robethichor/worlds/two_rooms_expanded.world',
-        }.items(),
-    )
+    # launch gazebo
+    world_path = PathJoinSubstitution([get_package_prefix('robethichor'),'..','..','src','robethichor', 'worlds', 'two_rooms_expanded.world'])
+
+    # TODO umstrukturieren?
+    packages = ['tiago_description', 'pmb2_description',
+                'pal_hey5_description', 'pal_gripper_description',
+                'pal_robotiq_description', 'omni_base_description',
+                'pal_urdf_utils']
+
+    model_paths = ""
+    for package_name in packages:
+        if model_paths != "":
+            model_paths += pathsep
+
+        package_path = get_package_prefix(package_name)
+        model_path = path.join(package_path, "share")
+
+        model_paths += model_path
+
+    pkg_path = get_package_share_directory('pal_gazebo_worlds')
+    model_paths = model_paths + pathsep + path.join(pkg_path, 'models')
+
+    if 'GAZEBO_MODEL_PATH' in environ:
+        model_paths = environ['GAZEBO_MODEL_PATH'] + pathsep + model_paths
+    gazebo_model_path_env_var = SetEnvironmentVariable(
+        'GAZEBO_MODEL_PATH', model_paths)
+
+    resource_path = pkg_path
+    if 'GAZEBO_RESOURCE_PATH' in environ:
+        resource_path += pathsep+environ['GAZEBO_RESOURCE_PATH']
+    gazebo_resource_path_env_var = SetEnvironmentVariable(
+        'GAZEBO_RESOURCE_PATH', resource_path)
+
+
+    # ressource_paths = []
+    # model_paths = []
+    # for package_name in packages:
+    #     package_share = FindPackageShare(package_name)
+    #     ressource_paths.append(package_share)
+    #     ressource_paths.append(PathJoinSubstitution([FindPackageShare(package_name),"models"]))
+
+
+    # gazebo_model_path_env_var = SetEnvironmentVariable(
+    #     'GAZEBO_MODEL_PATH', model_paths)
+    # gazebo_resource_path_env_var = SetEnvironmentVariable(
+    #     'GAZEBO_RESOURCE_PATH', ressource_paths)
+    
+    gz_server_launch = ExecuteProcess(cmd=[
+        'gzserver', '-s', 'libgazebo_ros_init.so',
+        '-s', 'libgazebo_ros_factory.so', world_path,
+        '--ros-args'], output='screen')
+    
+    gz_client_launch = ExecuteProcess(
+        cmd=['gzclient'], output='screen')
 
     # spawn robot in gazebo
-    urdf_spawner_node = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        name='urdf_spawner',
-        arguments=['-topic', 'robot_description', '-entity', 'robot' , '-unpause'],
-        output='screen',
+    urdf_spawner = IncludeLaunchDescription(
+        PathJoinSubstitution([FindPackageShare('tiago_gazebo'), 'launch', 'robot_spawn.launch.py']),
+        launch_arguments={
+            "use_sim_time": LaunchConfiguration("use_sim_time"),
+            "robot_name": 'robot',
+            "base_type": 'pmb2'}.items()
     )
 
     # controllers for robot model 
     bringup_launch_py = IncludeLaunchDescription(
         PathJoinSubstitution([FindPackageShare('tiago_bringup'), 'launch', 'tiago_bringup.launch.py']),
         launch_arguments={
-            # "arm_motor_model": 'parker',
-            "laser_model": 'sick-571',
+            "arm_motor_model": 'parker',
+            "laser_model": 'sick-551',
             "camera_model": 'orbbec-astra',
             "base_type": 'pmb2',
             "wrist_model": 'wrist-2017',
@@ -94,18 +100,39 @@ def generate_launch_description():
     )
 
     # navigation 
-    navigation_launch_py = IncludeLaunchDescription(
-        PathJoinSubstitution([FindPackageShare('tiago_2dnav'), 'launch', 'tiago_nav_bringup.launch.py']),
+    params_file = [FindPackageShare('pmb2_2dnav'), '/config', '/nav_public_sim.yaml']
+    map_path = PathJoinSubstitution([get_package_prefix('robethichor'),'..','..','src','robethichor', 'worlds', 'two_rooms_expanded', 'map.yaml'])
+    rviz_config_file = PathJoinSubstitution([get_package_prefix('robethichor'),'..','..','src','robethichor', 'config', 'setup.rviz'])
+    
+    navigation_bringup_py = IncludeLaunchDescription(
+        PathJoinSubstitution([FindPackageShare('nav2_bringup'), 'launch', 'navigation_launch.py']),
         launch_arguments={
-            'is_public_sim': 'True',
             "use_sim_time": LaunchConfiguration("use_sim_time"),
             'slam': 'True',
-            "robot_name": 'robot',
-            'advanced_navigation': 'False',
-            'laser': 'sick-571',
-            'base_type': 'pmb2',
-            'world_name': 'two_rooms_expanded',
-            'robethichor_path': '../../robethichor/'}.items()
+            'params_file': params_file,
+            'map': map_path}.items()
+    )
+
+    navigation_localization_py = IncludeLaunchDescription(
+        PathJoinSubstitution([FindPackageShare('nav2_bringup'), 'launch', 'localization_launch.py']),
+        launch_arguments={
+            "use_sim_time": LaunchConfiguration("use_sim_time"),
+            'params_file': params_file,
+            'map': map_path}.items()
+    )
+
+    navigation_slam_py = IncludeLaunchDescription(
+        PathJoinSubstitution([FindPackageShare('nav2_bringup'), 'launch', 'slam_launch.py']),
+        launch_arguments={
+            "use_sim_time": LaunchConfiguration("use_sim_time"),
+            'params_file': params_file}.items()
+    )
+
+    navigation_rviz_py = IncludeLaunchDescription(
+        PathJoinSubstitution([FindPackageShare('nav2_bringup'), 'launch', 'rviz_launch.py']),
+        launch_arguments={
+            "use_sim_time": LaunchConfiguration("use_sim_time"),
+            "rviz_config": rviz_config_file}.items()
     )
 
     # moveit 
@@ -116,7 +143,7 @@ def generate_launch_description():
             "use_sim_time": LaunchConfiguration("use_sim_time"),
             # "namespace": launch_args.namespace,
             "base_type": 'pmb2',
-            "arm_type": 'no-arm',
+            "arm_type": 'no-arm', # tiago-arm no-arm
             "end_effector": 'pal-gripper',
             "ft_sensor": 'schunk-ft',}.items()
     )
@@ -132,12 +159,17 @@ def generate_launch_description():
     ld = LaunchDescription([
         set_sim_time,
         gui_arg,
-        empty_world_launch,
-        client_launch,
-        urdf_spawner_node,
+        gazebo_model_path_env_var,
+        # gazebo_resource_path_env_var,
+        gz_server_launch,
+        gz_client_launch,
+        urdf_spawner,
         bringup_launch_py,
         moveit_launch_py,
-        navigation_launch_py,
+        navigation_bringup_py,
+        navigation_localization_py,
+        navigation_slam_py,
+        navigation_rviz_py,
         # tuck_arm,
     ])
 

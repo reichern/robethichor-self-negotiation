@@ -1,25 +1,22 @@
 # https://github.com/ros/urdf_launch/tree/main
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, RegisterEventHandler, EmitEvent
+from launch.actions import DeclareLaunchArgument, GroupAction, RegisterEventHandler, EmitEvent
 from launch.events import matches_action
-from launch_ros.actions import Node, PushRosNamespace, LifecycleNode
+from launch_ros.actions import Node, LifecycleNode
 from launch_ros.event_handlers import OnStateTransition
 from launch.event_handlers.on_process_start import OnProcessStart
 from launch_ros.events.lifecycle import ChangeState
 from lifecycle_msgs.msg import Transition
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch_ros.substitutions import FindPackageShare
+from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
-    # robot_ns_arg = DeclareLaunchArgument('ns', default_value='robassistant_1', description='Robot namespace')
     connector_port_arg = DeclareLaunchArgument('port', default_value='5000', description='Port for robot connector node')
     ethical_implication_file_arg = DeclareLaunchArgument('ethical_implication_file', description='Path of the ethical implication configuration file')
     disposition_activation_file_arg = DeclareLaunchArgument('disposition_activation_file', description='Path of the disposition activation configuration file')
     log_output_file_arg = DeclareLaunchArgument('log_output_file', default_value='', description='Path of the log output file')
     gazebo_arg = DeclareLaunchArgument('gazebo', default_value='False', description='Whether or not to run gazebo')
 
-    # robot_ns = LaunchConfiguration('ns')
     connector_port = LaunchConfiguration('port')
     ethical_implication_file = LaunchConfiguration('ethical_implication_file')
     disposition_activation_file = LaunchConfiguration('disposition_activation_file')
@@ -41,7 +38,6 @@ def generate_launch_description():
             )
 
     ld = LaunchDescription([
-        # robot_ns_arg,
         connector_port_arg,
         ethical_implication_file_arg,
         disposition_activation_file_arg,
