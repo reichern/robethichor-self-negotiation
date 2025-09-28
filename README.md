@@ -25,16 +25,6 @@ robethichor-self-negotiation
 ├── tiago_public_sim                  # local package to build separately for the simulated robot 
 └── rviz_goal_panel                   # custom rviz panel to visualize decision
 ```
-The structure of the datastick is as follows: 
-```
-├── master_thesis.pdf                 # the digital version of the master thesis this work was built around
-├── robethichor_ws                    # the workspace containing the robethichor package 
-│   └── src                           #     this folder contains the contents of this repository!
-│       └── ...                       #    
-└── tiago_public_ws                   # The workspace containing a required old version of a package for Gazebo simulation 
-    └── src                           #     the source code of the package
-        └── ...                       #    
-```
 
 ## Main changes
 The following main changes were made to the original system:
@@ -85,11 +75,13 @@ Additional packages to install:
 ```
 sudo apt-get install gnome-terminal
 sudo apt-get install jq 
+sudo apt-get install ros-humble-tiago-simulation
+sudo apt install ros-humble-navigation2
+sudo apt install ros-humble-nav2-bringup
+sudo apt install ros-humble-moveit-planners-chomp
 ```
 
 ### Installation
-
-When installing from Git, first the workspace for the code needs to be setup. This is not neccessary when installing from the datastick. In this case, skip to the next step. 
 
 Clone the git, create a workspace and move the data from the git in the `src/` folder. 
 
@@ -110,21 +102,6 @@ colcon build
 source install/setup.bash
 ```
 
-
-> [!IMPORTANT]
-> As mentioned, due to problems with a current version of the robot simulation package (ros-humble-tiago-simulation), the Gazebo simulation does not start up properly anymore. 
-> To run the tests with Gazebo, the package needs to be installed locally in its old version. 
-> This is provided on the datastick. Without access to the package, it will still be possible to run all the tests without Gazebo.
-> 
-> To install the package from the datastick, navigate to the `tiago_public_ws/` folder. Then, similarly, the dependencies need to be installed and the package needs to be built with `colcon`. 
-> ```
-> cd tiago_public_ws
-> sudo apt-get update
-> rosdep install --from-paths src -y --ignore-src
-> colcon build
-> source install/setup.bash
-> ```
-
 To run the Gazebo simulation, it also needs to be sourced: 
 
 ```
@@ -139,6 +116,11 @@ When the gnome-terminals are not starting up properly, this might be a problem w
 sudo locale-gen
 ```  
 Afterwards, reboot the system. 
+
+
+> [!IMPORTANT]
+> Currently fixing map bug with new tiago package version
+
 
 ### Running experiments
 

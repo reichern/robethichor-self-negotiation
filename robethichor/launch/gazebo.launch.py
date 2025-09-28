@@ -66,8 +66,7 @@ def generate_launch_description():
     #     'GAZEBO_RESOURCE_PATH', ressource_paths)
     
     gz_server_launch = ExecuteProcess(cmd=[
-        'gzserver', '-s', 'libgazebo_ros_init.so',
-        '-s', 'libgazebo_ros_factory.so', world_path,
+        'gzserver', '-s', 'libgazebo_ros_init.so', world_path,
         '--ros-args'], output='screen')
     
     gz_client_launch = ExecuteProcess(
@@ -157,10 +156,10 @@ def generate_launch_description():
 
     # launch description with all actions created above
     ld = LaunchDescription([
+        # gazebo_resource_path_env_var,
         set_sim_time,
         gui_arg,
         gazebo_model_path_env_var,
-        # gazebo_resource_path_env_var,
         gz_server_launch,
         gz_client_launch,
         urdf_spawner,
