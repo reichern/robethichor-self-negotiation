@@ -71,7 +71,7 @@ sudo rosdep init
 rosdep update
 ```
 
-To run with Gazebo, build the TIAGo package following the [instructions](https://pal-robotics.com/robot/tiago/).
+To run with Gazebo, build the TIAGo package following the [instructions](https://github.com/pal-robotics/tiago_simulation/blob/humble-devel/README.md).
 
 Additional packages to install:
 ```
