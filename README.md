@@ -107,6 +107,9 @@ To run the Gazebo simulation, it also needs to be sourced:
 source /usr/share/gazebo/setup.bash
 ```
 
+And don't forget to source the TIAGo package when running with Gazebo! 
+
+
 #### Troubleshooting
 
 - When the gnome-terminals are not starting up properly, this might be a problem with the locale-gen. A possible solution: navigate to `/etc/locale.gen`, make sure that the necessary languages (e.g. `de_DE.UTF-8 UTF-8`, `en_US.UTF-8 UTF-8`) are not commented out and run :
