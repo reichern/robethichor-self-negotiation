@@ -85,7 +85,7 @@ sudo apt install ros-humble-moveit-planners-chomp
 Clone the git, create a workspace and move the data from the git in the `src/` folder. 
 
 ```
-git clone https://github.com/reichern/robethichor-self-negotiation.git
+git clone git@github.com:reichern/robethichor-self-negotiation.git
 mkdir robethichor_ws
 mkdir robethichor_ws/src
 mv robethichor-self-negotiation/* robethichor_ws/src
