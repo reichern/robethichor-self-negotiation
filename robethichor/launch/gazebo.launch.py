@@ -7,7 +7,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from os import environ, pathsep, path
-from ament_index_python.packages import get_package_prefix, get_package_share_directory
+from ament_index_python.packages import get_package_prefix
 
 def generate_launch_description():
     # arguments
@@ -21,7 +21,6 @@ def generate_launch_description():
     # launch gazebo
     world_path = PathJoinSubstitution([get_package_prefix('robethichor'),'..','..','src','robethichor', 'worlds', 'two_rooms_expanded.world'])
 
-    # TODO umstrukturieren?
     packages = ['tiago_description', 'pmb2_description',
                 'pal_hey5_description', 'pal_gripper_description',
                 'pal_robotiq_description', 'omni_base_description',
@@ -37,40 +36,26 @@ def generate_launch_description():
 
         model_paths += model_path
 
-    pkg_path = get_package_share_directory('pal_gazebo_worlds')
-    model_paths = model_paths + pathsep + path.join(pkg_path, 'models')
-
     if 'GAZEBO_MODEL_PATH' in environ:
         model_paths = environ['GAZEBO_MODEL_PATH'] + pathsep + model_paths
     gazebo_model_path_env_var = SetEnvironmentVariable(
         'GAZEBO_MODEL_PATH', model_paths)
 
-    resource_path = pkg_path
-    if 'GAZEBO_RESOURCE_PATH' in environ:
-        resource_path += pathsep+environ['GAZEBO_RESOURCE_PATH']
-    gazebo_resource_path_env_var = SetEnvironmentVariable(
-        'GAZEBO_RESOURCE_PATH', resource_path)
+    gz_server_launch = IncludeLaunchDescription(
+        PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gzserver.launch.py']),
+        launch_arguments={
+            'gui': LaunchConfiguration('gui'),
+            'world': world_path,
+            's': 'libgazebo_ros_factory.so',
+        }.items(),
+    )
 
-
-    # ressource_paths = []
-    # model_paths = []
-    # for package_name in packages:
-    #     package_share = FindPackageShare(package_name)
-    #     ressource_paths.append(package_share)
-    #     ressource_paths.append(PathJoinSubstitution([FindPackageShare(package_name),"models"]))
-
-
-    # gazebo_model_path_env_var = SetEnvironmentVariable(
-    #     'GAZEBO_MODEL_PATH', model_paths)
-    # gazebo_resource_path_env_var = SetEnvironmentVariable(
-    #     'GAZEBO_RESOURCE_PATH', ressource_paths)
-    
-    gz_server_launch = ExecuteProcess(cmd=[
-        'gzserver', '-s', 'libgazebo_ros_init.so', world_path,
-        '--ros-args'], output='screen')
-    
-    gz_client_launch = ExecuteProcess(
-        cmd=['gzclient'], output='screen')
+    gz_client_launch = IncludeLaunchDescription(
+        PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gzclient.launch.py']),
+        launch_arguments={
+            'world': world_path,
+        }.items(),
+    )
 
     # spawn robot in gazebo
     urdf_spawner = IncludeLaunchDescription(
@@ -93,7 +78,7 @@ def generate_launch_description():
             "ft_sensor": 'schunk-ft',
             "end_effector": 'pal-gripper',
             "has_screen": 'False',
-            'arm_type': 'no-arm', # tiago-arm, no-arm
+            'arm_type': 'tiago-arm', # tiago-arm, no-arm
             'is_public_sim': 'True',
             "use_sim_time": LaunchConfiguration("use_sim_time")}.items()
     )
@@ -107,7 +92,7 @@ def generate_launch_description():
         PathJoinSubstitution([FindPackageShare('nav2_bringup'), 'launch', 'navigation_launch.py']),
         launch_arguments={
             "use_sim_time": LaunchConfiguration("use_sim_time"),
-            'slam': 'True',
+            'slam': 'False',
             'params_file': params_file,
             'map': map_path}.items()
     )
@@ -142,7 +127,7 @@ def generate_launch_description():
             "use_sim_time": LaunchConfiguration("use_sim_time"),
             # "namespace": launch_args.namespace,
             "base_type": 'pmb2',
-            "arm_type": 'no-arm', # tiago-arm no-arm
+            "arm_type": 'tiago-arm', # tiago-arm no-arm
             "end_effector": 'pal-gripper',
             "ft_sensor": 'schunk-ft',}.items()
     )
@@ -156,7 +141,6 @@ def generate_launch_description():
 
     # launch description with all actions created above
     ld = LaunchDescription([
-        # gazebo_resource_path_env_var,
         set_sim_time,
         gui_arg,
         gazebo_model_path_env_var,
@@ -167,9 +151,9 @@ def generate_launch_description():
         moveit_launch_py,
         navigation_bringup_py,
         navigation_localization_py,
-        navigation_slam_py,
+        # navigation_slam_py,
         navigation_rviz_py,
-        # tuck_arm,
+        tuck_arm,
     ])
 
     return ld

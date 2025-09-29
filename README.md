@@ -6,7 +6,7 @@ This is the accompanying repository to the paper "A Self-Negotiation Framework f
 
 The project is an expansion of the [RobEthiChor](https://doi.org/10.48550/arXiv.2507.22664) framework. Therefore, it is a fork of the [original repository](https://github.com/gianlucafilippone/robethichor.git) and with some help of the [second repository](https://github.com/RoboChor/robethichor-ethics-based-negotiation).
 
-As the robot to be simulated, the [TIAGo robot](https://pal-robotics.com/robot/tiago/) was chosen. It provides a [package](https://github.com/pal-robotics/tiago_simulation) to integrate it with Gazebo. However, at the moment the version with which this system was implemented is no longer available. The current state of this repository is not compatible with the new version of the package. Therefore, the old version is provided locally, to make the code in this repository replicable. 
+As the robot to be simulated, the [TIAGo robot](https://pal-robotics.com/robot/tiago/) was chosen. It provides a [package](https://github.com/pal-robotics/tiago_simulation) to integrate it with Gazebo. 
 
 The structure of the git repository is as follows: 
 ```
@@ -71,13 +71,12 @@ sudo rosdep init
 rosdep update
 ```
 
+To run with Gazebo, build the TIAGo package following the [instructions](https://pal-robotics.com/robot/tiago/).
+
 Additional packages to install:
 ```
 sudo apt-get install gnome-terminal
 sudo apt-get install jq 
-sudo apt-get install ros-humble-tiago-simulation
-sudo apt install ros-humble-navigation2
-sudo apt install ros-humble-nav2-bringup
 sudo apt install ros-humble-moveit-planners-chomp
 ```
 
@@ -110,16 +109,17 @@ source /usr/share/gazebo/setup.bash
 
 #### Troubleshooting
 
-When the gnome-terminals are not starting up properly, this might be a problem with the locale-gen. A possible solution: navigate to `/etc/locale.gen`, make sure that the necessary languages (e.g. `de_DE.UTF-8 UTF-8`, `en_US.UTF-8 UTF-8`) are not commented out and run :
-
+- When the gnome-terminals are not starting up properly, this might be a problem with the locale-gen. A possible solution: navigate to `/etc/locale.gen`, make sure that the necessary languages (e.g. `de_DE.UTF-8 UTF-8`, `en_US.UTF-8 UTF-8`) are not commented out and run :
 ```
 sudo locale-gen
 ```  
 Afterwards, reboot the system. 
 
+- If there is a large error in localization, possibly leading to crashes, this might be a problem with the drivers. This can be very device specific, but one solution might be: 
+```
+export LIBGL_ALWAYS_SOFTWARE=1
+```
 
-> [!IMPORTANT]
-> Currently fixing map bug with new tiago package version
 
 
 ### Running experiments
